@@ -1,0 +1,76 @@
+@model List<Cihaz>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Cihazlar";
+    ViewData["PageTitle"] = "Cihaz Yonetimi";
+    ViewData["Subtitle"] = "Cihaz kayitlarini musteri bazli filtreleyip takip et.";
+
+    var musteriler = ViewBag.Musteriler as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<div class="card">
+    <div class="page-actions">
+        <form method="get" class="search-row">
+            <input class="input" style="min-width:250px" type="text" name="q" value="@ViewBag.Q" placeholder="Marka, model veya musteri ara" />
+            <select name="musteriId" style="min-width:220px">
+                <option value="">Tum Musteriler</option>
+                @foreach (var m in musteriler)
+                {
+                    if (ViewBag.MusteriId?.ToString() == m.Value)
+                    {
+                        <option value="@m.Value" selected>@m.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@m.Value">@m.Text</option>
+                    }
+                }
+            </select>
+            <button class="btn btn-light" type="submit">Filtrele</button>
+        </form>
+        <a asp-action="Create" class="btn btn-primary">Yeni Cihaz</a>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Musteri</th>
+                    <th>Marka / Model</th>
+                    <th>Ariza</th>
+                    <th>Servis</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="5" class="muted">Kayit bulunamadi.</td></tr>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Musteri?.AdSoyad</td>
+                        <td>@item.Marka @item.Model</td>
+                        <td>@item.ArizaAciklama</td>
+                        <td>@item.ServisKayitlari.Count</td>
+                        <td>
+                            <div class="link-row">
+                                <a class="btn btn-light" asp-action="Details" asp-route-id="@item.Id">Detay</a>
+                                <a class="btn btn-light" asp-action="Edit" asp-route-id="@item.Id">Duzenle</a>
+                                <form asp-action="Delete" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-danger">Sil</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+@model ServisFormViewModel
+@{
+    ViewData["Title"] = "Yeni Servis";
+    ViewData["PageTitle"] = "Yeni Servis Kaydi";
+    ViewData["Subtitle"] = "Cihaz sec, durum belirle, islemleri ekle.";
+}
+
+<div class="card">
+    <form asp-action="Create" method="post" class="form-grid">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="validation full"></div>
+
+        <div class="field full">
+            <label>Cihaz</label>
+            <select asp-for="Servis.CihazId">
+                <option value="">Cihaz seciniz</option>
+                @foreach (var c in Model.Cihazlar)
+                {
+                    <option value="@c.Id">@c.Musteri?.AdSoyad - @c.Marka @c.Model</option>
+                }
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Tarih</label>
+            <input asp-for="Servis.Tarih" type="date" class="input" />
+        </div>
+
+        <div class="field">
+            <label>Durum</label>
+            <select asp-for="Servis.Durum">
+                <option>Bekliyor</option>
+                <option>Islemde</option>
+                <option>Tamamlandi</option>
+                <option>Teslim Edildi</option>
+            </select>
+        </div>
+
+        <div class="field full">
+            <label>Yapilacak Islemler</label>
+            <div class="checkbox-grid">
+                @foreach (var islem in Model.Islemler)
+                {
+                    <label class="checkbox-item">
+                        <span>@islem.Ad (@islem.Fiyat.ToString("C0"))</span>
+                        <input type="checkbox" name="SeciliIslemIdleri" value="@islem.Id" />
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="link-row full">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a asp-action="Index" class="btn btn-light">Vazgec</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

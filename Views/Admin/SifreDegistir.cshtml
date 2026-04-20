@@ -1,0 +1,39 @@
+@model AdminSifreDegistirViewModel
+@{
+    ViewData["Title"] = "Admin Sifre";
+    ViewData["PageTitle"] = "Admin Sifre Degistir";
+    ViewData["Subtitle"] = "Yonetim paneli sifreni guvenli sekilde guncelle.";
+}
+
+<div class="card" style="max-width:700px">
+    <form asp-action="SifreDegistir" method="post" class="form-grid">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="validation full"></div>
+
+        <div class="field full">
+            <label asp-for="MevcutSifre">Mevcut Sifre</label>
+            <input asp-for="MevcutSifre" class="input" type="password" />
+            <span asp-validation-for="MevcutSifre" class="validation"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="YeniSifre">Yeni Sifre</label>
+            <input asp-for="YeniSifre" class="input" type="password" />
+            <span asp-validation-for="YeniSifre" class="validation"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="YeniSifreTekrar">Yeni Sifre Tekrar</label>
+            <input asp-for="YeniSifreTekrar" class="input" type="password" />
+            <span asp-validation-for="YeniSifreTekrar" class="validation"></span>
+        </div>
+
+        <div class="link-row full">
+            <button type="submit" class="btn btn-primary">Sifreyi Guncelle</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,161 @@
+@model HomeDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["PageTitle"] = "Genel Durum";
+    ViewData["Subtitle"] = "Servis süreçlerini anlık takip et, kararlarını veriyle güçlendir.";
+
+    string BadgeClass(string durum)
+    {
+        return durum switch
+        {
+            "Bekliyor" => "bekliyor",
+            "Islemde" => "islemde",
+            "Tamamlandi" => "tamamlandi",
+            "Teslim Edildi" => "teslim",
+            _ => "bekliyor"
+        };
+    }
+}
+
+<div class="panel-header p-4 mb-4 shadow-sm">
+    <div class="row g-3 align-items-center">
+        <div class="col-lg-9">
+            <h2 class="h4 mb-2">Servis Operasyonları Kontrol Merkezi</h2>
+            <p class="mb-0 opacity-75">Müşteri, cihaz ve servis performansını tek ekrandan izle. Premium panel aktif.</p>
+        </div>
+        <div class="col-lg-3 text-lg-end">
+            <a asp-controller="Servis" asp-action="Create" class="btn btn-light fw-semibold"><i class="bi bi-plus-circle me-2"></i>Yeni Servis Kaydı</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card kpi-card h-100">
+            <div class="card-body">
+                <small class="text-secondary">Toplam Müşteri</small>
+                <h3 class="display-6 fw-bold mb-0">@Model.ToplamMusteri</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card kpi-card h-100">
+            <div class="card-body">
+                <small class="text-secondary">Toplam Cihaz</small>
+                <h3 class="display-6 fw-bold mb-0">@Model.ToplamCihaz</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card kpi-card h-100">
+            <div class="card-body">
+                <small class="text-secondary">Aktif Servis</small>
+                <h3 class="display-6 fw-bold mb-0">@Model.AktifServis</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card kpi-card h-100">
+            <div class="card-body">
+                <small class="text-secondary">Bu Ay Ciro</small>
+                <h3 class="display-6 fw-bold mb-0">@Model.BuAyCiro.ToString("C0")</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-xxl-5">
+        <div class="card chart-card h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-0">
+                <h5 class="fw-bold mb-1">Genel Performans Grafiği</h5>
+                <small class="text-secondary">Temel metrik dağılımı</small>
+            </div>
+            <div class="card-body">
+                <canvas id="premiumChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-xxl-7">
+        <div class="card h-100">
+            <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Son Servis Hareketleri</h5>
+                <a asp-controller="Servis" asp-action="Index" class="btn btn-sm btn-outline-primary">Tümünü Gör</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Müşteri</th>
+                                <th>Cihaz</th>
+                                <th>Durum</th>
+                                <th>Tutar</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @if (Model.SonServisler.Count == 0)
+                        {
+                            <tr><td colspan="6" class="text-secondary">Henüz servis kaydı yok.</td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model.SonServisler)
+                            {
+                                <tr>
+                                    <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                                    <td>@item.Cihaz?.Musteri?.AdSoyad</td>
+                                    <td>@item.Cihaz?.Marka @item.Cihaz?.Model</td>
+                                    <td><span class="badge-status @BadgeClass(item.Durum)">@item.Durum</span></td>
+                                    <td>@item.ToplamFiyat.ToString("C0")</td>
+                                    <td>
+                                        <a class="btn btn-sm btn-light border" asp-controller="Servis" asp-action="Details" asp-route-id="@item.Id">
+                                            <i class="bi bi-eye me-1"></i>Detay
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(() => {
+    const ctx = document.getElementById('premiumChart');
+    if (!ctx || typeof Chart === 'undefined') return;
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Müşteri', 'Cihaz', 'Aktif Servis', 'Aylık Ciro'],
+            datasets: [{
+                label: 'Değer',
+                data: [@Model.ToplamMusteri, @Model.ToplamCihaz, @Model.AktifServis, @Math.Round(Model.BuAyCiro)],
+                backgroundColor: ['#0d6efd', '#198754', '#f59e0b', '#8b5cf6'],
+                borderRadius: 10,
+                maxBarThickness: 52
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true }
+            }
+        }
+    });
+})();
+</script>
+}

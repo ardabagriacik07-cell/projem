@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Admin Girişi";
+}
+
+<div class="card auth-card premium-card w-100">
+    <div class="card-body p-4 p-md-5">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-2">Yönetim Girişi</h2>
+            <p class="text-secondary mb-0">Paneli kullanmak için yönetici bilgilerinle giriş yap.</p>
+        </div>
+
+        @if (ViewBag.Hata != null)
+        {
+            <div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>@ViewBag.Hata</div>
+        }
+
+        <form asp-action="Login" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+
+            <div class="col-12">
+                <label class="form-label">Kullanıcı Adı</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input class="form-control" name="kullaniciAdi" autocomplete="username" />
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Şifre</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                    <input type="password" class="form-control" name="sifre" autocomplete="current-password" />
+                </div>
+            </div>
+
+            <div class="col-12 d-grid">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-box-arrow-in-right me-2"></i>Panele Gir</button>
+            </div>
+        </form>
+
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+            <a class="btn btn-outline-primary" asp-controller="Uye" asp-action="Giris">Üye Girişi</a>
+            <a class="btn btn-outline-success" asp-controller="Uye" asp-action="Kayit">Üye Kayıt</a>
+        </div>
+    </div>
+</div>

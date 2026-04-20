@@ -1,0 +1,70 @@
+@model List<Musteri>
+@{
+    ViewData["Title"] = "Musteriler";
+    ViewData["PageTitle"] = "Musteri Yonetimi";
+    ViewData["Subtitle"] = "Arama, detay ve iletisim bilgileriyle musteri kayitlarini yonet.";
+}
+
+<div class="card">
+    <div class="page-actions">
+        <form method="get" class="search-row">
+            <input class="input" style="min-width:300px" type="text" name="q" value="@ViewBag.Q" placeholder="Ad, telefon veya email ara" />
+            <button class="btn btn-light" type="submit">Ara</button>
+        </form>
+        <a asp-action="Create" class="btn btn-primary">Yeni Musteri</a>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>Telefon</th>
+                    <th>Email</th>
+                    <th>Hesap Tipi</th>
+                    <th>Cihaz</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="6" class="muted">Sonuc bulunamadi.</td></tr>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.AdSoyad</td>
+                        <td>@item.Telefon</td>
+                        <td>@item.Email</td>
+                        <td>
+                            @if (item.UyeHesabiVar)
+                            {
+                                <span class="badge done">Uye Kayitli</span>
+                            }
+                            else
+                            {
+                                <span class="badge waiting">Sadece Musteri</span>
+                            }
+                        </td>
+                        <td>@item.Cihazlar.Count</td>
+                        <td>
+                            <div class="link-row">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-light">Detay</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-light">Duzenle</a>
+                                <form asp-action="Delete" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button class="btn btn-danger" type="submit">Sil</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,52 @@
+@model UyeProfilViewModel
+@{
+    ViewData["Title"] = "Profil";
+}
+
+<section class="member-card" style="max-width:980px">
+    <h3 style="margin-top:0">Profil Ayarlari</h3>
+    <p class="member-muted">Iletisim bilgilerini guncelleyebilir, istersen sifreni degistirebilirsin.</p>
+
+    <form asp-action="Profil" method="post" class="member-form-grid">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="member-validation full"></div>
+
+        <div class="member-field">
+            <label asp-for="AdSoyad">Ad Soyad</label>
+            <input asp-for="AdSoyad" class="member-input" />
+            <span asp-validation-for="AdSoyad" class="member-validation"></span>
+        </div>
+
+        <div class="member-field">
+            <label asp-for="Telefon">Telefon</label>
+            <input asp-for="Telefon" class="member-input" />
+            <span asp-validation-for="Telefon" class="member-validation"></span>
+        </div>
+
+        <div class="member-field full">
+            <label asp-for="Email">Email</label>
+            <input asp-for="Email" class="member-input" />
+            <span asp-validation-for="Email" class="member-validation"></span>
+        </div>
+
+        <div class="member-field">
+            <label asp-for="YeniSifre">Yeni Sifre (Opsiyonel)</label>
+            <input asp-for="YeniSifre" type="password" class="member-input" />
+            <span asp-validation-for="YeniSifre" class="member-validation"></span>
+        </div>
+
+        <div class="member-field">
+            <label asp-for="YeniSifreTekrar">Yeni Sifre Tekrar</label>
+            <input asp-for="YeniSifreTekrar" type="password" class="member-input" />
+            <span asp-validation-for="YeniSifreTekrar" class="member-validation"></span>
+        </div>
+
+        <div class="member-link-row full">
+            <button type="submit" class="member-btn">Profili Kaydet</button>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

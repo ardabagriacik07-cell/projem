@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.db-shm
+*.db-wal
+servis.db
+openai.chatgpt-*.vsix
+db-backup/

@@ -1,0 +1,40 @@
+@model Islem
+@{
+    ViewData["Title"] = "İşlem Düzenle";
+    ViewData["PageTitle"] = "İşlem Düzenle";
+    ViewData["Subtitle"] = "İşlem adı ve fiyatı için güncel değerleri kaydet.";
+}
+
+<div class="card premium-card">
+    <div class="card-body p-4">
+        <form asp-action="Edit" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="col-12">
+                <label asp-for="Ad" class="form-label">İşlem Adı</label>
+                <input asp-for="Ad" class="form-control form-control-lg" />
+                <span asp-validation-for="Ad" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Fiyat" class="form-label">Fiyat</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text">₺</span>
+                    <input asp-for="Fiyat" class="form-control" />
+                </div>
+                <span asp-validation-for="Fiyat" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-save me-1"></i>Güncelle</button>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Geri Dön</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

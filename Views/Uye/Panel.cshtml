@@ -1,0 +1,55 @@
+@model UyePanelViewModel
+@{
+    ViewData["Title"] = "Üye Paneli";
+
+    string DurumSinif(string durum)
+    {
+        return durum switch
+        {
+            "Bekliyor" => "waiting",
+            "Islemde" => "work",
+            "Tamamlandi" => "done",
+            "Teslim Edildi" => "delivery",
+            _ => "waiting"
+        };
+    }
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-xl-3"><div class="card member-card member-kpi h-100"><div class="card-body"><small class="member-muted">Hoş Geldin</small><div class="value">@Model.Uye.AdSoyad</div></div></div></div>
+    <div class="col-12 col-md-6 col-xl-3"><div class="card member-card member-kpi h-100"><div class="card-body"><small class="member-muted">Toplam Cihaz</small><div class="value">@Model.CihazSayisi</div></div></div></div>
+    <div class="col-12 col-md-6 col-xl-3"><div class="card member-card member-kpi h-100"><div class="card-body"><small class="member-muted">Aktif Talep</small><div class="value">@Model.AktifTalep</div></div></div></div>
+    <div class="col-12 col-md-6 col-xl-3"><div class="card member-card member-kpi h-100"><div class="card-body"><small class="member-muted">Toplam Talep</small><div class="value">@Model.ToplamTalep</div></div></div></div>
+</div>
+
+<div class="card member-card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Son Taleplerin</h5>
+            <a class="btn btn-info btn-sm" asp-action="YeniTalep">Yeni Talep Aç</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table member-table align-middle mb-0">
+                <thead><tr><th>Tarih</th><th>Cihaz</th><th>Durum</th><th>Tutar</th></tr></thead>
+                <tbody>
+                @if (Model.SonTalepler.Count == 0)
+                {
+                    <tr><td colspan="4" class="member-muted">Henüz talep oluşturmadın.</td></tr>
+                }
+                else
+                {
+                    @foreach (var item in Model.SonTalepler)
+                    {
+                        <tr>
+                            <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                            <td>@item.Cihaz?.Marka @item.Cihaz?.Model</td>
+                            <td><span class="member-pill @DurumSinif(item.Durum)">@item.Durum</span></td>
+                            <td>@item.ToplamFiyat.ToString("C0")</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

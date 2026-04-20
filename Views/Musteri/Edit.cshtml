@@ -1,0 +1,41 @@
+@model Musteri
+@{
+    ViewData["Title"] = "Musteri Duzenle";
+    ViewData["PageTitle"] = "Musteri Duzenle";
+    ViewData["Subtitle"] = "Kayitli musteri bilgilerini guncelle.";
+}
+
+<div class="card">
+    <form asp-action="Edit" method="post" class="form-grid">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="validation full"></div>
+
+        <div class="field">
+            <label asp-for="AdSoyad"></label>
+            <input asp-for="AdSoyad" class="input" />
+            <span asp-validation-for="AdSoyad" class="validation"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Telefon"></label>
+            <input asp-for="Telefon" class="input" />
+            <span asp-validation-for="Telefon" class="validation"></span>
+        </div>
+
+        <div class="field full">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="input" />
+            <span asp-validation-for="Email" class="validation"></span>
+        </div>
+
+        <div class="link-row full">
+            <button type="submit" class="btn btn-primary">Guncelle</button>
+            <a asp-action="Index" class="btn btn-light">Geri Don</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

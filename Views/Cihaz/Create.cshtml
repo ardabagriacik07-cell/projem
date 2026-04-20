@@ -1,0 +1,55 @@
+@model Cihaz
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Yeni Cihaz";
+    ViewData["PageTitle"] = "Yeni Cihaz Kaydi";
+    ViewData["Subtitle"] = "Cihazi ilgili musteriye baglayarak kayit et.";
+
+    var musteriler = ViewBag.Musteriler as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<div class="card">
+    <form asp-action="Create" method="post" class="form-grid">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="validation full"></div>
+
+        <div class="field">
+            <label>Musteri</label>
+            <select asp-for="MusteriId">
+                <option value="">Musteri seciniz</option>
+                @foreach (var m in musteriler)
+                {
+                    <option value="@m.Value">@m.Text</option>
+                }
+            </select>
+            <span asp-validation-for="MusteriId" class="validation"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Marka"></label>
+            <input asp-for="Marka" class="input" />
+            <span asp-validation-for="Marka" class="validation"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Model"></label>
+            <input asp-for="Model" class="input" />
+            <span asp-validation-for="Model" class="validation"></span>
+        </div>
+
+        <div class="field full">
+            <label asp-for="ArizaAciklama"></label>
+            <textarea asp-for="ArizaAciklama" rows="4"></textarea>
+            <span asp-validation-for="ArizaAciklama" class="validation"></span>
+        </div>
+
+        <div class="link-row full">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a asp-action="Index" class="btn btn-light">Vazgec</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

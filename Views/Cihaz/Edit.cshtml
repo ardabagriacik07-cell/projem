@@ -1,0 +1,62 @@
+@model Cihaz
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Cihaz Duzenle";
+    ViewData["PageTitle"] = "Cihaz Duzenle";
+    ViewData["Subtitle"] = "Cihaz bilgilerini ve musteri baglantisini guncelle.";
+
+    var musteriler = ViewBag.Musteriler as List<SelectListItem> ?? new List<SelectListItem>();
+}
+
+<div class="card">
+    <form asp-action="Edit" method="post" class="form-grid">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="validation full"></div>
+
+        <div class="field">
+            <label>Musteri</label>
+            <select asp-for="MusteriId">
+                @foreach (var m in musteriler)
+                {
+                    if (m.Value == Model.MusteriId.ToString())
+                    {
+                        <option value="@m.Value" selected>@m.Text</option>
+                    }
+                    else
+                    {
+                        <option value="@m.Value">@m.Text</option>
+                    }
+                }
+            </select>
+            <span asp-validation-for="MusteriId" class="validation"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Marka"></label>
+            <input asp-for="Marka" class="input" />
+            <span asp-validation-for="Marka" class="validation"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Model"></label>
+            <input asp-for="Model" class="input" />
+            <span asp-validation-for="Model" class="validation"></span>
+        </div>
+
+        <div class="field full">
+            <label asp-for="ArizaAciklama"></label>
+            <textarea asp-for="ArizaAciklama" rows="4"></textarea>
+            <span asp-validation-for="ArizaAciklama" class="validation"></span>
+        </div>
+
+        <div class="link-row full">
+            <button type="submit" class="btn btn-primary">Guncelle</button>
+            <a asp-action="Index" class="btn btn-light">Geri Don</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

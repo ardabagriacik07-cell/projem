@@ -1,0 +1,68 @@
+@model ServisDetailsViewModel
+@{
+    ViewData["Title"] = "Servis Detay";
+    ViewData["PageTitle"] = "Servis Detay";
+    ViewData["Subtitle"] = "Kayit, durum ve maliyet dagilimi";
+
+    string BadgeClass(string durum)
+    {
+        return durum switch
+        {
+            "Bekliyor" => "waiting",
+            "Islemde" => "work",
+            "Tamamlandi" => "done",
+            "Teslim Edildi" => "delivery",
+            _ => "waiting"
+        };
+    }
+}
+
+<div class="grid cols-2">
+    <section class="card">
+        <h3 style="margin-top:0">Servis Bilgisi</h3>
+        <p><strong>Musteri:</strong> @Model.Servis.Cihaz?.Musteri?.AdSoyad</p>
+        <p><strong>Cihaz:</strong> @Model.Servis.Cihaz?.Marka @Model.Servis.Cihaz?.Model</p>
+        <p><strong>Tarih:</strong> @Model.Servis.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</p>
+        <p><strong>Durum:</strong> <span class="badge @BadgeClass(Model.Servis.Durum)">@Model.Servis.Durum</span></p>
+        <div class="link-row">
+            <a class="btn btn-light" asp-action="Edit" asp-route-id="@Model.Servis.Id">Duzenle</a>
+            <a class="btn btn-primary" asp-action="Index">Tum Kayitlar</a>
+        </div>
+    </section>
+
+    <section class="card">
+        <h3 style="margin-top:0">Maliyet Ozet</h3>
+        <p class="muted">Toplam Islem: <strong>@Model.Servis.ServisIslemler.Count</strong></p>
+        <p class="muted">Toplam Tutar: <strong>@Model.Servis.ToplamFiyat.ToString("C0")</strong></p>
+    </section>
+</div>
+
+<section class="card" style="margin-top:16px">
+    <h3 style="margin-top:0">Islem Listesi</h3>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Islem</th>
+                    <th>Fiyat</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Servis.ServisIslemler.Count == 0)
+            {
+                <tr><td colspan="2" class="muted">Bu servis kaydinda secili islem yok.</td></tr>
+            }
+            else
+            {
+                @foreach (var islem in Model.Servis.ServisIslemler)
+                {
+                    <tr>
+                        <td>@islem.Islem?.Ad</td>
+                        <td>@(islem.Islem?.Fiyat.ToString("C0") ?? "-")</td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

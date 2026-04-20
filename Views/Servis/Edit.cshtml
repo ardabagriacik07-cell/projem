@@ -1,0 +1,83 @@
+@model ServisFormViewModel
+@{
+    ViewData["Title"] = "Servis Duzenle";
+    ViewData["PageTitle"] = "Servis Kaydini Duzenle";
+    ViewData["Subtitle"] = "Durumu, islemleri ve cihaz baglantisini guncelle.";
+}
+
+<div class="card">
+    <form asp-action="Edit" method="post" class="form-grid">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Servis.Id" />
+        <div asp-validation-summary="ModelOnly" class="validation full"></div>
+
+        <div class="field full">
+            <label>Cihaz</label>
+            <select asp-for="Servis.CihazId">
+                @foreach (var c in Model.Cihazlar)
+                {
+                    if (c.Id == Model.Servis.CihazId)
+                    {
+                        <option value="@c.Id" selected>@c.Musteri?.AdSoyad - @c.Marka @c.Model</option>
+                    }
+                    else
+                    {
+                        <option value="@c.Id">@c.Musteri?.AdSoyad - @c.Marka @c.Model</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="field">
+            <label>Tarih</label>
+            <input asp-for="Servis.Tarih" type="date" class="input" />
+        </div>
+
+        <div class="field">
+            <label>Durum</label>
+            <select asp-for="Servis.Durum">
+                @foreach (var d in new[] { "Bekliyor", "Islemde", "Tamamlandi", "Teslim Edildi" })
+                {
+                    if (Model.Servis.Durum == d)
+                    {
+                        <option value="@d" selected>@d</option>
+                    }
+                    else
+                    {
+                        <option value="@d">@d</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="field full">
+            <label>Yapilan Islemler</label>
+            <div class="checkbox-grid">
+                @foreach (var islem in Model.Islemler)
+                {
+                    var secili = Model.SeciliIslemIdleri.Contains(islem.Id);
+                    <label class="checkbox-item">
+                        <span>@islem.Ad (@islem.Fiyat.ToString("C0"))</span>
+                        @if (secili)
+                        {
+                            <input type="checkbox" name="SeciliIslemIdleri" value="@islem.Id" checked />
+                        }
+                        else
+                        {
+                            <input type="checkbox" name="SeciliIslemIdleri" value="@islem.Id" />
+                        }
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="link-row full">
+            <button type="submit" class="btn btn-primary">Guncelle</button>
+            <a asp-action="Index" class="btn btn-light">Geri Don</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

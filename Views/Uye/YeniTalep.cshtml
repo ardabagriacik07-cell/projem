@@ -1,0 +1,41 @@
+@model UyeTalepCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Talep";
+}
+
+<section class="member-card" style="max-width:920px">
+    <h3 style="margin-top:0">Yeni Servis Talebi Ac</h3>
+    <p class="member-muted">Olusturdugun talep sadece sana ozel gorunur. Admin panelde tum talepleri gorebilir.</p>
+
+    <form asp-action="YeniTalep" method="post" class="member-form-grid">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="member-validation full"></div>
+
+        <div class="member-field">
+            <label asp-for="Marka">Marka</label>
+            <input asp-for="Marka" class="member-input" />
+            <span asp-validation-for="Marka" class="member-validation"></span>
+        </div>
+
+        <div class="member-field">
+            <label asp-for="Model">Model</label>
+            <input asp-for="Model" class="member-input" />
+            <span asp-validation-for="Model" class="member-validation"></span>
+        </div>
+
+        <div class="member-field full">
+            <label asp-for="ArizaAciklama">Ariza Aciklamasi</label>
+            <textarea asp-for="ArizaAciklama" rows="5" class="member-textarea"></textarea>
+            <span asp-validation-for="ArizaAciklama" class="member-validation"></span>
+        </div>
+
+        <div class="member-link-row full">
+            <button type="submit" class="member-btn">Talebi Gonder</button>
+            <a class="member-btn secondary" asp-action="Taleplerim">Vazgec</a>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

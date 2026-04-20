@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Gizlilik";
+    ViewData["PageTitle"] = "Gizlilik Politikası";
+    ViewData["Subtitle"] = "Veri güvenliği yaklaşımı";
+}
+
+<div class="card premium-card">
+    <div class="card-body p-4">
+        <h5 class="fw-bold mb-3">Veri Koruma İlkeleri</h5>
+        <div class="accordion" id="privacyAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#p1">Erişim Güvenliği</button>
+                </h2>
+                <div id="p1" class="accordion-collapse collapse show" data-bs-parent="#privacyAccordion">
+                    <div class="accordion-body">Yönetim ekranları sadece yetkili hesaplar ile kullanılabilir.</div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p2">Veri Saklama</button>
+                </h2>
+                <div id="p2" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+                    <div class="accordion-body">Veriler SQLite veritabanında güvenli şekilde saklanır.</div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p3">Kullanıcı Mahremiyeti</button>
+                </h2>
+                <div id="p3" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+                    <div class="accordion-body">Üye talepleri hesap bazlı izole edilir; kullanıcılar birbirinin kayıtlarını göremez.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

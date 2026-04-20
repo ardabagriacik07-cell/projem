@@ -1,0 +1,40 @@
+@model Musteri
+@{
+    ViewData["Title"] = "Yeni Musteri";
+    ViewData["PageTitle"] = "Yeni Musteri Ekle";
+    ViewData["Subtitle"] = "Musteri iletisim bilgilerini girerek kayit olustur.";
+}
+
+<div class="card">
+    <form asp-action="Create" method="post" class="form-grid">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="validation full"></div>
+
+        <div class="field">
+            <label asp-for="AdSoyad"></label>
+            <input asp-for="AdSoyad" class="input" />
+            <span asp-validation-for="AdSoyad" class="validation"></span>
+        </div>
+
+        <div class="field">
+            <label asp-for="Telefon"></label>
+            <input asp-for="Telefon" class="input" />
+            <span asp-validation-for="Telefon" class="validation"></span>
+        </div>
+
+        <div class="field full">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="input" />
+            <span asp-validation-for="Email" class="validation"></span>
+        </div>
+
+        <div class="link-row full">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a asp-action="Index" class="btn btn-light">Vazgec</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

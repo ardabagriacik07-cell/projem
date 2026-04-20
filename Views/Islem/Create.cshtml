@@ -1,0 +1,39 @@
+@model Islem
+@{
+    ViewData["Title"] = "Yeni İşlem";
+    ViewData["PageTitle"] = "Yeni İşlem Tanımı";
+    ViewData["Subtitle"] = "Serviste kullanılacak işlem kalemini premium form ile oluştur.";
+}
+
+<div class="card premium-card">
+    <div class="card-body p-4">
+        <form asp-action="Create" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="col-12">
+                <label asp-for="Ad" class="form-label">İşlem Adı</label>
+                <input asp-for="Ad" class="form-control form-control-lg" placeholder="Örn: Ekran Değişimi" />
+                <span asp-validation-for="Ad" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Fiyat" class="form-label">Fiyat</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text">₺</span>
+                    <input asp-for="Fiyat" class="form-control" />
+                </div>
+                <span asp-validation-for="Fiyat" class="text-danger"></span>
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check2-circle me-1"></i>Kaydet</button>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Vazgeç</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

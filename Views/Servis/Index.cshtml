@@ -1,0 +1,89 @@
+@model List<ServisKaydi>
+@{
+    ViewData["Title"] = "Servis Kayitlari";
+    ViewData["PageTitle"] = "Servis Takip";
+    ViewData["Subtitle"] = "Duruma gore filtrele, kayitlari detayli takip et.";
+
+    string BadgeClass(string durum)
+    {
+        return durum switch
+        {
+            "Bekliyor" => "waiting",
+            "Islemde" => "work",
+            "Tamamlandi" => "done",
+            "Teslim Edildi" => "delivery",
+            _ => "waiting"
+        };
+    }
+}
+
+<div class="card">
+    <div class="page-actions">
+        <form method="get" class="search-row">
+            <input class="input" style="min-width:250px" type="text" name="q" value="@ViewBag.Q" placeholder="Musteri, marka veya model ara" />
+            <select name="durum" style="min-width:180px">
+                <option value="">Tum Durumlar</option>
+                @foreach (var s in new[] { "Bekliyor", "Islemde", "Tamamlandi", "Teslim Edildi" })
+                {
+                    if (ViewBag.Durum?.ToString() == s)
+                    {
+                        <option value="@s" selected>@s</option>
+                    }
+                    else
+                    {
+                        <option value="@s">@s</option>
+                    }
+                }
+            </select>
+            <button class="btn btn-light" type="submit">Uygula</button>
+        </form>
+        <a asp-action="Create" class="btn btn-primary">Yeni Servis</a>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Musteri</th>
+                    <th>Cihaz</th>
+                    <th>Durum</th>
+                    <th>Islem Adedi</th>
+                    <th>Tutar</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="7" class="muted">Servis kaydi bulunamadi.</td></tr>
+            }
+            else
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                        <td>@item.Cihaz?.Musteri?.AdSoyad</td>
+                        <td>@item.Cihaz?.Marka @item.Cihaz?.Model</td>
+                        <td><span class="badge @BadgeClass(item.Durum)">@item.Durum</span></td>
+                        <td>@item.ServisIslemler.Count</td>
+                        <td>@item.ToplamFiyat.ToString("C0")</td>
+                        <td>
+                            <div class="link-row">
+                                <a class="btn btn-light" asp-action="Details" asp-route-id="@item.Id">Detay</a>
+                                <a class="btn btn-light" asp-action="Edit" asp-route-id="@item.Id">Duzenle</a>
+                                <form asp-action="Delete" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button class="btn btn-danger" type="submit">Sil</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+@model UyeGirisViewModel
+@{
+    ViewData["Title"] = "Üye Girişi";
+}
+
+<div class="card member-auth-card shadow-lg border-0" style="max-width:520px; width:100%;">
+    <div class="card-body p-4 p-md-5">
+        <h1 class="h3 fw-bold mb-2">Üye Girişi</h1>
+        <p class="member-muted mb-4">Taleplerini takip etmek için hesabına giriş yap.</p>
+
+        <form asp-action="Giris" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="member-validation"></div>
+
+            <div class="col-12">
+                <label asp-for="Email" class="form-label">E-posta</label>
+                <input asp-for="Email" class="form-control member-input" />
+                <span asp-validation-for="Email" class="member-validation"></span>
+            </div>
+
+            <div class="col-12">
+                <label asp-for="Sifre" class="form-label">Şifre</label>
+                <input asp-for="Sifre" type="password" class="form-control member-input" />
+                <span asp-validation-for="Sifre" class="member-validation"></span>
+            </div>
+
+            <div class="col-12 d-grid gap-2">
+                <button type="submit" class="btn btn-info fw-semibold">Giriş Yap</button>
+                <a class="btn btn-outline-light" asp-action="Kayit">Kayıt Ol</a>
+                <a class="btn btn-outline-light" asp-controller="Admin" asp-action="Login">Admin Girişi</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

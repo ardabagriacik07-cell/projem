@@ -1,0 +1,55 @@
+@model UyeKayitViewModel
+@{
+    ViewData["Title"] = "Üye Kayıt";
+}
+
+<div class="card member-auth-card shadow-lg border-0" style="max-width:620px; width:100%;">
+    <div class="card-body p-4 p-md-5">
+        <h1 class="h3 fw-bold mb-2">Yeni Üye Kaydı</h1>
+        <p class="member-muted mb-4">Hesabını oluştur ve servis taleplerini güvenle yönet.</p>
+
+        <form asp-action="Kayit" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="member-validation"></div>
+
+            <div class="col-md-6">
+                <label asp-for="AdSoyad" class="form-label">Ad Soyad</label>
+                <input asp-for="AdSoyad" class="form-control member-input" />
+                <span asp-validation-for="AdSoyad" class="member-validation"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Telefon" class="form-label">Telefon</label>
+                <input asp-for="Telefon" class="form-control member-input" />
+                <span asp-validation-for="Telefon" class="member-validation"></span>
+            </div>
+
+            <div class="col-12">
+                <label asp-for="Email" class="form-label">E-posta</label>
+                <input asp-for="Email" class="form-control member-input" />
+                <span asp-validation-for="Email" class="member-validation"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Sifre" class="form-label">Şifre</label>
+                <input asp-for="Sifre" type="password" class="form-control member-input" />
+                <span asp-validation-for="Sifre" class="member-validation"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="SifreTekrar" class="form-label">Şifre Tekrar</label>
+                <input asp-for="SifreTekrar" type="password" class="form-control member-input" />
+                <span asp-validation-for="SifreTekrar" class="member-validation"></span>
+            </div>
+
+            <div class="col-12 d-grid gap-2">
+                <button type="submit" class="btn btn-success fw-semibold">Hesap Oluştur</button>
+                <a class="btn btn-outline-light" asp-action="Giris">Zaten Üyeyim</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
