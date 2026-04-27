@@ -16,40 +16,121 @@
 }
 
 <div class="row g-3 mb-4">
-    <div class="col-12 col-md-6 col-xl-3"><div class="card member-card member-kpi h-100"><div class="card-body"><small class="member-muted">Hoş Geldin</small><div class="value">@Model.Uye.AdSoyad</div></div></div></div>
+    <div class="col-12 col-xl-8">
+        <div class="member-card member-hero-card h-100">
+            <div class="card-body p-4 p-lg-5">
+                <div class="row g-4 align-items-center">
+                    <div class="col-lg-8">
+                        <span class="member-section-badge">Canlı Özet</span>
+                        <h2 class="member-hero-title mt-3">Hoş geldin, @Model.Uye.AdSoyad</h2>
+                        <p class="member-hero-copy mb-4">Açık servislerini, geçmiş kayıtlarını ve yeni taleplerini tek ekrandan yönetebilirsin.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a class="btn btn-info fw-semibold px-4" asp-action="YeniTalep">Yeni Talep Aç</a>
+                            <a class="btn btn-outline-light px-4" asp-action="Taleplerim">Taleplerimi Gör</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="member-hero-stat">
+                            <small>Son Giriş</small>
+                            <strong>@(Model.Uye.SonGirisTarihi?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "İlk giriş")</strong>
+                        </div>
+                        <div class="member-hero-stat">
+                            <small>Kayıt Tarihi</small>
+                            <strong>@Model.Uye.KayitTarihi.ToLocalTime().ToString("dd.MM.yyyy")</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="member-card member-quick-card h-100">
+            <div class="card-body p-4">
+                <div class="member-quick-label">Aktif Servis Nabzı</div>
+                <div class="member-quick-value">@Model.AktifTalep</div>
+                <p class="member-muted mb-4">Şu anda işlem bekleyen veya devam eden kayıtların.</p>
+                <div class="member-progress-track">
+                    <span style="width:@(Model.ToplamTalep == 0 ? 0 : (Model.AktifTalep * 100 / Model.ToplamTalep))%"></span>
+                </div>
+                <small class="member-muted d-block mt-3">Toplam @Model.ToplamTalep talebin içinden.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-xl-3"><div class="card member-card member-kpi h-100"><div class="card-body"><small class="member-muted">Müşteri Adı</small><div class="value">@Model.Uye.AdSoyad</div></div></div></div>
     <div class="col-12 col-md-6 col-xl-3"><div class="card member-card member-kpi h-100"><div class="card-body"><small class="member-muted">Toplam Cihaz</small><div class="value">@Model.CihazSayisi</div></div></div></div>
     <div class="col-12 col-md-6 col-xl-3"><div class="card member-card member-kpi h-100"><div class="card-body"><small class="member-muted">Aktif Talep</small><div class="value">@Model.AktifTalep</div></div></div></div>
     <div class="col-12 col-md-6 col-xl-3"><div class="card member-card member-kpi h-100"><div class="card-body"><small class="member-muted">Toplam Talep</small><div class="value">@Model.ToplamTalep</div></div></div></div>
 </div>
 
-<div class="card member-card">
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0">Son Taleplerin</h5>
-            <a class="btn btn-info btn-sm" asp-action="YeniTalep">Yeni Talep Aç</a>
+<div class="row g-3">
+    <div class="col-12 col-xl-8">
+        <div class="card member-card h-100">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <span class="member-section-badge">Servis Akışı</span>
+                        <h5 class="mb-0 mt-2">Son Taleplerin</h5>
+                    </div>
+                    <a class="btn btn-info btn-sm" asp-action="YeniTalep">Yeni Talep Aç</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table member-table align-middle mb-0">
+                        <thead><tr><th>Tarih</th><th>Cihaz</th><th>Durum</th><th>Tutar</th></tr></thead>
+                        <tbody>
+                        @if (Model.SonTalepler.Count == 0)
+                        {
+                            <tr><td colspan="4" class="member-muted">Henüz talep oluşturmadın.</td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model.SonTalepler)
+                            {
+                                <tr>
+                                    <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                                    <td>@item.Cihaz?.Marka @item.Cihaz?.Model</td>
+                                    <td><span class="member-pill @DurumSinif(item.Durum)">@item.Durum</span></td>
+                                    <td>@item.ToplamFiyat.ToString("C0")</td>
+                                </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <div class="table-responsive">
-            <table class="table member-table align-middle mb-0">
-                <thead><tr><th>Tarih</th><th>Cihaz</th><th>Durum</th><th>Tutar</th></tr></thead>
-                <tbody>
-                @if (Model.SonTalepler.Count == 0)
-                {
-                    <tr><td colspan="4" class="member-muted">Henüz talep oluşturmadın.</td></tr>
-                }
-                else
-                {
-                    @foreach (var item in Model.SonTalepler)
-                    {
-                        <tr>
-                            <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
-                            <td>@item.Cihaz?.Marka @item.Cihaz?.Model</td>
-                            <td><span class="member-pill @DurumSinif(item.Durum)">@item.Durum</span></td>
-                            <td>@item.ToplamFiyat.ToString("C0")</td>
-                        </tr>
-                    }
-                }
-                </tbody>
-            </table>
+    </div>
+    <div class="col-12 col-xl-4">
+        <div class="card member-card h-100">
+            <div class="card-body p-4">
+                <span class="member-section-badge">Hızlı Erişim</span>
+                <h5 class="mt-2">Sıradaki İşlemler</h5>
+                <div class="member-action-list mt-4">
+                    <a asp-action="YeniTalep" class="member-action-item">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        <div>
+                            <strong>Yeni Talep Oluştur</strong>
+                            <small>Cihaz ve arıza detayını hemen gir.</small>
+                        </div>
+                    </a>
+                    <a asp-action="Taleplerim" class="member-action-item">
+                        <i class="bi bi-clock-history"></i>
+                        <div>
+                            <strong>Durumları Takip Et</strong>
+                            <small>Bekleyen ve tamamlanan servisleri gör.</small>
+                        </div>
+                    </a>
+                    <a asp-action="Profil" class="member-action-item">
+                        <i class="bi bi-sliders"></i>
+                        <div>
+                            <strong>Profilini Güncelle</strong>
+                            <small>İletişim ve şifre ayarlarını düzenle.</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

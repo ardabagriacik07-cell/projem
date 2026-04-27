@@ -6,13 +6,33 @@
     ViewData["Subtitle"] = "Cihaz kayitlarini musteri bazli filtreleyip takip et.";
 
     var musteriler = ViewBag.Musteriler as List<SelectListItem> ?? new List<SelectListItem>();
+
+    string Initials(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "?";
+        var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(x => x[0]);
+        return string.Concat(parts).ToUpperInvariant();
+    }
 }
 
 <div class="card">
-    <div class="page-actions">
-        <form method="get" class="search-row">
-            <input class="input" style="min-width:250px" type="text" name="q" value="@ViewBag.Q" placeholder="Marka, model veya musteri ara" />
-            <select name="musteriId" style="min-width:220px">
+    <div class="card-body p-4 p-lg-5">
+        <div class="entity-hero mb-4">
+            <div>
+                <span class="admin-chip">Cihaz Havuzu</span>
+                <h3 class="mt-3 mb-2">Cihaz Yönetimi</h3>
+                <p class="text-secondary mb-0">Marka, model, arıza ve müşteri bağlantılarını tek bakışta izle.</p>
+            </div>
+            <div class="entity-hero-stat">
+                <small>Liste</small>
+                <strong>@Model.Count</strong>
+            </div>
+        </div>
+
+        <div class="admin-toolbar mb-4">
+        <form method="get" class="admin-searchbar admin-searchbar-wide">
+            <input class="input" type="text" name="q" value="@ViewBag.Q" placeholder="Marka, model veya musteri ara" />
+            <select name="musteriId" class="input-like-select">
                 <option value="">Tum Musteriler</option>
                 @foreach (var m in musteriler)
                 {
@@ -26,13 +46,13 @@
                     }
                 }
             </select>
-            <button class="btn btn-light" type="submit">Filtrele</button>
+            <button class="btn btn-outline-primary" type="submit">Filtrele</button>
         </form>
         <a asp-action="Create" class="btn btn-primary">Yeni Cihaz</a>
-    </div>
+        </div>
 
     <div class="table-wrap">
-        <table>
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th>Musteri</th>
@@ -52,18 +72,41 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.Musteri?.AdSoyad</td>
-                        <td>@item.Marka @item.Model</td>
-                        <td>@item.ArizaAciklama</td>
-                        <td>@item.ServisKayitlari.Count</td>
                         <td>
-                            <div class="link-row">
-                                <a class="btn btn-light" asp-action="Details" asp-route-id="@item.Id">Detay</a>
-                                <a class="btn btn-light" asp-action="Edit" asp-route-id="@item.Id">Duzenle</a>
+                            <div class="rich-cell">
+                                <div class="rich-avatar">@Initials(item.Musteri?.AdSoyad ?? "?")</div>
+                                <div>
+                                    <strong>@item.Musteri?.AdSoyad</strong>
+                                    <small>Musteri sahibi</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rich-stack">
+                                <strong>@item.Marka</strong>
+                                <small>@item.Model</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rich-stack">
+                                <strong>Ariza Notu</strong>
+                                <small>@item.ArizaAciklama</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="metric-pill">
+                                <strong>@item.ServisKayitlari.Count</strong>
+                                <small>Servis</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-cluster">
+                                <a class="btn action-btn action-btn-view" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i><span>Detay</span></a>
+                                <a class="btn action-btn action-btn-edit" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i><span>Duzenle</span></a>
                                 <form asp-action="Delete" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@item.Id" />
-                                    <button type="submit" class="btn btn-danger">Sil</button>
+                                    <button type="submit" class="btn action-btn action-btn-delete"><i class="bi bi-trash3"></i><span>Sil</span></button>
                                 </form>
                             </div>
                         </td>
@@ -72,5 +115,6 @@
             }
             </tbody>
         </table>
+    </div>
     </div>
 </div>

@@ -3,32 +3,79 @@
     ViewData["Title"] = "Musteri Detay";
     ViewData["PageTitle"] = "Musteri Detay";
     ViewData["Subtitle"] = "Musteri bilgileri, cihazlari ve servis gecmisi.";
+
+    string Initials(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "?";
+        var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(x => x[0]);
+        return string.Concat(parts).ToUpperInvariant();
+    }
 }
 
-<div class="grid cols-2">
-    <section class="card">
-        <h3 style="margin-top:0">@Model.Musteri.AdSoyad</h3>
-        <p><strong>Telefon:</strong> @Model.Musteri.Telefon</p>
-        <p><strong>Email:</strong> @Model.Musteri.Email</p>
-        <p><strong>Uyelik:</strong> @(Model.Musteri.UyeHesabiVar ? "Uye Girisi Acik" : "Uyelik Yok")</p>
-        <p><strong>Son Giris:</strong> @(Model.Musteri.SonGirisTarihi?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "-")</p>
-        <div class="link-row">
-            <a class="btn btn-light" asp-action="Edit" asp-route-id="@Model.Musteri.Id">Duzenle</a>
-            <a class="btn btn-primary" asp-controller="Cihaz" asp-action="Create">Cihaz Ekle</a>
+<section class="detail-hero-card mb-4">
+    <div class="row g-4 align-items-center">
+        <div class="col-xl-8">
+            <div class="detail-hero-content">
+                <div class="detail-identity">
+                    <div class="detail-identity-avatar">@Initials(Model.Musteri.AdSoyad)</div>
+                    <div>
+                        <span class="admin-chip detail-chip-light">Müşteri Profili</span>
+                        <h2 class="detail-hero-title mt-3">@Model.Musteri.AdSoyad</h2>
+                        <p class="detail-hero-copy mb-0">İletişim, üyelik ve cihaz geçmişini tek bir premium görünümde yönet.</p>
+                    </div>
+                </div>
+                <div class="detail-quick-grid mt-4">
+                    <div class="detail-quick-card">
+                        <small>Telefon</small>
+                        <strong>@Model.Musteri.Telefon</strong>
+                    </div>
+                    <div class="detail-quick-card">
+                        <small>Email</small>
+                        <strong>@Model.Musteri.Email</strong>
+                    </div>
+                    <div class="detail-quick-card">
+                        <small>Uyelik</small>
+                        <strong>@(Model.Musteri.UyeHesabiVar ? "Uye Girisi Acik" : "Uyelik Yok")</strong>
+                    </div>
+                    <div class="detail-quick-card">
+                        <small>Son Giris</small>
+                        <strong>@(Model.Musteri.SonGirisTarihi?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "-")</strong>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <a class="btn btn-light detail-hero-btn" asp-action="Edit" asp-route-id="@Model.Musteri.Id"><i class="bi bi-pencil-square me-2"></i>Duzenle</a>
+                    <a class="btn btn-outline-light detail-hero-btn" asp-controller="Cihaz" asp-action="Create"><i class="bi bi-plus-circle me-2"></i>Cihaz Ekle</a>
+                </div>
+            </div>
         </div>
-    </section>
+        <div class="col-xl-4">
+            <div class="detail-side-stack">
+                <div class="detail-side-stat">
+                    <small>Toplam Cihaz</small>
+                    <strong>@Model.Cihazlar.Count</strong>
+                    <span>Müşteriye bağlı aktif kayıt</span>
+                </div>
+                <div class="detail-side-stat">
+                    <small>Toplam Servis</small>
+                    <strong>@Model.Cihazlar.Sum(x => x.ServisKayitlari.Count)</strong>
+                    <span>Tüm cihazlardan oluşan servis hacmi</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <section class="card">
-        <h3 style="margin-top:0">Ozet</h3>
-        <p class="muted">Toplam Cihaz: <strong>@Model.Cihazlar.Count</strong></p>
-        <p class="muted">Toplam Servis: <strong>@Model.Cihazlar.Sum(x => x.ServisKayitlari.Count)</strong></p>
-    </section>
-</div>
-
-<section class="card" style="margin-top:16px">
-    <h3 style="margin-top:0">Musteriye Ait Cihazlar</h3>
+<section class="card premium-card detail-section-card">
+    <div class="card-body p-4 p-lg-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <span class="admin-chip">Bağlı Cihazlar</span>
+            <h3 class="mt-2 mb-0">Musteriye Ait Cihazlar</h3>
+        </div>
+        <span class="section-count-pill">@Model.Cihazlar.Count cihaz</span>
+    </div>
     <div class="table-wrap">
-        <table>
+        <table class="admin-table detail-table">
             <thead>
                 <tr>
                     <th>Marka / Model</th>
@@ -47,14 +94,30 @@
                 @foreach (var cihaz in Model.Cihazlar)
                 {
                     <tr>
-                        <td>@cihaz.Marka @cihaz.Model</td>
-                        <td>@cihaz.ArizaAciklama</td>
-                        <td>@cihaz.ServisKayitlari.Count</td>
-                        <td><a class="btn btn-light" asp-controller="Cihaz" asp-action="Details" asp-route-id="@cihaz.Id">Cihaz Detay</a></td>
+                        <td>
+                            <div class="rich-stack">
+                                <strong>@cihaz.Marka</strong>
+                                <small>@cihaz.Model</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rich-stack">
+                                <strong>Ariza Notu</strong>
+                                <small>@cihaz.ArizaAciklama</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="metric-pill">
+                                <strong>@cihaz.ServisKayitlari.Count</strong>
+                                <small>Servis</small>
+                            </div>
+                        </td>
+                        <td><a class="btn action-btn action-btn-view" asp-controller="Cihaz" asp-action="Details" asp-route-id="@cihaz.Id"><i class="bi bi-box-arrow-up-right"></i><span>Detaya Git</span></a></td>
                     </tr>
                 }
             }
             </tbody>
         </table>
+    </div>
     </div>
 </section>

@@ -1,0 +1,83 @@
+@model AdminSystemViewModel
+@{
+    ViewData["Title"] = "Sistem Durumu";
+    ViewData["PageTitle"] = "Sistem Durumu";
+    ViewData["Subtitle"] = "Yönetici oturumu, kullanıcı aktivitesi ve kritik servis kuyruğunu güvenle takip edin.";
+
+    string BadgeClass(string durum)
+    {
+        return durum switch
+        {
+            "Bekliyor" => "bekliyor",
+            "Islemde" => "islemde",
+            "Tamamlandi" => "tamamlandi",
+            "Teslim Edildi" => "teslim",
+            _ => "bekliyor"
+        };
+    }
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Toplam Admin</small><h3 class="display-6 fw-bold mb-0">@Model.ToplamAdmin</h3></div></div></div>
+    <div class="col-12 col-md-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Aktif Üye</small><h3 class="display-6 fw-bold mb-0">@Model.ToplamUye</h3></div></div></div>
+    <div class="col-12 col-md-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Son 7 Gün Giriş</small><h3 class="display-6 fw-bold mb-0">@Model.Son7GunGirisYapanUye</h3></div></div></div>
+    <div class="col-12 col-md-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Bugün Açılan Servis</small><h3 class="display-6 fw-bold mb-0">@Model.BugunAcilanServis</h3></div></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-xl-6">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">Hesap Aktivitesi</span>
+                <h5 class="fw-bold mt-2">Son Giriş Yapan Üyeler</h5>
+                <div class="timeline-list mt-4">
+                    @foreach (var uye in Model.SonGirisYapanUyeler)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div>
+                                <strong>@uye.AdSoyad</strong>
+                                <small>@uye.Email</small>
+                            </div>
+                            <span>@uye.SonGirisTarihi?.ToLocalTime().ToString("dd.MM HH:mm")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xl-6">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">Kritik Kuyruk</span>
+                <h5 class="fw-bold mt-2">Öncelikli Takip Gerektiren Servisler</h5>
+                <div class="queue-list mt-4">
+                    @foreach (var servis in Model.KritikServisler)
+                    {
+                        <div class="queue-item">
+                            <strong>@servis.Cihaz?.Musteri?.AdSoyad</strong>
+                            <small>@servis.Cihaz?.Marka @servis.Cihaz?.Model</small>
+                            <span><span class="badge-status @BadgeClass(servis.Durum)">@servis.Durum</span></span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-12">
+        <div class="card premium-card">
+            <div class="card-body p-4 p-lg-5">
+                <span class="admin-chip">Operasyon Checklist</span>
+                <h5 class="fw-bold mt-2">Sunum ve günlük kullanım için hazır durum listesi</h5>
+                <div class="row g-3 mt-3">
+                    <div class="col-md-4"><div class="check-card"><i class="bi bi-check2-circle"></i><div><strong>Oturum Yönetimi</strong><small>Admin ve üye oturumları ayrıştırılmış durumda.</small></div></div></div>
+                    <div class="col-md-4"><div class="check-card"><i class="bi bi-check2-circle"></i><div><strong>Veri Görünürlüğü</strong><small>Dashboard, rapor ve operasyon ekranları aktif.</small></div></div></div>
+                    <div class="col-md-4"><div class="check-card"><i class="bi bi-check2-circle"></i><div><strong>Mobil Uyum</strong><small>3 çizgili menü ile dar ekranlar için hazır.</small></div></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

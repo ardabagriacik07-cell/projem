@@ -2,45 +2,85 @@
     ViewData["Title"] = "Admin Girişi";
 }
 
-<div class="card auth-card premium-card w-100">
-    <div class="card-body p-4 p-md-5">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold mb-2">Yönetim Girişi</h2>
-            <p class="text-secondary mb-0">Paneli kullanmak için yönetici bilgilerinle giriş yap.</p>
-        </div>
+<div class="row g-4 g-xl-5 align-items-stretch min-vh-100 admin-auth-grid">
+    <div class="col-12 col-xl-7 d-flex">
+        <section class="admin-auth-showcase w-100">
+            <span class="admin-auth-badge">Executive Console</span>
+            <h1 class="admin-auth-title mt-4">Servis operasyonlarını tek bakışta yöneten kusursuz bir merkez.</h1>
+            <p class="admin-auth-copy">Müşteri, cihaz, servis, teslimat, gelir ve ekip akışını aynı yerden yönet. Sunum kalitesinde tasarım, hızlı işlem akışı ve güçlü görünürlük bir arada.</p>
 
-        @if (ViewBag.Hata != null)
-        {
-            <div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>@ViewBag.Hata</div>
-        }
-
-        <form asp-action="Login" method="post" class="row g-3">
-            @Html.AntiForgeryToken()
-
-            <div class="col-12">
-                <label class="form-label">Kullanıcı Adı</label>
-                <div class="input-group input-group-lg">
-                    <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input class="form-control" name="kullaniciAdi" autocomplete="username" />
+            <div class="row g-3 mt-1">
+                <div class="col-md-4">
+                    <div class="admin-auth-stat">
+                        <strong>Canlı Akış</strong>
+                        <small>Anlık servis hareketlerini izleyen panel düzeni</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="admin-auth-stat">
+                        <strong>Hızlı Erişim</strong>
+                        <small>3 çizgili menü ile tüm sayfalara tek dokunuş</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="admin-auth-stat">
+                        <strong>Rapor Gücü</strong>
+                        <small>Sunum ve karar desteği için net veri blokları</small>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-12">
-                <label class="form-label">Şifre</label>
-                <div class="input-group input-group-lg">
-                    <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
-                    <input type="password" class="form-control" name="sifre" autocomplete="current-password" />
+            <div class="admin-auth-note mt-4">
+                <i class="bi bi-shield-lock-fill"></i>
+                <div>
+                    <strong>Yönetici erişimi korumalıdır</strong>
+                    <small>Oturum yalnızca doğrulanmış yönetici hesabı ile başlatılır.</small>
                 </div>
             </div>
+        </section>
+    </div>
 
-            <div class="col-12 d-grid">
-                <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-box-arrow-in-right me-2"></i>Panele Gir</button>
+    <div class="col-12 col-xl-5 d-flex align-items-center justify-content-center">
+        <div class="card admin-login-card w-100">
+            <div class="card-body p-4 p-md-5">
+                <div class="admin-login-mark mb-3"><i class="bi bi-grid-1x2-fill"></i></div>
+                <h2 class="fw-bold mb-2">Yönetim Girişi</h2>
+                <p class="admin-login-subtitle mb-4">Yönetici bilgilerinizle giriş yapın ve komuta merkezini açın.</p>
+
+                @if (ViewBag.Hata != null)
+                {
+                    <div class="alert alert-danger admin-alert-inline"><i class="bi bi-exclamation-triangle me-2"></i>@ViewBag.Hata</div>
+                }
+
+                <form asp-action="Login" method="post" class="row g-3">
+                    @Html.AntiForgeryToken()
+
+                    <div class="col-12">
+                        <label class="form-label">Kullanıcı Adı</label>
+                        <div class="input-group input-group-lg admin-input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input class="form-control" name="kullaniciAdi" autocomplete="username" />
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Şifre</label>
+                        <div class="input-group input-group-lg admin-input-group">
+                            <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                            <input type="password" class="form-control" name="sifre" autocomplete="current-password" />
+                        </div>
+                    </div>
+
+                    <div class="col-12 d-grid mt-2">
+                        <button type="submit" class="btn btn-primary btn-lg admin-login-btn"><i class="bi bi-box-arrow-in-right me-2"></i>Panele Gir</button>
+                    </div>
+                </form>
+
+                <div class="d-flex flex-wrap gap-2 mt-4 admin-login-switches">
+                    <a class="btn btn-outline-primary flex-fill" asp-controller="Uye" asp-action="Giris">Üye Girişi</a>
+                    <a class="btn btn-outline-success flex-fill" asp-controller="Uye" asp-action="Kayit">Üye Kayıt</a>
+                </div>
             </div>
-        </form>
-
-        <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
-            <a class="btn btn-outline-primary" asp-controller="Uye" asp-action="Giris">Üye Girişi</a>
-            <a class="btn btn-outline-success" asp-controller="Uye" asp-action="Kayit">Üye Kayıt</a>
         </div>
     </div>
 </div>

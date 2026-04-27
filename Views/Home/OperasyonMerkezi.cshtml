@@ -1,0 +1,136 @@
+@model AdminOperationsViewModel
+@{
+    ViewData["Title"] = "Operasyon";
+    ViewData["PageTitle"] = "Operasyon Merkezi";
+    ViewData["Subtitle"] = "Bekleyen, işlemde ve tamamlanan servisleri ekip akışı gibi yönetin.";
+
+    string BadgeClass(string durum)
+    {
+        return durum switch
+        {
+            "Bekliyor" => "bekliyor",
+            "Islemde" => "islemde",
+            "Tamamlandi" => "tamamlandi",
+            "Teslim Edildi" => "teslim",
+            _ => "bekliyor"
+        };
+    }
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Bekleyen Kayıt</small><h3 class="display-6 fw-bold mb-0">@Model.BekleyenServisSayisi</h3></div></div></div>
+    <div class="col-12 col-md-4"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">İşlemde Kayıt</small><h3 class="display-6 fw-bold mb-0">@Model.IslemdeServisSayisi</h3></div></div></div>
+    <div class="col-12 col-md-4"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Tamamlanan Kayıt</small><h3 class="display-6 fw-bold mb-0">@Model.TamamlanmisServisSayisi</h3></div></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-xxl-4">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">Bekleyen</span>
+                <h5 class="fw-bold mt-2">İlk Ele Alınacak Servisler</h5>
+                <div class="queue-list mt-4">
+                    @foreach (var item in Model.BekleyenServisler)
+                    {
+                        <div class="queue-item">
+                            <strong>@item.Cihaz?.Musteri?.AdSoyad</strong>
+                            <small>@item.Cihaz?.Marka @item.Cihaz?.Model</small>
+                            <span>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xxl-4">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">İşlemde</span>
+                <h5 class="fw-bold mt-2">Aktif Teknik Akış</h5>
+                <div class="queue-list mt-4">
+                    @foreach (var item in Model.IslemdeServisler)
+                    {
+                        <div class="queue-item">
+                            <strong>@item.Cihaz?.Musteri?.AdSoyad</strong>
+                            <small>@item.Cihaz?.Marka @item.Cihaz?.Model</small>
+                            <span>@item.ServisIslemler.Count işlem bağlı</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xxl-4">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">Teslim Öncesi</span>
+                <h5 class="fw-bold mt-2">Kapanışa Yakın Kayıtlar</h5>
+                <div class="queue-list mt-4">
+                    @foreach (var item in Model.TamamlananServisler)
+                    {
+                        <div class="queue-item">
+                            <strong>@item.Cihaz?.Musteri?.AdSoyad</strong>
+                            <small>@item.Cihaz?.Marka @item.Cihaz?.Model</small>
+                            <span><span class="badge-status @BadgeClass(item.Durum)">@item.Durum</span></span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-12 col-xl-7">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">Yeni Cihazlar</span>
+                <h5 class="fw-bold mt-2">Sisteme Son Eklenen Cihazlar</h5>
+                <div class="table-responsive mt-4">
+                    <table class="table admin-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Müşteri</th>
+                                <th>Marka</th>
+                                <th>Model</th>
+                                <th>Arıza</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var cihaz in Model.SonEklenenCihazlar)
+                        {
+                            <tr>
+                                <td>@cihaz.Musteri?.AdSoyad</td>
+                                <td>@cihaz.Marka</td>
+                                <td>@cihaz.Model</td>
+                                <td>@cihaz.ArizaAciklama</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xl-5">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">Müşteri Akışı</span>
+                <h5 class="fw-bold mt-2">Son Üye Kayıtları</h5>
+                <div class="timeline-list mt-4">
+                    @foreach (var uye in Model.SonUyeler)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div>
+                                <strong>@uye.AdSoyad</strong>
+                                <small>@uye.Telefon</small>
+                            </div>
+                            <span>@(uye.UyeHesabiVar ? "Üye" : "Pasif")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

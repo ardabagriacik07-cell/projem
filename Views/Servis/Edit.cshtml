@@ -6,6 +6,11 @@
 }
 
 <div class="card">
+    <div class="card-body p-4 p-lg-5">
+    <span class="admin-chip">Servis Guncelle</span>
+    <h3 class="mt-3">Servis Kaydini Duzenle</h3>
+    <p class="text-secondary mb-4">Durum, tarih ve işlem bağlantılarını düzenleyerek kaydı güncel tut.</p>
+
     <form asp-action="Edit" method="post" class="form-grid">
         @Html.AntiForgeryToken()
         <input type="hidden" asp-for="Servis.Id" />
@@ -76,6 +81,7 @@
             <a asp-action="Index" class="btn btn-light">Geri Don</a>
         </div>
     </form>
+    </div>
 </div>
 
 @section Scripts {

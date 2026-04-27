@@ -15,13 +15,33 @@
             _ => "waiting"
         };
     }
+
+    string Initials(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "?";
+        var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(x => x[0]);
+        return string.Concat(parts).ToUpperInvariant();
+    }
 }
 
 <div class="card">
-    <div class="page-actions">
-        <form method="get" class="search-row">
-            <input class="input" style="min-width:250px" type="text" name="q" value="@ViewBag.Q" placeholder="Musteri, marka veya model ara" />
-            <select name="durum" style="min-width:180px">
+    <div class="card-body p-4 p-lg-5">
+        <div class="entity-hero mb-4">
+            <div>
+                <span class="admin-chip">Servis Hattı</span>
+                <h3 class="mt-3 mb-2">Servis Takip</h3>
+                <p class="text-secondary mb-0">Duruma göre filtrele, kayıtları izle ve teknik süreci daha iyi yönet.</p>
+            </div>
+            <div class="entity-hero-stat">
+                <small>Servis</small>
+                <strong>@Model.Count</strong>
+            </div>
+        </div>
+
+        <div class="admin-toolbar mb-4">
+        <form method="get" class="admin-searchbar admin-searchbar-wide">
+            <input class="input" type="text" name="q" value="@ViewBag.Q" placeholder="Musteri, marka veya model ara" />
+            <select name="durum" class="input-like-select">
                 <option value="">Tum Durumlar</option>
                 @foreach (var s in new[] { "Bekliyor", "Islemde", "Tamamlandi", "Teslim Edildi" })
                 {
@@ -35,13 +55,13 @@
                     }
                 }
             </select>
-            <button class="btn btn-light" type="submit">Uygula</button>
+            <button class="btn btn-outline-primary" type="submit">Uygula</button>
         </form>
         <a asp-action="Create" class="btn btn-primary">Yeni Servis</a>
-    </div>
+        </div>
 
     <div class="table-wrap">
-        <table>
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th>Tarih</th>
@@ -63,20 +83,48 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
-                        <td>@item.Cihaz?.Musteri?.AdSoyad</td>
-                        <td>@item.Cihaz?.Marka @item.Cihaz?.Model</td>
-                        <td><span class="badge @BadgeClass(item.Durum)">@item.Durum</span></td>
-                        <td>@item.ServisIslemler.Count</td>
-                        <td>@item.ToplamFiyat.ToString("C0")</td>
                         <td>
-                            <div class="link-row">
-                                <a class="btn btn-light" asp-action="Details" asp-route-id="@item.Id">Detay</a>
-                                <a class="btn btn-light" asp-action="Edit" asp-route-id="@item.Id">Duzenle</a>
+                            <div class="rich-stack">
+                                <strong>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</strong>
+                                <small>Servis tarihi</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rich-cell">
+                                <div class="rich-avatar">@Initials(item.Cihaz?.Musteri?.AdSoyad ?? "?")</div>
+                                <div>
+                                    <strong>@item.Cihaz?.Musteri?.AdSoyad</strong>
+                                    <small>Musteri profili</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rich-stack">
+                                <strong>@item.Cihaz?.Marka</strong>
+                                <small>@item.Cihaz?.Model</small>
+                            </div>
+                        </td>
+                        <td><span class="badge-status @BadgeClass(item.Durum)">@item.Durum</span></td>
+                        <td>
+                            <div class="metric-pill">
+                                <strong>@item.ServisIslemler.Count</strong>
+                                <small>Islem</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rich-stack">
+                                <strong>@item.ToplamFiyat.ToString("C0")</strong>
+                                <small>Toplam tutar</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="action-cluster">
+                                <a class="btn action-btn action-btn-view" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i><span>Detay</span></a>
+                                <a class="btn action-btn action-btn-edit" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i><span>Duzenle</span></a>
                                 <form asp-action="Delete" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@item.Id" />
-                                    <button class="btn btn-danger" type="submit">Sil</button>
+                                    <button class="btn action-btn action-btn-delete" type="submit"><i class="bi bi-trash3"></i><span>Sil</span></button>
                                 </form>
                             </div>
                         </td>
@@ -85,5 +133,6 @@
             }
             </tbody>
         </table>
+    </div>
     </div>
 </div>

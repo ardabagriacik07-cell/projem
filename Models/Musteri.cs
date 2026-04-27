@@ -22,6 +22,9 @@ public class Musteri
     public bool UyeHesabiVar { get; set; }
     public DateTime KayitTarihi { get; set; } = DateTime.UtcNow;
     public DateTime? SonGirisTarihi { get; set; }
+    [StringLength(6)]
+    public string? SifreSifirlamaKodu { get; set; }
+    public DateTime? SifreSifirlamaKodSonTarih { get; set; }
 
     public List<Cihaz> Cihazlar { get; set; } = new();
 }

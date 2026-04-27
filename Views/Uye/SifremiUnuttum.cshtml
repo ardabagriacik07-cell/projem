@@ -1,0 +1,31 @@
+@model UyeSifreKodGonderViewModel
+@{
+    ViewData["Title"] = "Sifremi Unuttum";
+}
+
+<div class="card member-auth-card shadow-lg border-0" style="max-width:520px; width:100%;">
+    <div class="card-body p-4 p-md-5">
+        <h1 class="h3 fw-bold mb-2">Sifremi Unuttum</h1>
+        <p class="member-muted mb-4">E-posta adresini gir, sana 6 haneli dogrulama kodu gonderelim.</p>
+
+        <form asp-action="SifremiUnuttum" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="member-validation"></div>
+
+            <div class="col-12">
+                <label asp-for="Email" class="form-label">E-posta</label>
+                <input asp-for="Email" class="form-control member-input" />
+                <span asp-validation-for="Email" class="member-validation"></span>
+            </div>
+
+            <div class="col-12 d-grid gap-2">
+                <button type="submit" class="btn btn-info fw-semibold">Kodu Gonder</button>
+                <a class="btn btn-outline-light" asp-action="Giris">Giris Ekranina Don</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

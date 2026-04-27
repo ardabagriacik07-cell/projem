@@ -1,0 +1,156 @@
+@model AdminReportsViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Raporlar";
+    ViewData["PageTitle"] = "Yönetim Raporları";
+    ViewData["Subtitle"] = "Gelir, marka performansı ve müşteri değeri verilerini sunum netliğinde inceleyin.";
+
+    var ciroValues = string.Join(", ", Model.Son6AyCiro.Select(x => x.Ciro.ToString(CultureInfo.InvariantCulture)));
+    var servisValues = string.Join(", ", Model.Son6AyCiro.Select(x => x.ServisSayisi));
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Bu Ay Ciro</small><h3 class="display-6 fw-bold mb-0">@Model.BuAyCiro.ToString("C0")</h3></div></div></div>
+    <div class="col-12 col-md-4"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Geçen Ay Ciro</small><h3 class="display-6 fw-bold mb-0">@Model.GecenAyCiro.ToString("C0")</h3></div></div></div>
+    <div class="col-12 col-md-4"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Bu Ay Servis</small><h3 class="display-6 fw-bold mb-0">@Model.BuAyServisSayisi</h3></div></div></div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-xxl-7">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4 p-xl-5">
+                <span class="admin-chip">6 Aylık Trend</span>
+                <h5 class="fw-bold mt-2">Ciro ve Servis Hacmi</h5>
+                <div class="report-chart-shell mt-4">
+                    <canvas id="reportChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xxl-5">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">Durum Dağılımı</span>
+                <h5 class="fw-bold mt-2">Servis Denge Tablosu</h5>
+                <div class="stack-list mt-4">
+                    @foreach (var item in Model.DurumDagilimi)
+                    {
+                        <div class="stack-row">
+                            <div>
+                                <strong>@item.Label</strong>
+                                <small>@item.Durum</small>
+                            </div>
+                            <span>@item.Count</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-12 col-xl-6">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">Marka Performansı</span>
+                <h5 class="fw-bold mt-2">En Çok Gelir Üreten Markalar</h5>
+                <div class="table-responsive mt-4">
+                    <table class="table admin-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Marka</th>
+                                <th>Cihaz</th>
+                                <th>Servis</th>
+                                <th>Ciro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in Model.MarkaPerformansi)
+                        {
+                            <tr>
+                                <td>@item.Marka</td>
+                                <td>@item.CihazSayisi</td>
+                                <td>@item.ServisSayisi</td>
+                                <td>@item.ToplamCiro.ToString("C0")</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xl-6">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">Müşteri Değeri</span>
+                <h5 class="fw-bold mt-2">En Değerli Müşteriler</h5>
+                <div class="table-responsive mt-4">
+                    <table class="table admin-table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Müşteri</th>
+                                <th>Telefon</th>
+                                <th>Servis</th>
+                                <th>Ciro</th>
+                                <th>Üyelik</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in Model.EnDegerliMusteriler)
+                        {
+                            <tr>
+                                <td>@item.AdSoyad</td>
+                                <td>@item.Telefon</td>
+                                <td>@item.ServisSayisi</td>
+                                <td>@item.ToplamCiro.ToString("C0")</td>
+                                <td>@(item.UyeHesabiVar ? "Aktif" : "Kapalı")</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(() => {
+    const ctx = document.getElementById('reportChart');
+    if (!ctx || typeof Chart === 'undefined') return;
+
+    new Chart(ctx, {
+        data: {
+            labels: [@Html.Raw(string.Join(", ", Model.Son6AyCiro.Select(x => $"'{x.Label}'")))],
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Ciro',
+                    data: [@Html.Raw(ciroValues)],
+                    borderRadius: 10,
+                    backgroundColor: '#0d6efd'
+                },
+                {
+                    type: 'line',
+                    label: 'Servis',
+                    data: [@Html.Raw(servisValues)],
+                    borderColor: '#11b980',
+                    backgroundColor: '#11b980',
+                    tension: .35
+                }
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+})();
+</script>
+}

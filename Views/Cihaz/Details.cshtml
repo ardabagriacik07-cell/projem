@@ -15,30 +15,71 @@
             _ => "waiting"
         };
     }
+
+    string Initials(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "?";
+        var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(x => x[0]);
+        return string.Concat(parts).ToUpperInvariant();
+    }
 }
 
-<div class="grid cols-2">
-    <section class="card">
-        <h3 style="margin-top:0">@Model.Cihaz.Marka @Model.Cihaz.Model</h3>
-        <p><strong>Musteri:</strong> @Model.Cihaz.Musteri?.AdSoyad</p>
-        <p><strong>Ariza Aciklamasi:</strong> @Model.Cihaz.ArizaAciklama</p>
-        <div class="link-row">
-            <a class="btn btn-light" asp-action="Edit" asp-route-id="@Model.Cihaz.Id">Duzenle</a>
-            <a class="btn btn-primary" asp-controller="Servis" asp-action="Create">Yeni Servis</a>
+<section class="detail-hero-card mb-4">
+    <div class="row g-4 align-items-center">
+        <div class="col-xl-8">
+            <div class="detail-hero-content">
+                <div class="detail-identity">
+                    <div class="detail-identity-avatar">@Initials(Model.Cihaz.Musteri?.AdSoyad ?? $"{Model.Cihaz.Marka}")</div>
+                    <div>
+                        <span class="admin-chip detail-chip-light">Cihaz Kartı</span>
+                        <h2 class="detail-hero-title mt-3">@Model.Cihaz.Marka @Model.Cihaz.Model</h2>
+                        <p class="detail-hero-copy mb-0">Müşteri sahibi, arıza açıklaması ve servis geçmişi tek merkezde toplandı.</p>
+                    </div>
+                </div>
+                <div class="detail-quick-grid mt-4">
+                    <div class="detail-quick-card">
+                        <small>Musteri</small>
+                        <strong>@Model.Cihaz.Musteri?.AdSoyad</strong>
+                    </div>
+                    <div class="detail-quick-card">
+                        <small>Ariza</small>
+                        <strong>@Model.Cihaz.ArizaAciklama</strong>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <a class="btn btn-light detail-hero-btn" asp-action="Edit" asp-route-id="@Model.Cihaz.Id"><i class="bi bi-pencil-square me-2"></i>Duzenle</a>
+                    <a class="btn btn-outline-light detail-hero-btn" asp-controller="Servis" asp-action="Create"><i class="bi bi-plus-circle me-2"></i>Yeni Servis</a>
+                </div>
+            </div>
         </div>
-    </section>
+        <div class="col-xl-4">
+            <div class="detail-side-stack">
+                <div class="detail-side-stat">
+                    <small>Toplam Servis</small>
+                    <strong>@Model.ServisKayitlari.Count</strong>
+                    <span>Cihaza bağlı tüm iş emri sayısı</span>
+                </div>
+                <div class="detail-side-stat">
+                    <small>Son Servis</small>
+                    <strong>@(Model.ServisKayitlari.FirstOrDefault()?.Tarih.ToLocalTime().ToString("dd.MM.yyyy") ?? "-")</strong>
+                    <span>En son teknik müdahale tarihi</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <section class="card">
-        <h3 style="margin-top:0">Istatistik</h3>
-        <p class="muted">Toplam Servis: <strong>@Model.ServisKayitlari.Count</strong></p>
-        <p class="muted">Son Servis: <strong>@(Model.ServisKayitlari.FirstOrDefault()?.Tarih.ToLocalTime().ToString("dd.MM.yyyy") ?? "-")</strong></p>
-    </section>
-</div>
-
-<section class="card" style="margin-top:16px">
-    <h3 style="margin-top:0">Servis Gecmisi</h3>
+<section class="card premium-card detail-section-card">
+    <div class="card-body p-4 p-lg-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <span class="admin-chip">Servis Gecmisi</span>
+            <h3 class="mt-2 mb-0">Cihaza Ait Servis Akışı</h3>
+        </div>
+        <span class="section-count-pill">@Model.ServisKayitlari.Count servis</span>
+    </div>
     <div class="table-wrap">
-        <table>
+        <table class="admin-table detail-table">
             <thead>
                 <tr>
                     <th>Tarih</th>
@@ -57,14 +98,25 @@
                 @foreach (var item in Model.ServisKayitlari)
                 {
                     <tr>
-                        <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
-                        <td><span class="badge @BadgeClass(item.Durum)">@item.Durum</span></td>
-                        <td>@item.ToplamFiyat.ToString("C0")</td>
-                        <td><a class="btn btn-light" asp-controller="Servis" asp-action="Details" asp-route-id="@item.Id">Servis Detay</a></td>
+                        <td>
+                            <div class="rich-stack">
+                                <strong>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</strong>
+                                <small>Servis tarihi</small>
+                            </div>
+                        </td>
+                        <td><span class="badge-status @BadgeClass(item.Durum)">@item.Durum</span></td>
+                        <td>
+                            <div class="rich-stack">
+                                <strong>@item.ToplamFiyat.ToString("C0")</strong>
+                                <small>Tahmini toplam</small>
+                            </div>
+                        </td>
+                        <td><a class="btn action-btn action-btn-view" asp-controller="Servis" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-box-arrow-up-right"></i><span>Servis Detay</span></a></td>
                     </tr>
                 }
             }
             </tbody>
         </table>
+    </div>
     </div>
 </section>

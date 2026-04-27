@@ -4,43 +4,78 @@
     ViewData["PageTitle"] = "Servis Detay";
     ViewData["Subtitle"] = "Kayit, durum ve maliyet dagilimi";
 
-    string BadgeClass(string durum)
+    string Initials(string text)
     {
-        return durum switch
-        {
-            "Bekliyor" => "waiting",
-            "Islemde" => "work",
-            "Tamamlandi" => "done",
-            "Teslim Edildi" => "delivery",
-            _ => "waiting"
-        };
+        if (string.IsNullOrWhiteSpace(text)) return "?";
+        var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(x => x[0]);
+        return string.Concat(parts).ToUpperInvariant();
     }
 }
 
-<div class="grid cols-2">
-    <section class="card">
-        <h3 style="margin-top:0">Servis Bilgisi</h3>
-        <p><strong>Musteri:</strong> @Model.Servis.Cihaz?.Musteri?.AdSoyad</p>
-        <p><strong>Cihaz:</strong> @Model.Servis.Cihaz?.Marka @Model.Servis.Cihaz?.Model</p>
-        <p><strong>Tarih:</strong> @Model.Servis.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</p>
-        <p><strong>Durum:</strong> <span class="badge @BadgeClass(Model.Servis.Durum)">@Model.Servis.Durum</span></p>
-        <div class="link-row">
-            <a class="btn btn-light" asp-action="Edit" asp-route-id="@Model.Servis.Id">Duzenle</a>
-            <a class="btn btn-primary" asp-action="Index">Tum Kayitlar</a>
+<section class="detail-hero-card mb-4">
+    <div class="row g-4 align-items-center">
+        <div class="col-xl-8">
+            <div class="detail-hero-content">
+                <div class="detail-identity">
+                    <div class="detail-identity-avatar">@Initials(Model.Servis.Cihaz?.Musteri?.AdSoyad ?? $"{Model.Servis.Cihaz?.Marka}")</div>
+                    <div>
+                        <span class="admin-chip detail-chip-light">Servis Bilgisi</span>
+                        <h2 class="detail-hero-title mt-3">@Model.Servis.Cihaz?.Marka @Model.Servis.Cihaz?.Model</h2>
+                        <p class="detail-hero-copy mb-0">Servisin müşteri, cihaz, durum ve maliyet akışını güçlü bir özetle sunar.</p>
+                    </div>
+                </div>
+                <div class="detail-quick-grid mt-4">
+                    <div class="detail-quick-card">
+                        <small>Musteri</small>
+                        <strong>@Model.Servis.Cihaz?.Musteri?.AdSoyad</strong>
+                    </div>
+                    <div class="detail-quick-card">
+                        <small>Tarih</small>
+                        <strong>@Model.Servis.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</strong>
+                    </div>
+                    <div class="detail-quick-card">
+                        <small>Durum</small>
+                        <strong>@Model.Servis.Durum</strong>
+                    </div>
+                    <div class="detail-quick-card">
+                        <small>Cihaz</small>
+                        <strong>@Model.Servis.Cihaz?.Marka @Model.Servis.Cihaz?.Model</strong>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <a class="btn btn-light detail-hero-btn" asp-action="Edit" asp-route-id="@Model.Servis.Id"><i class="bi bi-pencil-square me-2"></i>Duzenle</a>
+                    <a class="btn btn-outline-light detail-hero-btn" asp-action="Index"><i class="bi bi-collection me-2"></i>Tum Kayitlar</a>
+                </div>
+            </div>
         </div>
-    </section>
+        <div class="col-xl-4">
+            <div class="detail-side-stack">
+                <div class="detail-side-stat">
+                    <small>Toplam Islem</small>
+                    <strong>@Model.Servis.ServisIslemler.Count</strong>
+                    <span>Bağlı servis kalemi sayısı</span>
+                </div>
+                <div class="detail-side-stat">
+                    <small>Toplam Tutar</small>
+                    <strong>@Model.Servis.ToplamFiyat.ToString("C0")</strong>
+                    <span>Tahmini veya kesin servis bedeli</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    <section class="card">
-        <h3 style="margin-top:0">Maliyet Ozet</h3>
-        <p class="muted">Toplam Islem: <strong>@Model.Servis.ServisIslemler.Count</strong></p>
-        <p class="muted">Toplam Tutar: <strong>@Model.Servis.ToplamFiyat.ToString("C0")</strong></p>
-    </section>
-</div>
-
-<section class="card" style="margin-top:16px">
-    <h3 style="margin-top:0">Islem Listesi</h3>
+<section class="card premium-card detail-section-card">
+    <div class="card-body p-4 p-lg-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <span class="admin-chip">Islem Dagilimi</span>
+            <h3 class="mt-2 mb-0">Bagli Islem Listesi</h3>
+        </div>
+        <span class="section-count-pill">@Model.Servis.ServisIslemler.Count islem</span>
+    </div>
     <div class="table-wrap">
-        <table>
+        <table class="admin-table detail-table">
             <thead>
                 <tr>
                     <th>Islem</th>
@@ -57,12 +92,23 @@
                 @foreach (var islem in Model.Servis.ServisIslemler)
                 {
                     <tr>
-                        <td>@islem.Islem?.Ad</td>
-                        <td>@(islem.Islem?.Fiyat.ToString("C0") ?? "-")</td>
+                        <td>
+                            <div class="rich-stack">
+                                <strong>@islem.Islem?.Ad</strong>
+                                <small>Teknik işlem kalemi</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rich-stack">
+                                <strong>@(islem.Islem?.Fiyat.ToString("C0") ?? "-")</strong>
+                                <small>İşlem bedeli</small>
+                            </div>
+                        </td>
                     </tr>
                 }
             }
             </tbody>
         </table>
+    </div>
     </div>
 </section>

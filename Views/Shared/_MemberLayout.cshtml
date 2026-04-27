@@ -13,7 +13,8 @@
     var uyeAd = Context.Session.GetString("UyeAd");
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
     var action = ViewContext.RouteData.Values["action"]?.ToString();
-    var authSayfasi = controller == "Uye" && (action == "Giris" || action == "Kayit");
+    var authSayfasi = controller == "Uye" && (action == "Giris" || action == "Kayit" || action == "SifremiUnuttum" || action == "SifreSifirla");
+    var pageTitle = ViewData["Title"]?.ToString() ?? "Üye Alanı";
 }
 
 @if (authSayfasi)
@@ -26,36 +27,76 @@
 }
 else
 {
-    <header class="navbar navbar-expand-lg sticky-top member-navbar border-bottom">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold text-white" asp-controller="Uye" asp-action="Panel"><i class="bi bi-gem me-2"></i>Servis Plus</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#memberNav" aria-controls="memberNav" aria-expanded="false" aria-label="Navigasyonu aç">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="memberNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link @(action == "Panel" ? "active" : "")" asp-controller="Uye" asp-action="Panel">Panel</a></li>
-                    <li class="nav-item"><a class="nav-link @(action == "Taleplerim" ? "active" : "")" asp-controller="Uye" asp-action="Taleplerim">Taleplerim</a></li>
-                    <li class="nav-item"><a class="nav-link @(action == "YeniTalep" ? "active" : "")" asp-controller="Uye" asp-action="YeniTalep">Yeni Talep</a></li>
-                    <li class="nav-item"><a class="nav-link @(action == "Profil" ? "active" : "")" asp-controller="Uye" asp-action="Profil">Profil</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Login">Admin</a></li>
-                </ul>
-                <form asp-controller="Uye" asp-action="Cikis" method="post">
-                    @Html.AntiForgeryToken()
-                    <button class="btn btn-outline-light"><i class="bi bi-box-arrow-right me-2"></i>Çıkış (@uyeAd)</button>
-                </form>
-            </div>
-        </div>
-    </header>
+    <button class="btn member-menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#memberMenu" aria-controls="memberMenu" aria-label="Menüyü aç">
+        <i class="bi bi-list"></i>
+    </button>
 
-    <main class="container-fluid py-4 px-4">
+    <div class="offcanvas offcanvas-start member-offcanvas text-white" tabindex="-1" id="memberMenu" aria-labelledby="memberMenuLabel">
+        <div class="offcanvas-header border-bottom border-light border-opacity-10">
+            <div>
+                <div class="member-brand-mark mb-2"><i class="bi bi-gem"></i></div>
+                <h5 class="offcanvas-title mb-0" id="memberMenuLabel">Servis Plus</h5>
+                <small class="member-offcanvas-subtitle">@uyeAd</small>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Kapat"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <a class="member-side-link @(action == "Panel" ? "active" : "")" asp-controller="Uye" asp-action="Panel">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Panel</span>
+            </a>
+            <a class="member-side-link @(action == "Taleplerim" ? "active" : "")" asp-controller="Uye" asp-action="Taleplerim">
+                <i class="bi bi-receipt-cutoff"></i>
+                <span>Taleplerim</span>
+            </a>
+            <a class="member-side-link @(action == "YeniTalep" ? "active" : "")" asp-controller="Uye" asp-action="YeniTalep">
+                <i class="bi bi-plus-square-fill"></i>
+                <span>Yeni Talep</span>
+            </a>
+            <a class="member-side-link @(action == "Profil" ? "active" : "")" asp-controller="Uye" asp-action="Profil">
+                <i class="bi bi-person-circle"></i>
+                <span>Profil</span>
+            </a>
+            <a class="member-side-link" asp-controller="Admin" asp-action="Login">
+                <i class="bi bi-shield-lock-fill"></i>
+                <span>Admin</span>
+            </a>
+            <div class="member-side-spacer"></div>
+            <div class="member-side-note">
+                Taleplerini takip et, yeni kayıt aç ve profilini tek menüden yönet.
+            </div>
+            <form asp-controller="Uye" asp-action="Cikis" method="post" class="mt-3">
+                @Html.AntiForgeryToken()
+                <button class="btn member-logout-btn w-100">
+                    <i class="bi bi-box-arrow-right me-2"></i>Çıkış Yap
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <main class="member-shell container-fluid px-3 px-md-4 px-xl-5 py-4 py-md-5">
+        <section class="member-topbar mb-4">
+            <div>
+                <div class="member-eyebrow">Üye Alanı</div>
+                <h1 class="member-page-title mb-1">@pageTitle</h1>
+                <p class="member-topbar-copy mb-0">Servis sürecini tek bakışta takip et ve tüm işlemlerini hızlıca yönet.</p>
+            </div>
+            <div class="member-profile-chip">
+                <div class="member-profile-icon"><i class="bi bi-person-fill"></i></div>
+                <div>
+                    <strong>@uyeAd</strong>
+                    <small>Hesabın aktif</small>
+                </div>
+            </div>
+        </section>
+
         @if (TempData["UyeOk"] != null)
         {
-            <div class="alert alert-success border-0 shadow-sm"><i class="bi bi-check2-circle me-2"></i>@TempData["UyeOk"]</div>
+            <div class="alert alert-success member-alert border-0 shadow-sm"><i class="bi bi-check2-circle me-2"></i>@TempData["UyeOk"]</div>
         }
         @if (TempData["UyeHata"] != null)
         {
-            <div class="alert alert-danger border-0 shadow-sm"><i class="bi bi-exclamation-octagon me-2"></i>@TempData["UyeHata"]</div>
+            <div class="alert alert-danger member-alert border-0 shadow-sm"><i class="bi bi-exclamation-octagon me-2"></i>@TempData["UyeHata"]</div>
         }
         @RenderBody()
     </main>

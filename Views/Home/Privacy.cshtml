@@ -1,35 +1,56 @@
 @{
-    ViewData["Title"] = "Gizlilik";
-    ViewData["PageTitle"] = "Gizlilik Politikası";
-    ViewData["Subtitle"] = "Veri güvenliği yaklaşımı";
+    ViewData["Title"] = "Güvenlik";
+    ViewData["PageTitle"] = "Güvenlik ve Gizlilik";
+    ViewData["Subtitle"] = "Veri koruma yaklaşımı, erişim ilkeleri ve kullanıcı mahremiyet çerçevesi.";
 }
 
-<div class="card premium-card">
-    <div class="card-body p-4">
-        <h5 class="fw-bold mb-3">Veri Koruma İlkeleri</h5>
-        <div class="accordion" id="privacyAccordion">
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#p1">Erişim Güvenliği</button>
-                </h2>
-                <div id="p1" class="accordion-collapse collapse show" data-bs-parent="#privacyAccordion">
-                    <div class="accordion-body">Yönetim ekranları sadece yetkili hesaplar ile kullanılabilir.</div>
+<div class="row g-4">
+    <div class="col-12 col-xl-7">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4 p-lg-5">
+                <span class="admin-chip">Koruma Katmanları</span>
+                <h3 class="mt-3">Yönetim, veri ve üyelik güvenliği aynı çatıda.</h3>
+                <p class="text-secondary">Bu panel, servis iş akışını yönetirken aynı zamanda erişim kontrolünü ve veri ayrımını koruyacak şekilde tasarlandı.</p>
+
+                <div class="accordion admin-accordion mt-4" id="privacyAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#p1">Erişim Güvenliği</button>
+                        </h2>
+                        <div id="p1" class="accordion-collapse collapse show" data-bs-parent="#privacyAccordion">
+                            <div class="accordion-body">Yönetim ekranları yalnızca admin oturumu ile açılır. Üye ve admin oturumları birbirinden ayrıdır.</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p2">Veri Saklama</button>
+                        </h2>
+                        <div id="p2" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+                            <div class="accordion-body">Tüm veriler uygulama veritabanında tutulur. Dashboard ve rapor ekranları bu verileri görünür ve düzenli hale getirir.</div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p3">Kullanıcı Mahremiyeti</button>
+                        </h2>
+                        <div id="p3" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
+                            <div class="accordion-body">Üye talepleri hesap bazlı izole edilir. Üyeler yalnızca kendi kayıtlarını görür; yöneticiler tüm sistemi denetler.</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p2">Veri Saklama</button>
-                </h2>
-                <div id="p2" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
-                    <div class="accordion-body">Veriler SQLite veritabanında güvenli şekilde saklanır.</div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#p3">Kullanıcı Mahremiyeti</button>
-                </h2>
-                <div id="p3" class="accordion-collapse collapse" data-bs-parent="#privacyAccordion">
-                    <div class="accordion-body">Üye talepleri hesap bazlı izole edilir; kullanıcılar birbirinin kayıtlarını göremez.</div>
+        </div>
+    </div>
+    <div class="col-12 col-xl-5">
+        <div class="card premium-card h-100">
+            <div class="card-body p-4">
+                <span class="admin-chip">Politika Özeti</span>
+                <h5 class="fw-bold mt-2">Yüksek görünürlük, kontrollü erişim</h5>
+                <div class="stack-list mt-4">
+                    <div class="stack-row"><div><strong>Admin Oturumu</strong><small>Yetki kontrollü yönetim erişimi</small></div><span>Aktif</span></div>
+                    <div class="stack-row"><div><strong>Üye İzolasyonu</strong><small>Kayıtlar kullanıcı bazında ayrılır</small></div><span>Aktif</span></div>
+                    <div class="stack-row"><div><strong>Şifre Yönetimi</strong><small>Admin şifre güncelleme ekranı mevcut</small></div><span>Hazır</span></div>
+                    <div class="stack-row"><div><strong>Mobil Uyum</strong><small>3 çizgili offcanvas menü desteği</small></div><span>Hazır</span></div>
                 </div>
             </div>
         </div>

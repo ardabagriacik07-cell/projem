@@ -15,44 +15,51 @@
     }
 }
 
-<section class="member-card">
-    <div class="member-actions">
-        <h3 style="margin:0">Servis Taleplerim</h3>
-        <a class="member-btn" asp-action="YeniTalep">Yeni Talep</a>
-    </div>
+<div class="card member-card">
+    <div class="card-body p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <span class="member-section-badge">Tüm Kayıtlar</span>
+                <h3 class="mb-0 mt-2">Servis Taleplerim</h3>
+            </div>
+            <a class="btn btn-info fw-semibold" asp-action="YeniTalep">Yeni Talep</a>
+        </div>
 
-    <div class="member-table-wrap">
-        <table class="member-table">
-            <thead>
-                <tr>
-                    <th>Tarih</th>
-                    <th>Cihaz</th>
-                    <th>Ariza</th>
-                    <th>Durum</th>
-                    <th>Islem</th>
-                    <th>Tutar</th>
-                </tr>
-            </thead>
-            <tbody>
-            @if (Model.Count == 0)
-            {
-                <tr><td colspan="6" class="member-muted">Henuz servis kaydin yok.</td></tr>
-            }
-            else
-            {
-                @foreach (var item in Model)
-                {
+        <div class="table-responsive">
+            <table class="table member-table align-middle mb-0">
+                <thead>
                     <tr>
-                        <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
-                        <td>@item.Cihaz?.Marka @item.Cihaz?.Model</td>
-                        <td>@item.Cihaz?.ArizaAciklama</td>
-                        <td><span class="member-pill @DurumSinif(item.Durum)">@item.Durum</span></td>
-                        <td>@item.ServisIslemler.Count</td>
-                        <td>@item.ToplamFiyat.ToString("C0")</td>
+                        <th>Tarih</th>
+                        <th>Cihaz</th>
+                        <th>Ariza</th>
+                        <th>Durum</th>
+                        <th>Islem</th>
+                        <th>Tutar</th>
                     </tr>
+                </thead>
+                <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr><td colspan="6" class="member-muted">Henuz servis kaydin yok.</td></tr>
                 }
-            }
-            </tbody>
-        </table>
+                else
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                            <td>
+                                <strong>@item.Cihaz?.Marka @item.Cihaz?.Model</strong>
+                            </td>
+                            <td class="member-table-description">@item.Cihaz?.ArizaAciklama</td>
+                            <td><span class="member-pill @DurumSinif(item.Durum)">@item.Durum</span></td>
+                            <td>@item.ServisIslemler.Count</td>
+                            <td>@item.ToplamFiyat.ToString("C0")</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
     </div>
-</section>
+</div>
