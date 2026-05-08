@@ -15,6 +15,13 @@ public class ServisKaydi
     [Range(0, 999999)]
     public decimal ToplamFiyat { get; set; }
 
+    [Required]
+    [StringLength(30)]
+    public string FiyatOnayDurumu { get; set; } = "Onay Gerekmez";
+
+    public DateTime? FiyatOnayTarihi { get; set; }
+    public DateTime? FiyatCevapTarihi { get; set; }
+
     public Cihaz? Cihaz { get; set; }
     public List<ServisIslem> ServisIslemler { get; set; } = new();
 }

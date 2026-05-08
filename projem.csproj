@@ -18,4 +18,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Watch Remove="bin/**/*;obj/**/*;servis.db*;db-backup/**/*" />
+  </ItemGroup>
+
 </Project>

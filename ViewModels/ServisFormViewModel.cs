@@ -4,4 +4,5 @@ public class ServisFormViewModel
     public List<Cihaz> Cihazlar { get; set; } = new();
     public List<Islem> Islemler { get; set; } = new();
     public List<int> SeciliIslemIdleri { get; set; } = new();
+    public bool FiyatiOnayaGonder { get; set; }
 }

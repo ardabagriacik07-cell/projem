@@ -209,6 +209,19 @@ namespace projem.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("FiyatCevapTarihi")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FiyatOnayDurumu")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("Onay Gerekmez");
+
+                    b.Property<DateTime?>("FiyatOnayTarihi")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("Tarih")
                         .HasColumnType("TEXT");
 

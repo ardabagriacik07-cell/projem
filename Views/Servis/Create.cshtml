@@ -36,9 +36,19 @@
             <select asp-for="Servis.Durum">
                 <option>Bekliyor</option>
                 <option>Islemde</option>
+                <option>Fiyat Onayi Bekliyor</option>
                 <option>Tamamlandi</option>
                 <option>Teslim Edildi</option>
+                <option>Fiyat Reddedildi</option>
             </select>
+        </div>
+
+        <div class="field">
+            <label>Fiyat Onayi</label>
+            <label class="checkbox-item">
+                <span>Musteriye fiyat onayi gonder</span>
+                <input asp-for="FiyatiOnayaGonder" />
+            </label>
         </div>
 
         <div class="field full">

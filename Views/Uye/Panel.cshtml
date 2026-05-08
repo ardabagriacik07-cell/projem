@@ -8,8 +8,10 @@
         {
             "Bekliyor" => "waiting",
             "Islemde" => "work",
+            "Fiyat Onayi Bekliyor" => "work",
             "Tamamlandi" => "done",
             "Teslim Edildi" => "delivery",
+            "Fiyat Reddedildi" => "rejected",
             _ => "waiting"
         };
     }
@@ -78,11 +80,11 @@
                 </div>
                 <div class="table-responsive">
                     <table class="table member-table align-middle mb-0">
-                        <thead><tr><th>Tarih</th><th>Cihaz</th><th>Durum</th><th>Tutar</th></tr></thead>
+                        <thead><tr><th>Tarih</th><th>Cihaz</th><th>Durum</th><th>Tutar</th><th>Onay</th></tr></thead>
                         <tbody>
                         @if (Model.SonTalepler.Count == 0)
                         {
-                            <tr><td colspan="4" class="member-muted">Henüz talep oluşturmadın.</td></tr>
+                            <tr><td colspan="5" class="member-muted">Henüz talep oluşturmadın.</td></tr>
                         }
                         else
                         {
@@ -93,6 +95,16 @@
                                     <td>@item.Cihaz?.Marka @item.Cihaz?.Model</td>
                                     <td><span class="member-pill @DurumSinif(item.Durum)">@item.Durum</span></td>
                                     <td>@item.ToplamFiyat.ToString("C0")</td>
+                                    <td>
+                                        @if (item.FiyatOnayDurumu == "Onay Bekliyor")
+                                        {
+                                            <a class="btn btn-info btn-sm" asp-action="Taleplerim">Cevapla</a>
+                                        }
+                                        else
+                                        {
+                                            <span class="member-pill @DurumSinif(item.Durum)">@item.FiyatOnayDurumu</span>
+                                        }
+                                    </td>
                                 </tr>
                             }
                         }

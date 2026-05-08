@@ -41,7 +41,7 @@
         <div class="field">
             <label>Durum</label>
             <select asp-for="Servis.Durum">
-                @foreach (var d in new[] { "Bekliyor", "Islemde", "Tamamlandi", "Teslim Edildi" })
+                @foreach (var d in new[] { "Bekliyor", "Islemde", "Fiyat Onayi Bekliyor", "Tamamlandi", "Teslim Edildi", "Fiyat Reddedildi" })
                 {
                     if (Model.Servis.Durum == d)
                     {
@@ -53,6 +53,15 @@
                     }
                 }
             </select>
+        </div>
+
+        <div class="field">
+            <label>Fiyat Onayi</label>
+            <label class="checkbox-item">
+                <span>Musteriye fiyat onayi gonder</span>
+                <input asp-for="FiyatiOnayaGonder" />
+            </label>
+            <small class="text-secondary">Isaretlenirse secili islem tutari musteri onayina duser.</small>
         </div>
 
         <div class="field full">

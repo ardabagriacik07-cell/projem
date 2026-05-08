@@ -37,6 +37,10 @@ public class AppDbContext : DbContext
             .HasForeignKey(x => x.CihazId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<ServisKaydi>()
+            .Property(x => x.FiyatOnayDurumu)
+            .HasDefaultValue("Onay Gerekmez");
+
         modelBuilder.Entity<ServisIslem>()
             .HasOne(x => x.ServisKaydi)
             .WithMany(x => x.ServisIslemler)

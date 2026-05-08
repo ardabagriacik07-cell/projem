@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore;
 public class ServisController : Controller
 {
     private readonly AppDbContext _db;
+    private readonly IEmailSender _emailSender;
 
-    public ServisController(AppDbContext db)
+    public ServisController(AppDbContext db, IEmailSender emailSender)
     {
         _db = db;
+        _emailSender = emailSender;
     }
 
     public async Task<IActionResult> Index(string? q, string? durum)
@@ -93,8 +95,16 @@ public class ServisController : Controller
             CihazId = vm.Servis.CihazId,
             Tarih = vm.Servis.Tarih,
             Durum = vm.Servis.Durum,
-            ToplamFiyat = seciliIslemler.Sum(x => x.Fiyat)
+            ToplamFiyat = seciliIslemler.Sum(x => x.Fiyat),
+            FiyatOnayDurumu = "Onay Gerekmez"
         };
+
+        if (vm.FiyatiOnayaGonder && servis.ToplamFiyat > 0)
+        {
+            servis.Durum = "Fiyat Onayi Bekliyor";
+            servis.FiyatOnayDurumu = "Onay Bekliyor";
+            servis.FiyatOnayTarihi = DateTime.UtcNow;
+        }
 
         _db.ServisKayitlari.Add(servis);
         await _db.SaveChangesAsync();
@@ -107,6 +117,11 @@ public class ServisController : Controller
             }
 
             await _db.SaveChangesAsync();
+        }
+
+        if (servis.FiyatOnayDurumu == "Onay Bekliyor")
+        {
+            await FiyatOnayMailiGonderAsync(servis.Id);
         }
 
         TempData["Ok"] = "Servis kaydi olusturuldu.";
@@ -176,6 +191,17 @@ public class ServisController : Controller
         servis.ToplamFiyat = seciliIslemTutari;
 
         await _db.SaveChangesAsync();
+
+        if (vm.FiyatiOnayaGonder && servis.ToplamFiyat > 0)
+        {
+            servis.Durum = "Fiyat Onayi Bekliyor";
+            servis.FiyatOnayDurumu = "Onay Bekliyor";
+            servis.FiyatOnayTarihi = DateTime.UtcNow;
+            servis.FiyatCevapTarihi = null;
+            await _db.SaveChangesAsync();
+            await FiyatOnayMailiGonderAsync(servis.Id);
+        }
+
         TempData["Ok"] = "Servis kaydi guncellendi.";
         return RedirectToAction(nameof(Index));
     }
@@ -194,5 +220,36 @@ public class ServisController : Controller
         await _db.SaveChangesAsync();
         TempData["Ok"] = "Servis kaydi silindi.";
         return RedirectToAction(nameof(Index));
+    }
+
+    private async Task FiyatOnayMailiGonderAsync(int servisId)
+    {
+        var servis = await _db.ServisKayitlari
+            .Include(x => x.Cihaz)
+            .ThenInclude(x => x!.Musteri)
+            .FirstOrDefaultAsync(x => x.Id == servisId);
+
+        if (servis?.Cihaz?.Musteri == null || string.IsNullOrWhiteSpace(servis.Cihaz.Musteri.Email))
+        {
+            return;
+        }
+
+        var body = $"""
+            <div style="font-family:Arial,sans-serif;font-size:16px;color:#111827">
+                <p>Merhaba {servis.Cihaz.Musteri.AdSoyad},</p>
+                <p>{servis.Cihaz.Marka} {servis.Cihaz.Model} cihazın için servis fiyatı hazırlandı.</p>
+                <p style="font-size:28px;font-weight:700;margin:16px 0;">{servis.ToplamFiyat:C0}</p>
+                <p>Üye panelindeki Taleplerim ekranından fiyatı kabul veya reddedebilirsin.</p>
+            </div>
+            """;
+
+        try
+        {
+            await _emailSender.SendAsync(servis.Cihaz.Musteri.Email, "Servis Plus Fiyat Onayi", body);
+        }
+        catch
+        {
+            TempData["Ok"] = "Servis kaydi guncellendi ancak fiyat onay maili gonderilemedi.";
+        }
     }
 }

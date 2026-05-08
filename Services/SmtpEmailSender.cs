@@ -13,16 +13,20 @@ public class SmtpEmailSender : IEmailSender
 
     public async Task SendAsync(string toEmail, string subject, string htmlBody)
     {
+        var fromEmail = string.IsNullOrWhiteSpace(_options.FromEmail)
+            ? _options.UserName
+            : _options.FromEmail;
+
         if (string.IsNullOrWhiteSpace(_options.UserName) ||
             string.IsNullOrWhiteSpace(_options.Password) ||
-            string.IsNullOrWhiteSpace(_options.FromEmail))
+            string.IsNullOrWhiteSpace(fromEmail))
         {
-            throw new InvalidOperationException("SMTP ayarlari eksik. appsettings.json icindeki Smtp alanini doldurun.");
+            throw new InvalidOperationException("SMTP ayarlari eksik. appsettings.json icindeki Smtp UserName, Password ve FromEmail alanlarini doldurun.");
         }
 
         using var message = new MailMessage
         {
-            From = new MailAddress(_options.FromEmail, _options.FromName),
+            From = new MailAddress(fromEmail, _options.FromName),
             Subject = subject,
             Body = htmlBody,
             IsBodyHtml = true

@@ -33,7 +33,7 @@ public class HomeController : Controller
         {
             ToplamMusteri = await _db.Musteriler.CountAsync(),
             ToplamCihaz = await _db.Cihazlar.CountAsync(),
-            AktifServis = await _db.ServisKayitlari.CountAsync(x => x.Durum == "Bekliyor" || x.Durum == "Islemde"),
+            AktifServis = await _db.ServisKayitlari.CountAsync(x => x.Durum == "Bekliyor" || x.Durum == "Islemde" || x.Durum == "Fiyat Onayi Bekliyor"),
             TeslimEdilen = await _db.ServisKayitlari.CountAsync(x => x.Durum == "Teslim Edildi"),
             BekleyenServis = await _db.ServisKayitlari.CountAsync(x => x.Durum == "Bekliyor"),
             IslemdeServis = await _db.ServisKayitlari.CountAsync(x => x.Durum == "Islemde"),
@@ -75,7 +75,7 @@ public class HomeController : Controller
         var model = new AdminOperationsViewModel
         {
             BekleyenServisSayisi = await _db.ServisKayitlari.CountAsync(x => x.Durum == "Bekliyor"),
-            IslemdeServisSayisi = await _db.ServisKayitlari.CountAsync(x => x.Durum == "Islemde"),
+            IslemdeServisSayisi = await _db.ServisKayitlari.CountAsync(x => x.Durum == "Islemde" || x.Durum == "Fiyat Onayi Bekliyor"),
             TamamlanmisServisSayisi = await _db.ServisKayitlari.CountAsync(x => x.Durum == "Tamamlandi" || x.Durum == "Teslim Edildi"),
             BekleyenServisler = await GetServiceQuery()
                 .Where(x => x.Durum == "Bekliyor")
@@ -83,7 +83,7 @@ public class HomeController : Controller
                 .Take(6)
                 .ToListAsync(),
             IslemdeServisler = await GetServiceQuery()
-                .Where(x => x.Durum == "Islemde")
+                .Where(x => x.Durum == "Islemde" || x.Durum == "Fiyat Onayi Bekliyor")
                 .OrderBy(x => x.Tarih)
                 .Take(6)
                 .ToListAsync(),
@@ -177,7 +177,7 @@ public class HomeController : Controller
                 .Take(7)
                 .ToListAsync(),
             KritikServisler = await GetServiceQuery()
-                .Where(x => x.Durum == "Bekliyor" || x.Durum == "Islemde")
+                .Where(x => x.Durum == "Bekliyor" || x.Durum == "Islemde" || x.Durum == "Fiyat Onayi Bekliyor")
                 .OrderBy(x => x.Tarih)
                 .Take(7)
                 .ToListAsync()
@@ -212,6 +212,7 @@ public class HomeController : Controller
         {
             new() { Label = "Bekleyen", Durum = "Bekliyor", Count = servisler.Count(x => x.Durum == "Bekliyor"), AccentClass = "warning" },
             new() { Label = "İşlemde", Durum = "Islemde", Count = servisler.Count(x => x.Durum == "Islemde"), AccentClass = "info" },
+            new() { Label = "Onay Bekliyor", Durum = "Fiyat Onayi Bekliyor", Count = servisler.Count(x => x.Durum == "Fiyat Onayi Bekliyor"), AccentClass = "warning" },
             new() { Label = "Tamamlandı", Durum = "Tamamlandi", Count = servisler.Count(x => x.Durum == "Tamamlandi"), AccentClass = "success" },
             new() { Label = "Teslim", Durum = "Teslim Edildi", Count = servisler.Count(x => x.Durum == "Teslim Edildi"), AccentClass = "purple" }
         };

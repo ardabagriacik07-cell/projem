@@ -221,7 +221,7 @@ public class UyeController : Controller
         {
             Uye = uye,
             CihazSayisi = await _db.Cihazlar.CountAsync(x => x.MusteriId == uyeId.Value),
-            AktifTalep = servisler.Count(x => x.Durum == "Bekliyor" || x.Durum == "Islemde"),
+            AktifTalep = servisler.Count(x => x.Durum == "Bekliyor" || x.Durum == "Islemde" || x.Durum == "Fiyat Onayi Bekliyor"),
             ToplamTalep = servisler.Count,
             SonTalepler = servisler.Take(6).ToList()
         };
@@ -248,6 +248,58 @@ public class UyeController : Controller
             .ToListAsync();
 
         return View(talepler);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [UyeOnly]
+    public async Task<IActionResult> FiyatKabul(int id)
+    {
+        var servis = await UyeninServisKaydiniGetirAsync(id);
+        if (servis == null)
+        {
+            return NotFound();
+        }
+
+        if (servis.FiyatOnayDurumu != "Onay Bekliyor")
+        {
+            TempData["UyeOk"] = "Bu servis icin bekleyen fiyat onayi yok.";
+            return RedirectToAction(nameof(Taleplerim));
+        }
+
+        servis.FiyatOnayDurumu = "Kabul Edildi";
+        servis.FiyatCevapTarihi = DateTime.UtcNow;
+        servis.Durum = "Islemde";
+        await _db.SaveChangesAsync();
+
+        TempData["UyeOk"] = "Fiyat teklifini kabul ettin. Servis isleme alindi.";
+        return RedirectToAction(nameof(Taleplerim));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [UyeOnly]
+    public async Task<IActionResult> FiyatReddet(int id)
+    {
+        var servis = await UyeninServisKaydiniGetirAsync(id);
+        if (servis == null)
+        {
+            return NotFound();
+        }
+
+        if (servis.FiyatOnayDurumu != "Onay Bekliyor")
+        {
+            TempData["UyeOk"] = "Bu servis icin bekleyen fiyat onayi yok.";
+            return RedirectToAction(nameof(Taleplerim));
+        }
+
+        servis.FiyatOnayDurumu = "Reddedildi";
+        servis.FiyatCevapTarihi = DateTime.UtcNow;
+        servis.Durum = "Fiyat Reddedildi";
+        await _db.SaveChangesAsync();
+
+        TempData["UyeOk"] = "Fiyat teklifini reddettin. Servis ekibi kaydi bu duruma gore takip edecek.";
+        return RedirectToAction(nameof(Taleplerim));
     }
 
     [UyeOnly]
@@ -387,5 +439,18 @@ public class UyeController : Controller
         HttpContext.Session.Remove("UyeId");
         HttpContext.Session.Remove("UyeAd");
         return RedirectToAction(nameof(Giris));
+    }
+
+    private async Task<ServisKaydi?> UyeninServisKaydiniGetirAsync(int servisId)
+    {
+        var uyeId = HttpContext.Session.GetInt32("UyeId");
+        if (uyeId.HasValue == false)
+        {
+            return null;
+        }
+
+        return await _db.ServisKayitlari
+            .Include(x => x.Cihaz)
+            .FirstOrDefaultAsync(x => x.Id == servisId && x.Cihaz != null && x.Cihaz.MusteriId == uyeId.Value);
     }
 }
