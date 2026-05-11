@@ -265,6 +265,32 @@ public class MobileApiController : ControllerBase
         return await BuildAdminSyncAsync(username, string.Empty);
     }
 
+    [HttpPost("admin/password")]
+    public async Task<ActionResult<AdminSyncResponse>> ChangeAdminPassword(ChangeAdminPasswordRequest request)
+    {
+        var username = request.AdminUsername.Trim();
+        var admin = await _db.Adminler.FirstOrDefaultAsync(x => x.KullaniciAdi == username);
+        if (admin == null)
+        {
+            return NotFound(new ApiMessageResponse("Admin bulunamadi."));
+        }
+
+        if (admin.Sifre != request.CurrentPassword)
+        {
+            return BadRequest(new ApiMessageResponse("Mevcut sifre dogru degil."));
+        }
+
+        if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 5)
+        {
+            return BadRequest(new ApiMessageResponse("Yeni sifre en az 5 karakter olmali."));
+        }
+
+        admin.Sifre = request.NewPassword;
+        await _db.SaveChangesAsync();
+
+        return await BuildAdminSyncAsync(username, "Admin sifresi guncellendi.");
+    }
+
     [HttpPost("admin/members")]
     public async Task<ActionResult<AdminSyncResponse>> CreateAdminMember(CreateAdminMemberRequest request)
     {
@@ -437,10 +463,15 @@ public class MobileApiController : ControllerBase
     [HttpPost("admin/actions")]
     public async Task<ActionResult<AdminSyncResponse>> CreateAdminAction(CreateAdminActionRequest request)
     {
+        var price = CalculateActionPrice(request.Price, request.MinPrice, request.MaxPrice);
         var action = new Islem
         {
             Ad = request.Name.Trim(),
-            Fiyat = decimal.Round((decimal)request.Price, 2)
+            Kategori = CleanActionCategory(request.Category),
+            MinimumFiyat = decimal.Round((decimal)request.MinPrice, 2),
+            MaksimumFiyat = decimal.Round((decimal)request.MaxPrice, 2),
+            Fiyat = price,
+            Aciklama = request.Description?.Trim()
         };
 
         _db.Islemler.Add(action);
@@ -459,7 +490,11 @@ public class MobileApiController : ControllerBase
         }
 
         action.Ad = request.Name.Trim();
-        action.Fiyat = decimal.Round((decimal)request.Price, 2);
+        action.Kategori = CleanActionCategory(request.Category);
+        action.MinimumFiyat = decimal.Round((decimal)request.MinPrice, 2);
+        action.MaksimumFiyat = decimal.Round((decimal)request.MaxPrice, 2);
+        action.Fiyat = CalculateActionPrice(request.Price, request.MinPrice, request.MaxPrice);
+        action.Aciklama = request.Description?.Trim();
         await _db.SaveChangesAsync();
 
         return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Islem guncellendi.");
@@ -576,7 +611,34 @@ public class MobileApiController : ControllerBase
 
     private static ServiceActionDto ToActionDto(Islem action)
     {
-        return new ServiceActionDto(action.Id, action.Ad, decimal.ToDouble(action.Fiyat));
+        return new ServiceActionDto(
+            action.Id,
+            action.Ad,
+            decimal.ToDouble(action.Fiyat),
+            action.Kategori,
+            decimal.ToDouble(action.MinimumFiyat),
+            decimal.ToDouble(action.MaksimumFiyat),
+            action.Aciklama ?? string.Empty);
+    }
+
+    private static string CleanActionCategory(string? category)
+    {
+        return string.IsNullOrWhiteSpace(category) ? "Genel" : category.Trim();
+    }
+
+    private static decimal CalculateActionPrice(double price, double minPrice, double maxPrice)
+    {
+        if (price > 0)
+        {
+            return decimal.Round((decimal)price, 2);
+        }
+
+        if (minPrice > 0 && maxPrice > 0)
+        {
+            return decimal.Round(((decimal)minPrice + (decimal)maxPrice) / 2m, 2);
+        }
+
+        return 0m;
     }
 
     private static ServiceRecordDto ToServiceDto(ServisKaydi service)
@@ -600,12 +662,13 @@ public class MobileApiController : ControllerBase
     public sealed record UpdateMemberProfileRequest(string FullName, string Phone, string Email, string? NewPassword);
     public sealed record CreateMemberServiceRequestRequest(string Brand, string Model, string IssueDescription);
     public sealed record AdminLoginRequest(string Username, string Password);
+    public sealed record ChangeAdminPasswordRequest(string AdminUsername, string CurrentPassword, string NewPassword);
     public sealed record CreateAdminMemberRequest(string AdminUsername, string FullName, string Phone, string Email, bool CreateAccount);
     public sealed record CreateAdminDeviceRequest(string AdminUsername, int MemberId, string Brand, string Model, string IssueDescription);
     public sealed record CreateAdminServiceRequest(string AdminUsername, int DeviceId, string Status, List<int> ActionIds, bool SendPriceApproval = false);
     public sealed record UpdateAdminServiceRequest(string AdminUsername, int DeviceId, DateTime Date, string Status, List<int> ActionIds, bool SendPriceApproval = false);
-    public sealed record CreateAdminActionRequest(string AdminUsername, string Name, double Price);
-    public sealed record UpdateAdminActionRequest(string AdminUsername, string Name, double Price);
+    public sealed record CreateAdminActionRequest(string AdminUsername, string Name, double Price, string? Category = null, double MinPrice = 0, double MaxPrice = 0, string? Description = null);
+    public sealed record UpdateAdminActionRequest(string AdminUsername, string Name, double Price, string? Category = null, double MinPrice = 0, double MaxPrice = 0, string? Description = null);
     public sealed record DeleteAdminEntityRequest(string AdminUsername);
 
     public sealed record ApiMessageResponse(string Message);
@@ -613,6 +676,6 @@ public class MobileApiController : ControllerBase
     public sealed record AdminSyncResponse(string Message, string AdminUsername, List<MemberDto> Members, List<DeviceDto> Devices, List<ServiceActionDto> Actions, List<ServiceRecordDto> Services);
     public sealed record MemberDto(int Id, string FullName, string Phone, string Email, string Password, bool HasAccount, DateTime RegisteredAt, DateTime? LastLoginAt, string? ResetCode, DateTime? ResetCodeExpiresAt);
     public sealed record DeviceDto(int Id, int MemberId, string Brand, string Model, string IssueDescription);
-    public sealed record ServiceActionDto(int Id, string Name, double Price);
+    public sealed record ServiceActionDto(int Id, string Name, double Price, string Category, double MinPrice, double MaxPrice, string Description);
     public sealed record ServiceRecordDto(int Id, int DeviceId, DateTime Date, string Status, double TotalPrice, List<int> ActionIds, string PriceApprovalStatus, DateTime? PriceApprovalSentAt, DateTime? PriceApprovalAnsweredAt);
 }

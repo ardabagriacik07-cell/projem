@@ -1,6 +1,12 @@
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+{
+    builder.WebHost.UseUrls("http://localhost:5106");
+}
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddCors(options =>
@@ -17,9 +23,20 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 
+var rawConnectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=servis.db";
+var sqliteConnectionBuilder = new SqliteConnectionStringBuilder(rawConnectionString);
+
+if (string.IsNullOrWhiteSpace(sqliteConnectionBuilder.DataSource) == false &&
+    Path.IsPathRooted(sqliteConnectionBuilder.DataSource) == false &&
+    sqliteConnectionBuilder.DataSource.StartsWith("file:", StringComparison.OrdinalIgnoreCase) == false &&
+    sqliteConnectionBuilder.Mode != SqliteOpenMode.Memory)
+{
+    sqliteConnectionBuilder.DataSource = Path.Combine(builder.Environment.ContentRootPath, sqliteConnectionBuilder.DataSource);
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options
-        .UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=servis.db")
+        .UseSqlite(sqliteConnectionBuilder.ToString())
         .ConfigureWarnings(warnings =>
             warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 

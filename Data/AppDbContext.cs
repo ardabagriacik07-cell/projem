@@ -65,10 +65,10 @@ public class AppDbContext : DbContext
         });
 
         modelBuilder.Entity<Islem>().HasData(
-            new Islem { Id = 1, Ad = "Ekran Degisimi", Fiyat = 2450m },
-            new Islem { Id = 2, Ad = "Batarya Degisimi", Fiyat = 1250m },
-            new Islem { Id = 3, Ad = "Soket Tamiri", Fiyat = 900m },
-            new Islem { Id = 4, Ad = "Genel Bakim", Fiyat = 650m }
+            new Islem { Id = 1, Ad = "Ekran Degisimi", Kategori = "Telefon", MinimumFiyat = 1800m, MaksimumFiyat = 6500m, Fiyat = 4150m, Aciklama = "On cam saglamsa komple panel degisimi gerekebilir; marka ve OLED/AMOLED yapisina gore fiyat degisir." },
+            new Islem { Id = 2, Ad = "Batarya Degisimi", Kategori = "Telefon", MinimumFiyat = 900m, MaksimumFiyat = 3200m, Fiyat = 2050m, Aciklama = "Pil sagligi dusen veya sisen telefonlarda parca kalitesine gore fiyat araligi degisir." },
+            new Islem { Id = 3, Ad = "Soket Tamiri", Kategori = "Telefon", MinimumFiyat = 700m, MaksimumFiyat = 2200m, Fiyat = 1450m, Aciklama = "Sarj almama ve temassizlik sorunlarinda soket temizlik veya degisim uygulanir." },
+            new Islem { Id = 4, Ad = "Genel Bakim", Kategori = "Telefon", MinimumFiyat = 600m, MaksimumFiyat = 1500m, Fiyat = 1050m, Aciklama = "Ic temizlik, baglanti kontrolleri ve genel performans taramasi iceren temel servis bakimi." }
         );
     }
 }

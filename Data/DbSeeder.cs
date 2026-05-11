@@ -6,6 +6,7 @@ public static class DbSeeder
     public static void Seed(AppDbContext db)
     {
         EnsureSchemaCompatibility(db);
+        EnsureOperationCatalog(db);
 
         if (db.Musteriler.Any() == false)
         {
@@ -123,6 +124,49 @@ public static class DbSeeder
         Execute(connection, "CREATE UNIQUE INDEX IF NOT EXISTS IX_Musteriler_Email ON Musteriler (Email);");
         Execute(connection, "UPDATE Musteriler SET Sifre = '' WHERE Sifre IS NULL;");
         Execute(connection, "UPDATE Musteriler SET KayitTarihi = datetime('now') WHERE KayitTarihi IS NULL;");
+    }
+
+    private static void EnsureOperationCatalog(AppDbContext db)
+    {
+        var existingOperations = db.Islemler.ToList();
+        var operationsByKey = existingOperations
+            .GroupBy(x => OperationCatalog.NormalizeKey(x.Ad))
+            .ToDictionary(x => x.Key, x => x.ToList(), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var catalogItem in OperationCatalog.Items)
+        {
+            var key = OperationCatalog.NormalizeKey(catalogItem.Name);
+            if (operationsByKey.TryGetValue(key, out var matches))
+            {
+                foreach (var operation in matches)
+                {
+                    ApplyOperationDefaults(operation, catalogItem);
+                }
+
+                continue;
+            }
+
+            db.Islemler.Add(new Islem
+            {
+                Ad = catalogItem.Name,
+                Kategori = catalogItem.Category,
+                MinimumFiyat = catalogItem.MinPrice,
+                MaksimumFiyat = catalogItem.MaxPrice,
+                Fiyat = catalogItem.AveragePrice,
+                Aciklama = catalogItem.Description
+            });
+        }
+
+        db.SaveChanges();
+    }
+
+    private static void ApplyOperationDefaults(Islem operation, OperationCatalogItem catalogItem)
+    {
+        operation.Kategori = catalogItem.Category;
+        operation.MinimumFiyat = catalogItem.MinPrice;
+        operation.MaksimumFiyat = catalogItem.MaxPrice;
+        operation.Fiyat = catalogItem.AveragePrice;
+        operation.Aciklama = catalogItem.Description;
     }
 
     private static void Execute(SqliteConnection connection, string sql)

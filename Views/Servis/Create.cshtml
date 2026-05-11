@@ -52,16 +52,7 @@
         </div>
 
         <div class="field full">
-            <label>Yapilacak Islemler</label>
-            <div class="checkbox-grid">
-                @foreach (var islem in Model.Islemler)
-                {
-                    <label class="checkbox-item">
-                        <span>@islem.Ad (@islem.Fiyat.ToString("C0"))</span>
-                        <input type="checkbox" name="SeciliIslemIdleri" value="@islem.Id" />
-                    </label>
-                }
-            </div>
+            <partial name="_IslemSelector" model="Model" />
         </div>
 
         <div class="link-row full">

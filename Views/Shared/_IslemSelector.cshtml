@@ -1,0 +1,181 @@
+@model ServisFormViewModel
+@{
+    var selectorId = $"islem-selector-{Guid.NewGuid():N}";
+    var groupedOperations = Model.Islemler
+        .OrderBy(x => x.Kategori)
+        .ThenBy(x => x.Ad)
+        .GroupBy(x => string.IsNullOrWhiteSpace(x.Kategori) ? "Diger" : x.Kategori)
+        .ToList();
+}
+
+<section class="islem-selector" id="@selectorId">
+    <div class="islem-selector-top">
+        <div>
+            <label class="mb-2">Yapilacak Islemler</label>
+            <p class="text-secondary mb-0">Arama yap, kategoriden daralt ve sadece ihtiyacin olan islemleri sec.</p>
+        </div>
+        <div class="islem-selector-summary">
+            <div class="islem-selector-stat">
+                <small>Secili</small>
+                <strong data-selected-count>0</strong>
+            </div>
+            <div class="islem-selector-stat">
+                <small>Tahmini Tutar</small>
+                <strong data-selected-total>0 TL</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="islem-selector-toolbar">
+        <div class="islem-search-shell">
+            <i class="bi bi-search"></i>
+            <input type="search" class="input islem-search-input" placeholder="Islem, kategori veya aciklama ara" data-islem-search />
+        </div>
+
+        <div class="islem-category-pills" data-category-pills>
+            <button type="button" class="islem-pill active" data-category-filter="">Tum Islemler</button>
+            @foreach (var group in groupedOperations)
+            {
+                <button type="button" class="islem-pill" data-category-filter="@group.Key">@group.Key</button>
+            }
+        </div>
+    </div>
+
+    <div class="islem-groups">
+        @{
+            var index = 0;
+        }
+        @foreach (var group in groupedOperations)
+        {
+            var categoryKey = OperationCatalog.NormalizeKey(group.Key);
+            <details class="islem-group" data-islem-group data-category="@group.Key" open="@(index == 0 ? "open" : null)">
+                <summary class="islem-group-summary">
+                    <div>
+                        <strong>@group.Key</strong>
+                        <small>@group.Count() islem</small>
+                    </div>
+                    <span class="islem-group-toggle">Listeyi Gor</span>
+                </summary>
+
+                <div class="islem-card-grid">
+                    @foreach (var islem in group)
+                    {
+                        var secili = Model.SeciliIslemIdleri.Contains(islem.Id);
+                        var searchBlob = $"{islem.Ad} {group.Key} {islem.Aciklama}".ToLowerInvariant();
+                        <label class="islem-card @(secili ? "selected" : string.Empty)"
+                               data-islem-item
+                               data-category="@categoryKey"
+                               data-search="@searchBlob"
+                               data-price="@islem.Fiyat">
+                            @if (secili)
+                            {
+                                <input type="checkbox"
+                                       name="SeciliIslemIdleri"
+                                       value="@islem.Id"
+                                       checked
+                                       data-islem-checkbox />
+                            }
+                            else
+                            {
+                                <input type="checkbox"
+                                       name="SeciliIslemIdleri"
+                                       value="@islem.Id"
+                                       data-islem-checkbox />
+                            }
+                            <div class="islem-card-main">
+                                <div class="islem-card-head">
+                                    <strong>@islem.Ad</strong>
+                                    <span class="islem-price-badge">@islem.Fiyat.ToString("C0")</span>
+                                </div>
+                                <small class="islem-range">@islem.MinimumFiyat.ToString("C0") - @islem.MaksimumFiyat.ToString("C0")</small>
+                                @if (string.IsNullOrWhiteSpace(islem.Aciklama) == false)
+                                {
+                                    <p>@islem.Aciklama</p>
+                                }
+                            </div>
+                        </label>
+                    }
+                </div>
+            </details>
+
+            index++;
+        }
+    </div>
+</section>
+
+<script>
+(() => {
+    const root = document.getElementById("@selectorId");
+    if (!root) return;
+
+    const searchInput = root.querySelector("[data-islem-search]");
+    const pills = Array.from(root.querySelectorAll("[data-category-filter]"));
+    const groups = Array.from(root.querySelectorAll("[data-islem-group]"));
+    const items = Array.from(root.querySelectorAll("[data-islem-item]"));
+    const checkboxes = Array.from(root.querySelectorAll("[data-islem-checkbox]"));
+    const countNode = root.querySelector("[data-selected-count]");
+    const totalNode = root.querySelector("[data-selected-total]");
+    const formatter = new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY", maximumFractionDigits: 0 });
+    let activeCategory = "";
+
+    function syncSelectionState() {
+        let selectedCount = 0;
+        let selectedTotal = 0;
+
+        items.forEach(item => {
+            const checkbox = item.querySelector("[data-islem-checkbox]");
+            const isSelected = !!checkbox?.checked;
+            item.classList.toggle("selected", isSelected);
+
+            if (isSelected) {
+                selectedCount += 1;
+                selectedTotal += Number(item.dataset.price || "0");
+            }
+        });
+
+        if (countNode) countNode.textContent = selectedCount.toString();
+        if (totalNode) totalNode.textContent = formatter.format(selectedTotal);
+    }
+
+    function applyFilters() {
+        const term = (searchInput?.value || "").trim().toLocaleLowerCase("tr-TR");
+
+        groups.forEach(group => {
+            const groupCategory = (group.dataset.category || "").toLocaleLowerCase("tr-TR");
+            let groupHasVisibleItem = false;
+
+            group.querySelectorAll("[data-islem-item]").forEach(item => {
+                const itemText = (item.dataset.search || "").toLocaleLowerCase("tr-TR");
+                const itemCategory = (item.dataset.category || "").toLocaleLowerCase("tr-TR");
+                const categoryMatches = !activeCategory || itemCategory === activeCategory;
+                const textMatches = !term || itemText.includes(term);
+                const visible = categoryMatches && textMatches;
+                item.hidden = !visible;
+                if (visible) groupHasVisibleItem = true;
+            });
+
+            group.hidden = !groupHasVisibleItem;
+            if (groupHasVisibleItem && (term || activeCategory)) {
+                group.open = true;
+            }
+            if (!groupHasVisibleItem) {
+                group.open = false;
+            }
+        });
+    }
+
+    pills.forEach(pill => {
+        pill.addEventListener("click", () => {
+            activeCategory = (pill.dataset.categoryFilter || "").toLocaleLowerCase("tr-TR");
+            pills.forEach(btn => btn.classList.toggle("active", btn === pill));
+            applyFilters();
+        });
+    });
+
+    searchInput?.addEventListener("input", applyFilters);
+    checkboxes.forEach(checkbox => checkbox.addEventListener("change", syncSelectionState));
+
+    syncSelectionState();
+    applyFilters();
+})();
+</script>

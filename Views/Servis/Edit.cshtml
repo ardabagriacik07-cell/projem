@@ -65,24 +65,7 @@
         </div>
 
         <div class="field full">
-            <label>Yapilan Islemler</label>
-            <div class="checkbox-grid">
-                @foreach (var islem in Model.Islemler)
-                {
-                    var secili = Model.SeciliIslemIdleri.Contains(islem.Id);
-                    <label class="checkbox-item">
-                        <span>@islem.Ad (@islem.Fiyat.ToString("C0"))</span>
-                        @if (secili)
-                        {
-                            <input type="checkbox" name="SeciliIslemIdleri" value="@islem.Id" checked />
-                        }
-                        else
-                        {
-                            <input type="checkbox" name="SeciliIslemIdleri" value="@islem.Id" />
-                        }
-                    </label>
-                }
-            </div>
+            <partial name="_IslemSelector" model="Model" />
         </div>
 
         <div class="link-row full">

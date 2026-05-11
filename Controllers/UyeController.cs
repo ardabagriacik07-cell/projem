@@ -213,6 +213,8 @@ public class UyeController : Controller
 
         var servisler = await _db.ServisKayitlari
             .Include(x => x.Cihaz)
+            .Include(x => x.ServisIslemler)
+            .ThenInclude(x => x.Islem)
             .Where(x => x.Cihaz != null && x.Cihaz.MusteriId == uyeId.Value)
             .OrderByDescending(x => x.Tarih)
             .ToListAsync();

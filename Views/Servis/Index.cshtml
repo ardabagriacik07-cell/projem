@@ -11,9 +11,13 @@
             "Bekliyor" => "waiting",
             "Islemde" => "work",
             "Fiyat Onayi Bekliyor" => "work",
+            "Onay Bekliyor" => "work",
             "Tamamlandi" => "done",
             "Teslim Edildi" => "delivery",
             "Fiyat Reddedildi" => "rejected",
+            "Reddedildi" => "rejected",
+            "Kabul Edildi" => "done",
+            "Onay Gerekmez" => "waiting",
             _ => "waiting"
         };
     }
@@ -108,7 +112,7 @@
                             </div>
                         </td>
                         <td><span class="badge-status @BadgeClass(item.Durum)">@item.Durum</span></td>
-                        <td><span class="badge-status @BadgeClass(item.Durum)">@item.FiyatOnayDurumu</span></td>
+                        <td><span class="badge-status @BadgeClass(item.FiyatOnayDurumu)">@item.FiyatOnayDurumu</span></td>
                         <td>
                             <div class="metric-pill">
                                 <strong>@item.ServisIslemler.Count</strong>

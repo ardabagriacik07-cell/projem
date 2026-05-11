@@ -3,6 +3,7 @@ public class SmtpOptions
     public string Host { get; set; } = "smtp.gmail.com";
     public int Port { get; set; } = 587;
     public bool EnableSsl { get; set; } = true;
+    public int TimeoutSeconds { get; set; } = 15;
     public string UserName { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string FromEmail { get; set; } = string.Empty;

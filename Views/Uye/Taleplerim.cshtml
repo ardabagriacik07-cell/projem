@@ -35,7 +35,7 @@
                         <th>Cihaz</th>
                         <th>Ariza</th>
                         <th>Durum</th>
-                        <th>Islem</th>
+                        <th>Yapılacak İşlemler</th>
                         <th>Tutar</th>
                         <th>Fiyat Onayi</th>
                     </tr>
@@ -56,7 +56,27 @@
                             </td>
                             <td class="member-table-description">@item.Cihaz?.ArizaAciklama</td>
                             <td><span class="member-pill @DurumSinif(item.Durum)">@item.Durum</span></td>
-                            <td>@item.ServisIslemler.Count</td>
+                            <td>
+                                @if (item.ServisIslemler.Count == 0)
+                                {
+                                    <span class="member-muted">Servis ekibi inceleme sonrası işlemleri paylaşacak.</span>
+                                }
+                                else
+                                {
+                                    <div class="member-service-actions">
+                                        @foreach (var servisIslem in item.ServisIslemler.Where(x => x.Islem != null))
+                                        {
+                                            <div class="member-service-action">
+                                                <strong>@servisIslem.Islem!.Ad</strong>
+                                                @if (string.IsNullOrWhiteSpace(servisIslem.Islem.Aciklama) == false)
+                                                {
+                                                    <small>@servisIslem.Islem.Aciklama</small>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </td>
                             <td>@item.ToplamFiyat.ToString("C0")</td>
                             <td>
                                 @if (item.FiyatOnayDurumu == "Onay Bekliyor")

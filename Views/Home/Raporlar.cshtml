@@ -146,8 +146,15 @@
         options: {
             maintainAspectRatio: false,
             scales: {
-                y: { beginAtZero: true },
-                x: { grid: { display: false } }
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(148, 190, 229, .14)' },
+                    ticks: { color: '#b8c7dc' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#b8c7dc' }
+                }
             }
         }
     });

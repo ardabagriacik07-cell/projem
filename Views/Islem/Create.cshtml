@@ -2,7 +2,8 @@
 @{
     ViewData["Title"] = "Yeni İşlem";
     ViewData["PageTitle"] = "Yeni İşlem Tanımı";
-    ViewData["Subtitle"] = "Serviste kullanılacak işlem kalemini premium form ile oluştur.";
+    ViewData["Subtitle"] = "Bilgisayar ve telefon teknik servis işlemini katalog için oluştur.";
+    var kategoriler = (ViewBag.Kategoriler as IEnumerable<string>)?.ToList() ?? new List<string>();
 }
 
 <div class="card premium-card">
@@ -11,14 +12,44 @@
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="col-12">
+            <div class="col-md-8">
                 <label asp-for="Ad" class="form-label">İşlem Adı</label>
                 <input asp-for="Ad" class="form-control form-control-lg" placeholder="Örn: Ekran Değişimi" />
                 <span asp-validation-for="Ad" class="text-danger"></span>
             </div>
 
-            <div class="col-md-6">
-                <label asp-for="Fiyat" class="form-label">Fiyat</label>
+            <div class="col-md-4">
+                <label asp-for="Kategori" class="form-label">Kategori</label>
+                <input asp-for="Kategori" class="form-control form-control-lg" list="kategoriList" />
+                <datalist id="kategoriList">
+                    @foreach (var kategori in kategoriler)
+                    {
+                        <option value="@kategori"></option>
+                    }
+                </datalist>
+                <span asp-validation-for="Kategori" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="MinimumFiyat" class="form-label">Minimum Fiyat</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text">₺</span>
+                    <input asp-for="MinimumFiyat" class="form-control" />
+                </div>
+                <span asp-validation-for="MinimumFiyat" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="MaksimumFiyat" class="form-label">Maksimum Fiyat</label>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text">₺</span>
+                    <input asp-for="MaksimumFiyat" class="form-control" />
+                </div>
+                <span asp-validation-for="MaksimumFiyat" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Fiyat" class="form-label">Ortalama Fiyat</label>
                 <div class="input-group input-group-lg">
                     <span class="input-group-text">₺</span>
                     <input asp-for="Fiyat" class="form-control" />
@@ -26,8 +57,16 @@
                 <span asp-validation-for="Fiyat" class="text-danger"></span>
             </div>
 
+            <div class="col-12">
+                <label asp-for="Aciklama" class="form-label">Açıklama</label>
+                <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Örn: Parça fiyatına ve cihaz modeline göre değişebilir."></textarea>
+                <span asp-validation-for="Aciklama" class="text-danger"></span>
+            </div>
+
             <div class="col-12 d-flex gap-2">
-                <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check2-circle me-1"></i>Kaydet</button>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check2-circle me-1"></i>Kaydet
+                </button>
                 <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Vazgeç</a>
             </div>
         </form>

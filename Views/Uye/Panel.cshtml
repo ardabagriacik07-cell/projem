@@ -80,11 +80,11 @@
                 </div>
                 <div class="table-responsive">
                     <table class="table member-table align-middle mb-0">
-                        <thead><tr><th>Tarih</th><th>Cihaz</th><th>Durum</th><th>Tutar</th><th>Onay</th></tr></thead>
+                        <thead><tr><th>Tarih</th><th>Cihaz</th><th>Yapılacak İşlemler</th><th>Durum</th><th>Tutar</th><th>Onay</th></tr></thead>
                         <tbody>
                         @if (Model.SonTalepler.Count == 0)
                         {
-                            <tr><td colspan="5" class="member-muted">Henüz talep oluşturmadın.</td></tr>
+                            <tr><td colspan="6" class="member-muted">Henüz talep oluşturmadın.</td></tr>
                         }
                         else
                         {
@@ -93,6 +93,21 @@
                                 <tr>
                                     <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
                                     <td>@item.Cihaz?.Marka @item.Cihaz?.Model</td>
+                                    <td>
+                                        @if (item.ServisIslemler.Count == 0)
+                                        {
+                                            <span class="member-muted">Henüz belirlenmedi</span>
+                                        }
+                                        else
+                                        {
+                                            <div class="member-service-actions compact">
+                                                @foreach (var servisIslem in item.ServisIslemler.Where(x => x.Islem != null))
+                                                {
+                                                    <span class="member-action-chip">@servisIslem.Islem!.Ad</span>
+                                                }
+                                            </div>
+                                        }
+                                    </td>
                                     <td><span class="member-pill @DurumSinif(item.Durum)">@item.Durum</span></td>
                                     <td>@item.ToplamFiyat.ToString("C0")</td>
                                     <td>

@@ -82,6 +82,9 @@ public class ServisController : Controller
     {
         vm.Cihazlar = await _db.Cihazlar.Include(x => x.Musteri).OrderByDescending(x => x.Id).ToListAsync();
         vm.Islemler = await _db.Islemler.OrderBy(x => x.Ad).ToListAsync();
+        ModelState.Remove("Servis.FiyatOnayDurumu");
+        ModelState.Remove("Servis.FiyatOnayTarihi");
+        ModelState.Remove("Servis.FiyatCevapTarihi");
 
         if (ModelState.IsValid == false)
         {
@@ -154,6 +157,9 @@ public class ServisController : Controller
     {
         vm.Cihazlar = await _db.Cihazlar.Include(x => x.Musteri).OrderByDescending(x => x.Id).ToListAsync();
         vm.Islemler = await _db.Islemler.OrderBy(x => x.Ad).ToListAsync();
+        ModelState.Remove("Servis.FiyatOnayDurumu");
+        ModelState.Remove("Servis.FiyatOnayTarihi");
+        ModelState.Remove("Servis.FiyatCevapTarihi");
 
         if (ModelState.IsValid == false)
         {
@@ -172,6 +178,12 @@ public class ServisController : Controller
         servis.CihazId = vm.Servis.CihazId;
         servis.Tarih = vm.Servis.Tarih;
         servis.Durum = vm.Servis.Durum;
+        if (vm.FiyatiOnayaGonder == false && servis.FiyatOnayDurumu == "Onay Bekliyor")
+        {
+            servis.FiyatOnayDurumu = "Onay Gerekmez";
+            servis.FiyatOnayTarihi = null;
+            servis.FiyatCevapTarihi = null;
+        }
 
         var mevcutIslemKayitlari = servis.ServisIslemler.ToList();
         if (mevcutIslemKayitlari.Count > 0)
@@ -249,7 +261,7 @@ public class ServisController : Controller
         }
         catch
         {
-            TempData["Ok"] = "Servis kaydi guncellendi ancak fiyat onay maili gonderilemedi.";
+            TempData["Hata"] = "Fiyat onay maili gonderilemedi. Servis kaydi yine de kaydedildi.";
         }
     }
 }
