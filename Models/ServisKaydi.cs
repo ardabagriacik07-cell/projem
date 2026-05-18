@@ -24,4 +24,5 @@ public class ServisKaydi
 
     public Cihaz? Cihaz { get; set; }
     public List<ServisIslem> ServisIslemler { get; set; } = new();
+    public List<MusteriBildirim> Bildirimler { get; set; } = new();
 }

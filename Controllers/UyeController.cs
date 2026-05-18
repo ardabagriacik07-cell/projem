@@ -219,16 +219,93 @@ public class UyeController : Controller
             .OrderByDescending(x => x.Tarih)
             .ToListAsync();
 
+        var sonBildirimler = await _db.MusteriBildirimleri
+            .Where(x => x.MusteriId == uyeId.Value)
+            .OrderByDescending(x => x.OlusturmaTarihi)
+            .Take(5)
+            .ToListAsync();
+
         var model = new UyePanelViewModel
         {
             Uye = uye,
             CihazSayisi = await _db.Cihazlar.CountAsync(x => x.MusteriId == uyeId.Value),
             AktifTalep = servisler.Count(x => x.Durum == "Bekliyor" || x.Durum == "Islemde" || x.Durum == "Fiyat Onayi Bekliyor"),
             ToplamTalep = servisler.Count,
-            SonTalepler = servisler.Take(6).ToList()
+            OkunmamisBildirimSayisi = await _db.MusteriBildirimleri.CountAsync(x => x.MusteriId == uyeId.Value && x.Okundu == false),
+            SonTalepler = servisler.Take(6).ToList(),
+            SonBildirimler = sonBildirimler
         };
 
         return View(model);
+    }
+
+    [UyeOnly]
+    public async Task<IActionResult> Bildirimler()
+    {
+        var uyeId = HttpContext.Session.GetInt32("UyeId");
+        if (uyeId.HasValue == false)
+        {
+            return RedirectToAction(nameof(Giris));
+        }
+
+        var bildirimler = await _db.MusteriBildirimleri
+            .Include(x => x.ServisKaydi)
+            .ThenInclude(x => x!.Cihaz)
+            .Where(x => x.MusteriId == uyeId.Value)
+            .OrderByDescending(x => x.OlusturmaTarihi)
+            .ToListAsync();
+
+        return View(bildirimler);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [UyeOnly]
+    public async Task<IActionResult> BildirimOkundu(int id)
+    {
+        var uyeId = HttpContext.Session.GetInt32("UyeId");
+        if (uyeId.HasValue == false)
+        {
+            return RedirectToAction(nameof(Giris));
+        }
+
+        var bildirim = await _db.MusteriBildirimleri
+            .FirstOrDefaultAsync(x => x.Id == id && x.MusteriId == uyeId.Value);
+
+        if (bildirim != null && bildirim.Okundu == false)
+        {
+            bildirim.Okundu = true;
+            bildirim.OkunmaTarihi = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+        }
+
+        return RedirectToAction(nameof(Bildirimler));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [UyeOnly]
+    public async Task<IActionResult> TumBildirimleriOkunduYap()
+    {
+        var uyeId = HttpContext.Session.GetInt32("UyeId");
+        if (uyeId.HasValue == false)
+        {
+            return RedirectToAction(nameof(Giris));
+        }
+
+        var bildirimler = await _db.MusteriBildirimleri
+            .Where(x => x.MusteriId == uyeId.Value && x.Okundu == false)
+            .ToListAsync();
+
+        foreach (var bildirim in bildirimler)
+        {
+            bildirim.Okundu = true;
+            bildirim.OkunmaTarihi = DateTime.UtcNow;
+        }
+
+        await _db.SaveChangesAsync();
+        TempData["UyeOk"] = "Bildirimler okundu olarak isaretlendi.";
+        return RedirectToAction(nameof(Bildirimler));
     }
 
     [UyeOnly]

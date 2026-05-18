@@ -1,40 +1,53 @@
 @model AdminSifreDegistirViewModel
 @{
-    ViewData["Title"] = "Admin Sifre";
-    ViewData["PageTitle"] = "Admin Sifre Degistir";
-    ViewData["Subtitle"] = "Yonetim paneli sifreni guvenli sekilde guncelle.";
+    ViewData["Title"] = "Admin Hesap";
+    ViewData["PageTitle"] = "Admin Hesap Ayarlari";
+    ViewData["Subtitle"] = "Yonetici kullanici adi ve sifre bilgilerini guncelle.";
 }
 
-<div class="card" style="max-width:700px">
+<div class="card admin-account-card">
     <div class="card-body p-4 p-lg-5">
-        <span class="admin-chip">Kimlik Güvenliği</span>
-        <h3 class="mt-3">Admin Şifre Güncelle</h3>
-        <p class="text-secondary mb-4">Yönetici hesabının erişim güvenliğini korumak için güçlü ve güncel bir şifre kullan.</p>
+        <span class="admin-chip">Kimlik Ayarlari</span>
+        <h3 class="mt-3">Admin Hesabini Guncelle</h3>
+        <p class="text-secondary mb-4">Kullanici adini degistirebilir, istersen ayni formda yeni sifre belirleyebilirsin.</p>
 
         <form asp-action="SifreDegistir" method="post" class="row g-4">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="validation col-12"></div>
 
-            <div class="col-12">
+            <div class="col-md-6">
+                <label asp-for="KullaniciAdi" class="form-label">Kullanici Adi</label>
+                <input asp-for="KullaniciAdi" class="input" autocomplete="username" />
+                <span asp-validation-for="KullaniciAdi" class="validation"></span>
+            </div>
+
+            <div class="col-md-6">
                 <label asp-for="MevcutSifre" class="form-label">Mevcut Sifre</label>
-                <input asp-for="MevcutSifre" class="input" type="password" />
+                <input asp-for="MevcutSifre" class="input" type="password" autocomplete="current-password" />
                 <span asp-validation-for="MevcutSifre" class="validation"></span>
+            </div>
+
+            <div class="col-12">
+                <div class="admin-form-note">
+                    <i class="bi bi-info-circle"></i>
+                    <span>Sifreyi degistirmek istemiyorsan yeni sifre alanlarini bos birak.</span>
+                </div>
             </div>
 
             <div class="col-md-6">
                 <label asp-for="YeniSifre" class="form-label">Yeni Sifre</label>
-                <input asp-for="YeniSifre" class="input" type="password" />
+                <input asp-for="YeniSifre" class="input" type="password" autocomplete="new-password" />
                 <span asp-validation-for="YeniSifre" class="validation"></span>
             </div>
 
             <div class="col-md-6">
                 <label asp-for="YeniSifreTekrar" class="form-label">Yeni Sifre Tekrar</label>
-                <input asp-for="YeniSifreTekrar" class="input" type="password" />
+                <input asp-for="YeniSifreTekrar" class="input" type="password" autocomplete="new-password" />
                 <span asp-validation-for="YeniSifreTekrar" class="validation"></span>
             </div>
 
             <div class="col-12 d-flex flex-wrap gap-2">
-                <button type="submit" class="btn btn-primary">Sifreyi Guncelle</button>
+                <button type="submit" class="btn btn-primary">Hesabi Guncelle</button>
                 <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="SistemDurumu">Sistem Durumuna Don</a>
             </div>
         </form>

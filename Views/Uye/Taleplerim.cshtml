@@ -49,6 +49,7 @@
                 {
                     @foreach (var item in Model)
                     {
+                        var fiyatKalemleri = item.ServisIslemler.Where(x => x.Islem != null).ToList();
                         <tr>
                             <td>@item.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
                             <td>
@@ -57,17 +58,20 @@
                             <td class="member-table-description">@item.Cihaz?.ArizaAciklama</td>
                             <td><span class="member-pill @DurumSinif(item.Durum)">@item.Durum</span></td>
                             <td>
-                                @if (item.ServisIslemler.Count == 0)
+                                @if (fiyatKalemleri.Count == 0)
                                 {
                                     <span class="member-muted">Servis ekibi inceleme sonrası işlemleri paylaşacak.</span>
                                 }
                                 else
                                 {
                                     <div class="member-service-actions">
-                                        @foreach (var servisIslem in item.ServisIslemler.Where(x => x.Islem != null))
+                                        @foreach (var servisIslem in fiyatKalemleri)
                                         {
                                             <div class="member-service-action">
-                                                <strong>@servisIslem.Islem!.Ad</strong>
+                                                <div class="member-service-action-heading">
+                                                    <strong>@servisIslem.Islem!.Ad</strong>
+                                                    <span>@servisIslem.Islem.Fiyat.ToString("C0")</span>
+                                                </div>
                                                 @if (string.IsNullOrWhiteSpace(servisIslem.Islem.Aciklama) == false)
                                                 {
                                                     <small>@servisIslem.Islem.Aciklama</small>
@@ -81,17 +85,40 @@
                             <td>
                                 @if (item.FiyatOnayDurumu == "Onay Bekliyor")
                                 {
-                                    <div class="member-offer-actions">
-                                        <form asp-action="FiyatKabul" method="post">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" class="btn btn-success btn-sm">Kabul Et</button>
-                                        </form>
-                                        <form asp-action="FiyatReddet" method="post">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="id" value="@item.Id" />
-                                            <button type="submit" class="btn btn-outline-light btn-sm">Reddet</button>
-                                        </form>
+                                    <div class="member-offer-card">
+                                        <strong class="member-offer-title">Fiyat kalemleri</strong>
+                                        @if (fiyatKalemleri.Count == 0)
+                                        {
+                                            <span class="member-muted">Detay bekleniyor.</span>
+                                        }
+                                        else
+                                        {
+                                            <div class="member-price-breakdown">
+                                                @foreach (var servisIslem in fiyatKalemleri)
+                                                {
+                                                    <div>
+                                                        <span>@servisIslem.Islem!.Ad</span>
+                                                        <strong>@servisIslem.Islem.Fiyat.ToString("C0")</strong>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        <div class="member-offer-total">
+                                            <span>Toplam</span>
+                                            <strong>@item.ToplamFiyat.ToString("C0")</strong>
+                                        </div>
+                                        <div class="member-offer-actions">
+                                            <form asp-action="FiyatKabul" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button type="submit" class="btn btn-success btn-sm">Kabul Et</button>
+                                            </form>
+                                            <form asp-action="FiyatReddet" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <button type="submit" class="btn btn-outline-light btn-sm">Reddet</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 }
                                 else

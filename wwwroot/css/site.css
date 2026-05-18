@@ -1805,3 +1805,627 @@ textarea:focus {
 .text-danger {
   color: #ffb4b4 !important;
 }
+
+/* Soft light admin theme restore */
+.admin-body {
+  --admin-deep: #eaf4ff;
+  --admin-panel: rgba(255, 255, 255, .88);
+  --admin-panel-strong: rgba(255, 255, 255, .96);
+  --admin-panel-soft: rgba(241, 247, 255, .9);
+  --admin-line: rgba(13, 110, 253, .1);
+  --admin-line-strong: rgba(13, 110, 253, .22);
+  --admin-text: #0f172a;
+  --admin-muted: #64748b;
+  --admin-faint: #8da0b7;
+  --admin-cyan: #0d6efd;
+  --admin-teal: #11b980;
+  --admin-gold: #f59e0b;
+  background:
+    radial-gradient(circle at top left, rgba(13, 110, 253, .13), transparent 28%),
+    radial-gradient(circle at 88% 8%, rgba(125, 211, 252, .18), transparent 30%),
+    linear-gradient(180deg, #f8fbff 0%, #eef6ff 48%, #e7f1ff 100%);
+  color: var(--admin-text);
+}
+
+.admin-body::before {
+  background-image:
+    linear-gradient(rgba(13, 110, 253, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13, 110, 253, .03) 1px, transparent 1px);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, .18), transparent 86%);
+}
+
+.admin-body a {
+  color: #0d6efd;
+}
+
+.admin-body a:hover {
+  color: #0b5ed7;
+}
+
+.admin-menu-toggle {
+  border-color: rgba(13, 110, 253, .12);
+  background: rgba(255, 255, 255, .92);
+  color: var(--admin-text);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, .1);
+}
+
+.admin-menu-toggle:hover,
+.admin-menu-toggle:focus {
+  color: var(--admin-text);
+  background: #fff;
+}
+
+.admin-offcanvas {
+  background:
+    radial-gradient(circle at top, rgba(116, 185, 255, .18), transparent 32%),
+    linear-gradient(180deg, #10284a 0%, #173b68 100%);
+  border-right-color: rgba(255, 255, 255, .18);
+}
+
+.brand-badge,
+.admin-topbar-icon,
+.admin-login-mark {
+  color: #fff;
+  background: linear-gradient(135deg, #0d6efd, #38bdf8);
+  box-shadow: 0 14px 30px rgba(13, 110, 253, .18);
+}
+
+.admin-side-link:hover,
+.admin-side-link.active {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(13, 110, 253, .32), rgba(56, 189, 248, .22));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
+}
+
+.admin-side-panel,
+.admin-logout-btn {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(255, 255, 255, .16);
+}
+
+.admin-page-title,
+.admin-body h1,
+.admin-body h2,
+.admin-body h3,
+.admin-body h4,
+.admin-body h5,
+.admin-body h6,
+.rich-stack strong,
+.rich-cell strong,
+.metric-pill strong,
+.entity-hero-stat strong,
+.islem-selector-stat strong,
+.islem-card-head strong,
+.section-count-pill,
+.field label,
+.form-label {
+  color: var(--admin-text);
+}
+
+.admin-eyebrow,
+.admin-chip {
+  color: #0d6efd;
+}
+
+.admin-subtitle,
+.admin-topbar-card small,
+.admin-login-subtitle,
+.text-secondary,
+.muted,
+.rich-stack small,
+.rich-cell small,
+.metric-pill small,
+.entity-hero-stat small,
+.detail-grid small,
+.stack-row small,
+.timeline-item small,
+.queue-item small,
+.check-card small,
+.islem-selector-stat small,
+.islem-group-summary small,
+.islem-group-toggle,
+.islem-card p,
+.admin-table thead th,
+.table thead th {
+  color: var(--admin-muted) !important;
+}
+
+.admin-offcanvas-copy,
+.admin-menu-caption {
+  color: rgba(255, 255, 255, .68) !important;
+}
+
+.admin-topbar-card,
+.card,
+.premium-card,
+.kpi-card,
+.auth-card,
+.admin-login-card {
+  color: var(--admin-text);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(248, 251, 255, .9));
+  border: 1px solid rgba(13, 110, 253, .08);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, .08);
+}
+
+.kpi-card {
+  background: linear-gradient(145deg, #fff, #f5f9ff);
+}
+
+.admin-card-soft,
+.status-glass,
+.stack-row,
+.timeline-item,
+.queue-item,
+.check-card,
+.detail-grid div,
+.entity-hero,
+.entity-hero-stat,
+.metric-pill,
+.section-count-pill,
+.islem-selector,
+.islem-selector-stat,
+.islem-group,
+.islem-card,
+.admin-accordion .accordion-item {
+  color: var(--admin-text);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(242, 248, 255, .9));
+  border-color: rgba(13, 110, 253, .08);
+}
+
+.admin-hero,
+.detail-hero-card,
+.admin-auth-showcase {
+  color: #fff;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, .2), transparent 30%),
+    linear-gradient(135deg, #0d6efd 0%, #38bdf8 62%, #7dd3fc 100%);
+  border: 1px solid rgba(255, 255, 255, .28);
+  box-shadow: 0 24px 60px rgba(13, 110, 253, .18);
+}
+
+.admin-chip {
+  background: rgba(13, 110, 253, .08);
+  border: 1px solid rgba(13, 110, 253, .12);
+}
+
+.admin-hero .admin-chip,
+.detail-chip-light,
+.admin-auth-badge {
+  color: #fff;
+  background: rgba(255, 255, 255, .16);
+  border: 1px solid rgba(255, 255, 255, .22);
+}
+
+.admin-hero-copy,
+.detail-hero-copy,
+.admin-auth-copy,
+.admin-auth-stat small,
+.admin-auth-note small,
+.admin-hero-side span,
+.detail-quick-card small,
+.detail-side-stat small,
+.detail-side-stat span {
+  color: rgba(255, 255, 255, .84) !important;
+}
+
+.admin-hero-side,
+.detail-quick-card,
+.detail-side-stat,
+.detail-identity-avatar,
+.admin-auth-stat,
+.admin-auth-note {
+  background: rgba(255, 255, 255, .14);
+  border: 1px solid rgba(255, 255, 255, .18);
+}
+
+.detail-quick-card strong,
+.detail-side-stat strong {
+  color: #fff;
+}
+
+.admin-body .table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--admin-text);
+  --bs-table-border-color: rgba(13, 110, 253, .08);
+  --bs-table-hover-bg: rgba(13, 110, 253, .04);
+  --bs-table-hover-color: var(--admin-text);
+  color: var(--admin-text);
+}
+
+.admin-table tbody td {
+  background: rgba(255, 255, 255, .88);
+  border-top-color: rgba(13, 110, 253, .07);
+  border-bottom-color: rgba(13, 110, 253, .07);
+}
+
+.admin-table tbody td:first-child {
+  border-left-color: rgba(13, 110, 253, .07);
+}
+
+.admin-table tbody td:last-child {
+  border-right-color: rgba(13, 110, 253, .07);
+}
+
+.admin-table tbody tr:hover td,
+.table tbody tr:hover {
+  background: rgba(247, 251, 255, .98);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, .06);
+}
+
+.table > :not(caption) > * > * {
+  color: inherit;
+  border-bottom-color: rgba(13, 110, 253, .08);
+}
+
+.admin-body .card-header,
+.admin-body .card-footer {
+  color: var(--admin-text);
+  border-color: rgba(13, 110, 253, .08) !important;
+}
+
+.admin-body .form-control,
+.admin-body .form-select,
+.admin-body .input,
+.admin-body .input-like-select,
+.admin-body select,
+.admin-body textarea,
+.admin-input-group .input-group-text {
+  color: var(--admin-text);
+  background-color: rgba(255, 255, 255, .96);
+  border-color: #dbe5f0;
+}
+
+.admin-body .form-control::placeholder,
+.admin-body .input::placeholder,
+.admin-body textarea::placeholder {
+  color: #94a3b8;
+}
+
+.admin-body .form-control:focus,
+.admin-body .form-select:focus,
+.admin-body .input:focus,
+.admin-body .input-like-select:focus,
+.admin-body select:focus,
+.admin-body textarea:focus {
+  color: var(--admin-text);
+  background-color: #fff;
+  border-color: rgba(13, 110, 253, .5);
+  box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .1);
+}
+
+.admin-body select option,
+.admin-body .form-select option {
+  color: var(--admin-text);
+  background: #fff;
+}
+
+.admin-body .btn-primary,
+.admin-body .btn-success,
+.admin-login-btn {
+  border: 0;
+  color: #fff;
+  background: linear-gradient(135deg, #0d6efd, #38bdf8);
+  box-shadow: 0 14px 30px rgba(13, 110, 253, .18);
+}
+
+.admin-body .btn-primary:hover,
+.admin-body .btn-success:hover,
+.admin-login-btn:hover {
+  color: #fff;
+  background: linear-gradient(135deg, #0b5ed7, #0ea5e9);
+}
+
+.admin-body .btn-outline-primary,
+.admin-body .btn-outline-success,
+.admin-body .btn-outline-secondary {
+  color: #0d6efd;
+  border-color: rgba(13, 110, 253, .22);
+  background: rgba(13, 110, 253, .04);
+}
+
+.admin-body .btn-outline-primary:hover,
+.admin-body .btn-outline-success:hover,
+.admin-body .btn-outline-secondary:hover {
+  color: #fff;
+  background: linear-gradient(135deg, #0d6efd, #38bdf8);
+  border-color: transparent;
+}
+
+.admin-body .btn-light {
+  border-color: rgba(13, 110, 253, .08) !important;
+  background: rgba(255, 255, 255, .94);
+  color: var(--admin-text);
+}
+
+.action-btn-view {
+  background: rgba(13, 110, 253, .08);
+  border-color: rgba(13, 110, 253, .12);
+  color: #0d6efd;
+}
+
+.action-btn-view:hover {
+  background: rgba(13, 110, 253, .14);
+  color: #0b5ed7;
+}
+
+.action-btn-edit {
+  background: rgba(17, 185, 128, .1);
+  border-color: rgba(17, 185, 128, .16);
+  color: #0f9a6f;
+}
+
+.action-btn-edit:hover {
+  background: rgba(17, 185, 128, .16);
+  color: #0d7e5b;
+}
+
+.action-btn-delete {
+  background: rgba(220, 53, 69, .09);
+  border-color: rgba(220, 53, 69, .14);
+  color: #c03645;
+}
+
+.action-btn-delete:hover {
+  background: rgba(220, 53, 69, .14);
+  color: #a92b39;
+}
+
+.catalog-action-btn {
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .07);
+}
+
+.catalog-action-btn i {
+  background: rgba(255, 255, 255, .72);
+}
+
+.rich-avatar {
+  color: #0d6efd;
+  background: linear-gradient(135deg, rgba(13, 110, 253, .14), rgba(56, 189, 248, .18));
+}
+
+.timeline-dot {
+  background: linear-gradient(135deg, #0d6efd, #38bdf8);
+  box-shadow: 0 0 0 5px rgba(13, 110, 253, .08);
+}
+
+.islem-pill {
+  background: rgba(255, 255, 255, .96);
+  border-color: rgba(13, 110, 253, .12);
+  color: #334155;
+}
+
+.islem-pill.active,
+.islem-card.selected {
+  color: #fff;
+  background: linear-gradient(135deg, #0d6efd, #38bdf8);
+  border-color: transparent;
+}
+
+.islem-card:hover {
+  border-color: rgba(13, 110, 253, .22);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, .06);
+}
+
+.islem-price-badge,
+.section-count-pill {
+  background: rgba(13, 110, 253, .08);
+  color: #0d6efd;
+  border: 1px solid rgba(13, 110, 253, .12);
+}
+
+.islem-range {
+  color: #0f766e;
+}
+
+.badge.bg-dark {
+  color: #0d6efd !important;
+  background: rgba(13, 110, 253, .08) !important;
+  border: 1px solid rgba(13, 110, 253, .12);
+}
+
+.badge-status.bekliyor,
+.badge-status.waiting {
+  background: #fff3cd;
+  color: #8a6d3b;
+  border-color: rgba(245, 158, 11, .18);
+}
+
+.badge-status.islemde,
+.badge-status.work {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-color: rgba(29, 78, 216, .12);
+}
+
+.badge-status.tamamlandi,
+.badge-status.done {
+  background: #dcfce7;
+  color: #166534;
+  border-color: rgba(22, 101, 52, .12);
+}
+
+.badge-status.teslim,
+.badge-status.delivery {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: rgba(3, 105, 161, .12);
+}
+
+.badge-status.rejected {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: rgba(153, 27, 27, .12);
+}
+
+.status-glass.warning { border-left-color: var(--admin-gold); }
+.status-glass.info { border-left-color: #38bdf8; }
+.status-glass.success { border-left-color: var(--admin-teal); }
+.status-glass.purple { border-left-color: #0d6efd; }
+
+.admin-body .alert-success {
+  color: #0f5132;
+  background: rgba(220, 252, 231, .92);
+  border: 1px solid rgba(22, 101, 52, .14) !important;
+}
+
+.admin-body .alert-danger {
+  color: #842029;
+  background: rgba(254, 226, 226, .92);
+  border: 1px solid rgba(153, 27, 27, .14) !important;
+}
+
+.admin-accordion .accordion-button {
+  color: var(--admin-text);
+  background: rgba(255, 255, 255, .94);
+}
+
+.admin-accordion .accordion-button:not(.collapsed) {
+  color: #0d6efd;
+  background: rgba(13, 110, 253, .08);
+}
+
+.admin-accordion .accordion-body {
+  color: var(--admin-text);
+  background: rgba(248, 251, 255, .94);
+}
+
+.validation,
+.field-validation-error,
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.admin-account-card {
+  max-width: 880px;
+}
+
+.admin-form-note {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .8rem .95rem;
+  border-radius: .95rem;
+  color: #0f4f78;
+  background: rgba(13, 110, 253, .07);
+  border: 1px solid rgba(13, 110, 253, .1);
+}
+
+.admin-page-title {
+  font-size: clamp(1.55rem, 2.6vw, 2.25rem);
+  letter-spacing: 0;
+}
+
+.admin-topbar-card {
+  min-width: 230px;
+  padding: .8rem .95rem;
+}
+
+.admin-hero-compact {
+  padding: 1.15rem 1.25rem;
+  border-radius: 1.25rem;
+}
+
+.admin-hero-compact .admin-hero-title {
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
+  letter-spacing: 0;
+}
+
+.admin-hero-compact .admin-hero-copy {
+  max-width: 36rem;
+}
+
+.admin-hero-side-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.admin-hero-compact .admin-hero-side {
+  padding: .85rem .95rem;
+  border-radius: 1rem;
+}
+
+.admin-hero-compact .admin-hero-side strong {
+  font-size: 1.35rem;
+  margin: .2rem 0;
+}
+
+.dashboard-kpis .card-body {
+  padding: .9rem 1rem;
+}
+
+.admin-kpi-value {
+  font-size: clamp(1.35rem, 2vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.dashboard-kpis small {
+  font-size: .78rem;
+}
+
+.admin-hero-compact ~ .row .status-glass {
+  padding: .85rem .9rem;
+  border-radius: .95rem;
+}
+
+.admin-hero-compact ~ .row .status-glass strong {
+  font-size: 1.35rem;
+}
+
+.admin-hero-compact ~ .row .stack-row,
+.admin-hero-compact ~ .row .timeline-item {
+  padding: .78rem .85rem;
+  border-radius: .9rem;
+}
+
+.admin-hero-compact ~ .row .admin-table tbody td {
+  padding-top: .85rem;
+  padding-bottom: .85rem;
+}
+
+.admin-hero-compact ~ .row .admin-chip {
+  padding: .34rem .62rem;
+  font-size: .72rem;
+}
+
+@media (max-width: 767.98px) {
+  .admin-hero-side-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-body .admin-offcanvas,
+.admin-body .admin-offcanvas a,
+.admin-body .admin-offcanvas .admin-side-link,
+.admin-body .admin-offcanvas .admin-side-link span,
+.admin-body .admin-offcanvas .admin-side-link i,
+.admin-body .admin-offcanvas .admin-side-link:hover,
+.admin-body .admin-offcanvas .admin-side-link:hover span,
+.admin-body .admin-offcanvas .admin-side-link:hover i,
+.admin-body .admin-offcanvas .admin-side-link.active,
+.admin-body .admin-offcanvas .admin-side-link.active span,
+.admin-body .admin-offcanvas .admin-side-link.active i {
+  color: #fff !important;
+}
+
+.admin-body .admin-offcanvas .admin-side-link {
+  background: transparent;
+}
+
+.admin-body .admin-offcanvas .admin-side-link:hover,
+.admin-body .admin-offcanvas .admin-side-link.active {
+  background: rgba(255, 255, 255, .14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18);
+}
+
+.admin-body .admin-offcanvas .admin-menu-caption,
+.admin-body .admin-offcanvas .admin-offcanvas-copy,
+.admin-body .admin-offcanvas .admin-side-panel small {
+  color: rgba(255, 255, 255, .74) !important;
+}
+
+.admin-body .admin-offcanvas .admin-side-panel strong,
+.admin-body .admin-offcanvas .admin-logout-btn {
+  color: #fff !important;
+}

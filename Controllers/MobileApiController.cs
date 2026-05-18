@@ -280,15 +280,45 @@ public class MobileApiController : ControllerBase
             return BadRequest(new ApiMessageResponse("Mevcut sifre dogru degil."));
         }
 
-        if (string.IsNullOrWhiteSpace(request.NewPassword) || request.NewPassword.Length < 5)
+        var newUsername = string.IsNullOrWhiteSpace(request.NewUsername)
+            ? admin.KullaniciAdi
+            : request.NewUsername.Trim();
+
+        if (string.IsNullOrWhiteSpace(newUsername))
+        {
+            return BadRequest(new ApiMessageResponse("Yeni kullanici adi bos olamaz."));
+        }
+
+        if (newUsername.Length < 3 || newUsername.Length > 50)
+        {
+            return BadRequest(new ApiMessageResponse("Yeni kullanici adi 3-50 karakter arasinda olmali."));
+        }
+
+        var usernameExists = await _db.Adminler.AnyAsync(x =>
+            x.Id != admin.Id && x.KullaniciAdi.ToLower() == newUsername.ToLower());
+
+        if (usernameExists)
+        {
+            return BadRequest(new ApiMessageResponse("Bu kullanici adi baska bir admin tarafindan kullaniliyor."));
+        }
+
+        var passwordWillChange = string.IsNullOrWhiteSpace(request.NewPassword) == false;
+        if (passwordWillChange && request.NewPassword!.Length < 5)
         {
             return BadRequest(new ApiMessageResponse("Yeni sifre en az 5 karakter olmali."));
         }
 
-        admin.Sifre = request.NewPassword;
+        admin.KullaniciAdi = newUsername;
+        if (passwordWillChange)
+        {
+            admin.Sifre = request.NewPassword!;
+        }
+
         await _db.SaveChangesAsync();
 
-        return await BuildAdminSyncAsync(username, "Admin sifresi guncellendi.");
+        return await BuildAdminSyncAsync(admin.KullaniciAdi, passwordWillChange
+            ? "Admin hesabi guncellendi."
+            : "Admin kullanici adi guncellendi.");
     }
 
     [HttpPost("admin/members")]
@@ -382,6 +412,7 @@ public class MobileApiController : ControllerBase
         }
 
         await _db.SaveChangesAsync();
+        await ServisBildirimHelper.TamamlananServisBildiriminiOlusturAsync(_db, service.Id);
         return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Servis kaydi olusturuldu.");
     }
 
@@ -442,6 +473,7 @@ public class MobileApiController : ControllerBase
         }
 
         await _db.SaveChangesAsync();
+        await ServisBildirimHelper.TamamlananServisBildiriminiOlusturAsync(_db, service.Id);
         return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Servis kaydi guncellendi.");
     }
 
@@ -662,7 +694,7 @@ public class MobileApiController : ControllerBase
     public sealed record UpdateMemberProfileRequest(string FullName, string Phone, string Email, string? NewPassword);
     public sealed record CreateMemberServiceRequestRequest(string Brand, string Model, string IssueDescription);
     public sealed record AdminLoginRequest(string Username, string Password);
-    public sealed record ChangeAdminPasswordRequest(string AdminUsername, string CurrentPassword, string NewPassword);
+    public sealed record ChangeAdminPasswordRequest(string AdminUsername, string CurrentPassword, string? NewPassword = null, string? NewUsername = null);
     public sealed record CreateAdminMemberRequest(string AdminUsername, string FullName, string Phone, string Email, bool CreateAccount);
     public sealed record CreateAdminDeviceRequest(string AdminUsername, int MemberId, string Brand, string Model, string IssueDescription);
     public sealed record CreateAdminServiceRequest(string AdminUsername, int DeviceId, string Status, List<int> ActionIds, bool SendPriceApproval = false);

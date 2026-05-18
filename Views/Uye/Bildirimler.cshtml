@@ -1,0 +1,69 @@
+@model List<MusteriBildirim>
+@{
+    ViewData["Title"] = "Bildirimler";
+}
+
+<div class="card member-card">
+    <div class="card-body p-4 p-lg-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <span class="member-section-badge">Servis Haberleri</span>
+                <h3 class="mb-0 mt-2">Bildirimler</h3>
+            </div>
+            @if (Model.Any(x => x.Okundu == false))
+            {
+                <form asp-action="TumBildirimleriOkunduYap" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-light btn-sm">Tumunu Okundu Yap</button>
+                </form>
+            }
+        </div>
+
+        <div class="member-notification-page-list">
+            @if (Model.Count == 0)
+            {
+                <div class="member-empty-state">
+                    <i class="bi bi-bell"></i>
+                    <strong>Henuz bildirim yok</strong>
+                    <span>Servis durumun teslim icin hazir olunca burada gorunecek.</span>
+                </div>
+            }
+            else
+            {
+                @foreach (var bildirim in Model)
+                {
+                    <article class="member-notification-card @(bildirim.Okundu ? "" : "unread")">
+                        <div class="member-notification-icon">
+                            <i class="bi @(bildirim.Okundu ? "bi-bell" : "bi-bell-fill")"></i>
+                        </div>
+                        <div>
+                            <div class="member-notification-heading">
+                                <h5>@bildirim.Baslik</h5>
+                                <time>@bildirim.OlusturmaTarihi.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</time>
+                            </div>
+                            <p>@bildirim.Mesaj</p>
+                            @if (bildirim.ServisKaydi?.Cihaz != null)
+                            {
+                                <small>@bildirim.ServisKaydi.Cihaz.Marka @bildirim.ServisKaydi.Cihaz.Model</small>
+                            }
+                            <div class="member-notification-actions">
+                                @if (bildirim.ServisKaydiId.HasValue)
+                                {
+                                    <a class="btn btn-info btn-sm" asp-action="Taleplerim">Servisi Gor</a>
+                                }
+                                @if (bildirim.Okundu == false)
+                                {
+                                    <form asp-action="BildirimOkundu" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@bildirim.Id" />
+                                        <button type="submit" class="btn btn-outline-light btn-sm">Okundu Yap</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </article>
+                }
+            }
+        </div>
+    </div>
+</div>

@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Islem> Islemler => Set<Islem>();
     public DbSet<ServisIslem> ServisIslemler => Set<ServisIslem>();
     public DbSet<Admin> Adminler => Set<Admin>();
+    public DbSet<MusteriBildirim> MusteriBildirimleri => Set<MusteriBildirim>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,6 +31,32 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Musteri>()
             .Property(x => x.UyeHesabiVar)
             .HasDefaultValue(false);
+
+        modelBuilder.Entity<MusteriBildirim>()
+            .HasOne(x => x.Musteri)
+            .WithMany(x => x.Bildirimler)
+            .HasForeignKey(x => x.MusteriId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MusteriBildirim>()
+            .HasOne(x => x.ServisKaydi)
+            .WithMany(x => x.Bildirimler)
+            .HasForeignKey(x => x.ServisKaydiId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MusteriBildirim>()
+            .Property(x => x.Tur)
+            .HasDefaultValue("Genel");
+
+        modelBuilder.Entity<MusteriBildirim>()
+            .Property(x => x.Okundu)
+            .HasDefaultValue(false);
+
+        modelBuilder.Entity<MusteriBildirim>()
+            .HasIndex(x => new { x.MusteriId, x.Okundu, x.OlusturmaTarihi });
+
+        modelBuilder.Entity<MusteriBildirim>()
+            .HasIndex(x => new { x.ServisKaydiId, x.Tur });
 
         modelBuilder.Entity<Cihaz>()
             .HasMany(x => x.ServisKayitlari)

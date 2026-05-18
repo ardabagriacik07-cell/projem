@@ -52,7 +52,7 @@ else
             <a class="admin-side-link @(controller == "Cihaz" ? "active" : "")" asp-controller="Cihaz" asp-action="Index"><i class="bi bi-phone-fill"></i><span>Cihazlar</span></a>
             <a class="admin-side-link @(controller == "Servis" ? "active" : "")" asp-controller="Servis" asp-action="Index"><i class="bi bi-tools"></i><span>Servisler</span></a>
             <a class="admin-side-link @(controller == "Islem" ? "active" : "")" asp-controller="Islem" asp-action="Index"><i class="bi bi-list-check"></i><span>İşlem Kataloğu</span></a>
-            <a class="admin-side-link @(controller == "Admin" && action == "SifreDegistir" ? "active" : "")" asp-controller="Admin" asp-action="SifreDegistir"><i class="bi bi-key-fill"></i><span>Admin Şifre</span></a>
+            <a class="admin-side-link @(controller == "Admin" && action == "SifreDegistir" ? "active" : "")" asp-controller="Admin" asp-action="SifreDegistir"><i class="bi bi-person-gear"></i><span>Admin Hesap</span></a>
 
             <div class="admin-side-spacer"></div>
             <div class="admin-side-panel">
@@ -78,10 +78,10 @@ else
                 <p class="admin-subtitle mb-0">@subtitle</p>
             </div>
             <div class="admin-topbar-card">
-                <div class="admin-topbar-icon"><i class="bi bi-stars"></i></div>
+                <div class="admin-topbar-icon"><i class="bi bi-person-check"></i></div>
                 <div>
-                    <strong>Sunum Hazır Mod</strong>
-                    <small>Bootstrap tabanlı premium yönetim deneyimi</small>
+                    <strong>@(string.IsNullOrWhiteSpace(admin) ? "Admin" : admin)</strong>
+                    <small>Yonetici oturumu aktif</small>
                 </div>
             </div>
         </section>
@@ -104,8 +104,8 @@ else
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script>
     if (window.Chart) {
-        Chart.defaults.color = '#b8c7dc';
-        Chart.defaults.borderColor = 'rgba(148, 190, 229, .16)';
+        Chart.defaults.color = '#64748b';
+        Chart.defaults.borderColor = 'rgba(13, 110, 253, .08)';
     }
 </script>
 @await RenderSectionAsync("Scripts", required: false)

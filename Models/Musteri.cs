@@ -27,4 +27,5 @@ public class Musteri
     public DateTime? SifreSifirlamaKodSonTarih { get; set; }
 
     public List<Cihaz> Cihazlar { get; set; } = new();
+    public List<MusteriBildirim> Bildirimler { get; set; } = new();
 }

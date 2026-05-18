@@ -4,5 +4,7 @@ public class UyePanelViewModel
     public int CihazSayisi { get; set; }
     public int AktifTalep { get; set; }
     public int ToplamTalep { get; set; }
+    public int OkunmamisBildirimSayisi { get; set; }
     public List<ServisKaydi> SonTalepler { get; set; } = new();
+    public List<MusteriBildirim> SonBildirimler { get; set; } = new();
 }

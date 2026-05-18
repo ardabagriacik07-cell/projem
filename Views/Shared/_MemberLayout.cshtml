@@ -49,6 +49,10 @@ else
                 <i class="bi bi-receipt-cutoff"></i>
                 <span>Taleplerim</span>
             </a>
+            <a class="member-side-link @(action == "Bildirimler" ? "active" : "")" asp-controller="Uye" asp-action="Bildirimler">
+                <i class="bi bi-bell-fill"></i>
+                <span>Bildirimler</span>
+            </a>
             <a class="member-side-link @(action == "YeniTalep" ? "active" : "")" asp-controller="Uye" asp-action="YeniTalep">
                 <i class="bi bi-plus-square-fill"></i>
                 <span>Yeni Talep</span>

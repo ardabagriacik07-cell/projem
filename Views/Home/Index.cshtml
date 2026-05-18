@@ -1,8 +1,8 @@
 @model AdminDashboardViewModel
 @{
     ViewData["Title"] = "Dashboard";
-    ViewData["PageTitle"] = "Komuta Dashboard";
-    ViewData["Subtitle"] = "Operasyon, gelir, servis ve üye akışını aynı ekrandan yönet.";
+    ViewData["PageTitle"] = "Dashboard";
+    ViewData["Subtitle"] = "Kritik servis, gelir ve uye akisina hizli bakis.";
 
     string BadgeClass(string durum)
     {
@@ -17,67 +17,76 @@
     }
 }
 
-<section class="admin-hero mb-4">
-    <div class="row g-4 align-items-center">
-        <div class="col-xl-8">
-            <span class="admin-chip">Executive Overview</span>
-            <h2 class="admin-hero-title mt-3">Servis operasyonları tam kontrol altında.</h2>
-            <p class="admin-hero-copy">Bekleyen işleri, aktif akışı, gelir performansını ve son müşteri hareketlerini tek sayfada izle. Sunum odaklı, güçlü ve okunaklı bir kontrol alanı.</p>
-            <div class="d-flex flex-wrap gap-2 mt-4">
-                <a asp-controller="Servis" asp-action="Create" class="btn btn-light fw-semibold"><i class="bi bi-plus-circle me-2"></i>Yeni Servis Kaydı</a>
-                <a asp-action="Raporlar" class="btn btn-outline-light"><i class="bi bi-bar-chart me-2"></i>Raporları Aç</a>
+<section class="admin-hero admin-hero-compact mb-3">
+    <div class="row g-3 align-items-center">
+        <div class="col-xl-7">
+            <span class="admin-chip">Operasyon Ozeti</span>
+            <h2 class="admin-hero-title mt-2">Bugunku tablo</h2>
+            <p class="admin-hero-copy mb-0">Bekleyen isleri, aktif servisleri ve gelir durumunu tek bakista izle.</p>
+        </div>
+        <div class="col-xl-5">
+            <div class="admin-hero-side-grid">
+                <div class="admin-hero-side">
+                    <small>Bu Ay Gelir</small>
+                    <strong>@Model.BuAyCiro.ToString("C0")</strong>
+                    <span>@Model.YeniUyelerBuAy yeni uye</span>
+                </div>
+                <div class="admin-hero-side">
+                    <small>Aktif Servis</small>
+                    <strong>@Model.AktifServis</strong>
+                    <span>@Model.BekleyenServis bekleyen, @Model.IslemdeServis islemde</span>
+                </div>
             </div>
         </div>
-        <div class="col-xl-4">
-            <div class="admin-hero-side">
-                <small>Bu Ay Gelir</small>
-                <strong>@Model.BuAyCiro.ToString("C0")</strong>
-                <span>@Model.YeniUyelerBuAy yeni üye, @Model.AktifServis aktif servis</span>
+        <div class="col-12">
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-controller="Servis" asp-action="Create" class="btn btn-light btn-sm fw-semibold"><i class="bi bi-plus-circle me-2"></i>Yeni Servis</a>
+                <a asp-action="OperasyonMerkezi" class="btn btn-outline-light btn-sm"><i class="bi bi-diagram-3 me-2"></i>Operasyon</a>
+                <a asp-action="Raporlar" class="btn btn-outline-light btn-sm"><i class="bi bi-bar-chart me-2"></i>Raporlar</a>
             </div>
         </div>
     </div>
 </section>
 
-<div class="row g-3 mb-4">
-    <div class="col-12 col-sm-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Toplam Müşteri</small><h3 class="display-6 fw-bold mb-0">@Model.ToplamMusteri</h3></div></div></div>
-    <div class="col-12 col-sm-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Toplam Cihaz</small><h3 class="display-6 fw-bold mb-0">@Model.ToplamCihaz</h3></div></div></div>
-    <div class="col-12 col-sm-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Aktif Servis</small><h3 class="display-6 fw-bold mb-0">@Model.AktifServis</h3></div></div></div>
-    <div class="col-12 col-sm-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Ortalama Tutar</small><h3 class="display-6 fw-bold mb-0">@Model.OrtalamaServisTutari.ToString("C0")</h3></div></div></div>
+<div class="row g-3 mb-3 dashboard-kpis">
+    <div class="col-6 col-xl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Toplam Musteri</small><h3 class="admin-kpi-value mb-0">@Model.ToplamMusteri</h3></div></div></div>
+    <div class="col-6 col-xl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Toplam Cihaz</small><h3 class="admin-kpi-value mb-0">@Model.ToplamCihaz</h3></div></div></div>
+    <div class="col-6 col-xl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Aktif Servis</small><h3 class="admin-kpi-value mb-0">@Model.AktifServis</h3></div></div></div>
+    <div class="col-6 col-xl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Ortalama Tutar</small><h3 class="admin-kpi-value mb-0">@Model.OrtalamaServisTutari.ToString("C0")</h3></div></div></div>
 </div>
 
-<div class="row g-4 mb-4">
+<div class="row g-3 mb-3">
     <div class="col-12 col-xxl-8">
         <div class="card premium-card h-100">
-            <div class="card-body p-4 p-xl-5">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+            <div class="card-body p-3 p-xl-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
                     <div>
-                        <span class="admin-chip">Operasyon Haritası</span>
-                        <h4 class="fw-bold mb-0 mt-2">Durum Dağılımı</h4>
+                        <span class="admin-chip">Operasyon</span>
+                        <h5 class="fw-bold mb-0 mt-2">Durum Dagilimi</h5>
                     </div>
                     <a class="btn btn-sm btn-outline-primary" asp-action="OperasyonMerkezi">Detaylı Operasyon</a>
                 </div>
-                <div class="row g-3 mb-4">
+                <div class="row g-2 mb-3">
                     @foreach (var item in Model.DurumOzeti)
                     {
-                        <div class="col-12 col-md-6">
+                        <div class="col-6 col-lg">
                             <div class="status-glass @item.AccentClass">
                                 <small>@item.Label</small>
                                 <strong>@item.Count</strong>
-                                <span>@item.Durum durumundaki servis sayısı</span>
                             </div>
                         </div>
                     }
                 </div>
-                <canvas id="adminOverviewChart" height="120"></canvas>
+                <canvas id="adminOverviewChart" height="90"></canvas>
             </div>
         </div>
     </div>
     <div class="col-12 col-xxl-4">
         <div class="card premium-card h-100">
-            <div class="card-body p-4">
-                <span class="admin-chip">Marka Gücü</span>
-                <h5 class="fw-bold mt-2">En Çok İş Alan Markalar</h5>
-                <div class="stack-list mt-4">
+            <div class="card-body p-3 p-xl-4">
+                <span class="admin-chip">Markalar</span>
+                <h5 class="fw-bold mt-2">En Cok Is Alanlar</h5>
+                <div class="stack-list mt-3">
                     @foreach (var marka in Model.MarkaOzetleri)
                     {
                         <div class="stack-row">
@@ -94,17 +103,17 @@
     </div>
 </div>
 
-<div class="row g-4">
+<div class="row g-3">
     <div class="col-12 col-xxl-8">
         <div class="card premium-card h-100">
-            <div class="card-header bg-transparent border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
+            <div class="card-header bg-transparent border-0 p-3 p-xl-4 pb-0 d-flex justify-content-between align-items-center">
                 <div>
-                    <span class="admin-chip">Canlı Liste</span>
+                    <span class="admin-chip">Servisler</span>
                     <h5 class="fw-bold mb-0 mt-2">Son Servis Hareketleri</h5>
                 </div>
                 <a asp-controller="Servis" asp-action="Index" class="btn btn-sm btn-outline-primary">Tüm Servisler</a>
             </div>
-            <div class="card-body p-4">
+            <div class="card-body p-3 p-xl-4">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0 admin-table">
                         <thead>
@@ -144,10 +153,10 @@
     </div>
     <div class="col-12 col-xxl-4">
         <div class="card premium-card h-100">
-            <div class="card-body p-4">
-                <span class="admin-chip">Yeni Üyeler</span>
-                <h5 class="fw-bold mt-2">Son Kayıt Akışı</h5>
-                <div class="timeline-list mt-4">
+            <div class="card-body p-3 p-xl-4">
+                <span class="admin-chip">Uyeler</span>
+                <h5 class="fw-bold mt-2">Son Kayit Akisi</h5>
+                <div class="timeline-list mt-3">
                     @foreach (var uye in Model.SonUyeler)
                     {
                         <div class="timeline-item">
@@ -185,7 +194,7 @@
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { color: '#b8c7dc', usePointStyle: true, padding: 18 }
+                    labels: { color: '#64748b', usePointStyle: true, padding: 12 }
                 }
             }
         }
