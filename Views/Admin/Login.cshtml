@@ -1,13 +1,13 @@
 @{
-    ViewData["Title"] = "Admin Girişi";
+    ViewData["Title"] = "Yönetici Girişi";
 }
 
 <div class="row g-4 g-xl-5 align-items-stretch min-vh-100 admin-auth-grid">
     <div class="col-12 col-xl-7 d-flex">
         <section class="admin-auth-showcase w-100">
-            <span class="admin-auth-badge">Executive Console</span>
-            <h1 class="admin-auth-title mt-4">Servis operasyonlarını tek bakışta yöneten kusursuz bir merkez.</h1>
-            <p class="admin-auth-copy">Müşteri, cihaz, servis, teslimat, gelir ve ekip akışını aynı yerden yönet. Sunum kalitesinde tasarım, hızlı işlem akışı ve güçlü görünürlük bir arada.</p>
+            <span class="admin-auth-badge">Yönetici Konsolu</span>
+            <h1 class="admin-auth-title mt-4">Fixoria servis operasyonlarını tek bakışta yöneten merkez.</h1>
+            <p class="admin-auth-copy">Müşteri, cihaz, servis, teslimat, gelir ve üye akışını aynı yerden yönet. Hızlı işlem akışı ve güçlü görünürlük tek panelde.</p>
 
             <div class="row g-3 mt-1">
                 <div class="col-md-4">
@@ -44,7 +44,7 @@
         <div class="card admin-login-card w-100">
             <div class="card-body p-4 p-md-5">
                 <div class="admin-login-mark mb-3"><i class="bi bi-grid-1x2-fill"></i></div>
-                <h2 class="fw-bold mb-2">Yönetim Girişi</h2>
+                <h2 class="fw-bold mb-2">Yönetici Girişi</h2>
                 <p class="admin-login-subtitle mb-4">Yönetici bilgilerinizle giriş yapın ve komuta merkezini açın.</p>
 
                 @if (ViewBag.Hata != null)
@@ -78,7 +78,7 @@
 
                 <div class="d-flex flex-wrap gap-2 mt-4 admin-login-switches">
                     <a class="btn btn-outline-primary flex-fill" asp-controller="Uye" asp-action="Giris">Üye Girişi</a>
-                    <a class="btn btn-outline-success flex-fill" asp-controller="Uye" asp-action="Kayit">Üye Kayıt</a>
+                    <a class="btn btn-outline-success flex-fill" asp-controller="Uye" asp-action="Kayit">Üye Kaydı</a>
                 </div>
             </div>
         </div>

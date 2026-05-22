@@ -1,14 +1,14 @@
 @model ServisFormViewModel
 @{
     ViewData["Title"] = "Yeni Servis";
-    ViewData["PageTitle"] = "Yeni Servis Kaydi";
-    ViewData["Subtitle"] = "Cihaz sec, durum belirle, islemleri ekle.";
+    ViewData["PageTitle"] = "Yeni Servis Kaydı";
+    ViewData["Subtitle"] = "Cihaz seç, durum belirle, işlemleri ekle.";
 }
 
 <div class="card">
     <div class="card-body p-4 p-lg-5">
     <span class="admin-chip">Yeni İş Emri</span>
-    <h3 class="mt-3">Yeni Servis Kaydi</h3>
+    <h3 class="mt-3">Yeni Servis Kaydı</h3>
     <p class="text-secondary mb-4">Cihazı seç, durum belirle ve yapılacak işlemleri tek formdan bağla.</p>
 
     <form asp-action="Create" method="post" class="form-grid">
@@ -18,7 +18,7 @@
         <div class="field full">
             <label>Cihaz</label>
             <select asp-for="Servis.CihazId">
-                <option value="">Cihaz seciniz</option>
+                <option value="">Cihaz seçiniz</option>
                 @foreach (var c in Model.Cihazlar)
                 {
                     <option value="@c.Id">@c.Musteri?.AdSoyad - @c.Marka @c.Model</option>
@@ -35,18 +35,18 @@
             <label>Durum</label>
             <select asp-for="Servis.Durum">
                 <option>Bekliyor</option>
-                <option>Islemde</option>
-                <option>Fiyat Onayi Bekliyor</option>
-                <option>Tamamlandi</option>
+                <option value="Islemde">İşlemde</option>
+                <option value="Fiyat Onayi Bekliyor">Fiyat Onayı Bekliyor</option>
+                <option value="Tamamlandi">Tamamlandı</option>
                 <option>Teslim Edildi</option>
                 <option>Fiyat Reddedildi</option>
             </select>
         </div>
 
         <div class="field">
-            <label>Fiyat Onayi</label>
+            <label>Fiyat Onayı</label>
             <label class="checkbox-item">
-                <span>Musteri ekranina fiyat onayi dusur</span>
+                <span>Müşteri ekranına fiyat onayı düşür</span>
                 <input asp-for="FiyatiOnayaGonder" />
             </label>
         </div>
@@ -57,7 +57,7 @@
 
         <div class="link-row full">
             <button type="submit" class="btn btn-primary">Kaydet</button>
-            <a asp-action="Index" class="btn btn-light">Vazgec</a>
+            <a asp-action="Index" class="btn btn-light">Vazgeç</a>
         </div>
     </form>
     </div>

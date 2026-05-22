@@ -71,7 +71,7 @@
                         <div class="queue-item">
                             <strong>@item.Cihaz?.Musteri?.AdSoyad</strong>
                             <small>@item.Cihaz?.Marka @item.Cihaz?.Model</small>
-                            <span><span class="badge-status @BadgeClass(item.Durum)">@item.Durum</span></span>
+                            <span><span class="badge-status @BadgeClass(item.Durum)">@DisplayTextHelper.Status(item.Durum)</span></span>
                         </div>
                     }
                 </div>

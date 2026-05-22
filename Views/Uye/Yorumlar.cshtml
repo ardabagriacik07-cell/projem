@@ -1,0 +1,69 @@
+@model UyeYorumlarViewModel
+@{
+    ViewData["Title"] = "Yorumlarım";
+}
+
+<div class="row g-3">
+    <div class="col-12 col-xl-5">
+        <div class="card member-card h-100">
+            <div class="card-body p-4 p-lg-5">
+                <span class="member-section-badge">Geri Bildirim</span>
+                <h3 class="mt-2">Yorum Yaz</h3>
+                <p class="member-muted">Fixoria deneyiminle ilgili düşünceni paylaş. Yönetici ekibi bu yorumları panelden takip eder.</p>
+                <form asp-action="YorumEkle" method="post" class="member-comment-form mt-4">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="member-validation"></div>
+                    <input asp-for="Form.Baslik" name="Baslik" class="member-input" placeholder="Başlık" />
+                    <span asp-validation-for="Form.Baslik" class="member-validation"></span>
+                    <textarea asp-for="Form.Mesaj" name="Mesaj" class="member-textarea" rows="6" placeholder="Yorumunu yaz"></textarea>
+                    <span asp-validation-for="Form.Mesaj" class="member-validation"></span>
+                    <select asp-for="Form.Puan" name="Puan" class="member-select">
+                        <option value="5">5 - Çok iyi</option>
+                        <option value="4">4 - İyi</option>
+                        <option value="3">3 - Orta</option>
+                        <option value="2">2 - Geliştirilmeli</option>
+                        <option value="1">1 - Memnun değilim</option>
+                    </select>
+                    <span asp-validation-for="Form.Puan" class="member-validation"></span>
+                    <button class="btn btn-info fw-semibold" type="submit">Gönder</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xl-7">
+        <div class="card member-card h-100">
+            <div class="card-body p-4 p-lg-5">
+                <span class="member-section-badge">Geçmiş Yorumlar</span>
+                <h3 class="mt-2 mb-4">Paylaştıkların</h3>
+                <div class="member-comment-list">
+                    @if (Model.Yorumlar.Count == 0)
+                    {
+                        <div class="member-empty-state">
+                            <i class="bi bi-chat-left-heart"></i>
+                            <strong>Henüz yorum yok</strong>
+                            <span>İlk yorumunu buradan gönderebilirsin.</span>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var yorum in Model.Yorumlar)
+                        {
+                            <article class="member-comment-card">
+                                <div>
+                                    <strong>@yorum.Baslik</strong>
+                                    <span>@yorum.Puan/5</span>
+                                </div>
+                                <p>@yorum.Mesaj</p>
+                                <small>@yorum.OlusturmaTarihi.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</small>
+                            </article>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

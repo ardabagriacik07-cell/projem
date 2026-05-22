@@ -112,7 +112,7 @@
                                             </div>
                                         }
                                     </td>
-                                    <td><span class="member-pill @DurumSinif(item.Durum)">@item.Durum</span></td>
+                                    <td><span class="member-pill @DurumSinif(item.Durum)">@DisplayTextHelper.Status(item.Durum)</span></td>
                                     <td>@item.ToplamFiyat.ToString("C0")</td>
                                     <td>
                                         @if (item.FiyatOnayDurumu == "Onay Bekliyor")
@@ -121,7 +121,7 @@
                                         }
                                         else
                                         {
-                                            <span class="member-pill @DurumSinif(item.Durum)">@item.FiyatOnayDurumu</span>
+                                            <span class="member-pill @DurumSinif(item.Durum)">@DisplayTextHelper.Status(item.FiyatOnayDurumu)</span>
                                         }
                                     </td>
                                 </tr>
@@ -149,7 +149,7 @@
                 <div class="member-notification-list mt-3">
                     @if (Model.SonBildirimler.Count == 0)
                     {
-                        <span class="member-muted">Henuz bildirimin yok.</span>
+                        <span class="member-muted">Henüz bildirimin yok.</span>
                     }
                     else
                     {
@@ -166,7 +166,41 @@
                         }
                     }
                 </div>
-                <a class="btn btn-info btn-sm mt-3" asp-action="Bildirimler">Tum Bildirimler</a>
+                <a class="btn btn-info btn-sm mt-3" asp-action="Bildirimler">Tüm Bildirimler</a>
+            </div>
+        </div>
+        <div class="card member-card mb-3">
+            <div class="card-body p-4">
+                <span class="member-section-badge">Yorum Kutusu</span>
+                <h5 class="mt-2 mb-1">Düşünceni paylaş</h5>
+                <p class="member-muted">Servis deneyimini yaz, yönetici panelinde doğrudan görülsün.</p>
+                <form asp-action="YorumEkle" method="post" class="member-comment-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnTo" value="Panel" />
+                    <input asp-for="YorumForm.Baslik" name="Baslik" class="member-input" placeholder="Kısa başlık" />
+                    <textarea asp-for="YorumForm.Mesaj" name="Mesaj" class="member-textarea" rows="4" placeholder="Yorumunu yaz"></textarea>
+                    <select asp-for="YorumForm.Puan" name="Puan" class="member-select">
+                        <option value="5">5 - Çok iyi</option>
+                        <option value="4">4 - İyi</option>
+                        <option value="3">3 - Orta</option>
+                        <option value="2">2 - Geliştirilmeli</option>
+                        <option value="1">1 - Memnun değilim</option>
+                    </select>
+                    <button class="btn btn-info fw-semibold" type="submit">Yorumu Gönder</button>
+                </form>
+                @if (Model.SonYorumlar.Count > 0)
+                {
+                    <div class="member-mini-comments mt-3">
+                        @foreach (var yorum in Model.SonYorumlar)
+                        {
+                            <div>
+                                <strong>@yorum.Baslik</strong>
+                                <small>@yorum.Puan/5 · @yorum.OlusturmaTarihi.ToLocalTime().ToString("dd.MM.yyyy")</small>
+                            </div>
+                        }
+                    </div>
+                }
+                <a class="btn btn-outline-light btn-sm mt-3" asp-action="Yorumlar">Tüm Yorumlarım</a>
             </div>
         </div>
         <div class="card member-card">

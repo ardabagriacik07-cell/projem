@@ -50,6 +50,12 @@ public class HomeController : Controller
                 .OrderByDescending(x => x.KayitTarihi)
                 .Take(5)
                 .ToListAsync(),
+            YeniYorumSayisi = await _db.UyeYorumlari.CountAsync(x => x.YoneticiGordu == false),
+            SonYorumlar = await _db.UyeYorumlari
+                .Include(x => x.Musteri)
+                .OrderByDescending(x => x.OlusturmaTarihi)
+                .Take(4)
+                .ToListAsync(),
             DurumOzeti = BuildStatusItems(tumDurumlar),
             MarkaOzetleri = tumCihazlar
                 .GroupBy(x => x.Marka)
@@ -67,6 +73,104 @@ public class HomeController : Controller
         };
 
         return View(model);
+    }
+
+    [AdminOnly]
+    public async Task<IActionResult> Yorumlar()
+    {
+        var yorumlar = await _db.UyeYorumlari
+            .Include(x => x.Musteri)
+            .OrderByDescending(x => x.OlusturmaTarihi)
+            .ToListAsync();
+
+        var model = new AdminYorumlarViewModel
+        {
+            ToplamYorum = yorumlar.Count,
+            YeniYorum = yorumlar.Count(x => x.YoneticiGordu == false),
+            OrtalamaPuan = yorumlar.Count == 0 ? 0 : (decimal)yorumlar.Average(x => x.Puan),
+            Yorumlar = yorumlar
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [AdminOnly]
+    public async Task<IActionResult> YorumOkundu(int id)
+    {
+        var yorum = await _db.UyeYorumlari.FindAsync(id);
+        if (yorum == null)
+        {
+            return NotFound();
+        }
+
+        yorum.YoneticiGordu = true;
+        await _db.SaveChangesAsync();
+        TempData["Ok"] = "Yorum okundu olarak işaretlendi.";
+        return RedirectToAction(nameof(Yorumlar));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [AdminOnly]
+    public async Task<IActionResult> YorumSil(int id)
+    {
+        var yorum = await _db.UyeYorumlari.FindAsync(id);
+        if (yorum == null)
+        {
+            return NotFound();
+        }
+
+        _db.UyeYorumlari.Remove(yorum);
+        await _db.SaveChangesAsync();
+        TempData["Ok"] = "Yorum silindi.";
+        return RedirectToAction(nameof(Yorumlar));
+    }
+
+    [AdminOnly]
+    public async Task<IActionResult> Gecmis(DateTime? tarih, string? durum, string? q)
+    {
+        var servisler = await ApplyGecmisFilters(GetServiceQuery(), tarih, durum, q)
+            .OrderByDescending(x => x.Tarih)
+            .ToListAsync();
+
+        return View(new AdminGecmisViewModel
+        {
+            Tarih = tarih,
+            Durum = durum,
+            Q = q,
+            ServisSayisi = servisler.Count,
+            ToplamTutar = servisler.Sum(x => x.ToplamFiyat),
+            Durumlar = await _db.ServisKayitlari
+                .Select(x => x.Durum)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToListAsync(),
+            Servisler = servisler
+        });
+    }
+
+    [AdminOnly]
+    public async Task<IActionResult> GecmisPdf(DateTime? tarih, string? durum, string? q)
+    {
+        var servisler = await ApplyGecmisFilters(GetServiceQuery(), tarih, durum, q)
+            .OrderByDescending(x => x.Tarih)
+            .ToListAsync();
+
+        var model = new AdminGecmisViewModel
+        {
+            Tarih = tarih,
+            Durum = durum,
+            Q = q,
+            ServisSayisi = servisler.Count,
+            ToplamTutar = servisler.Sum(x => x.ToplamFiyat),
+            Servisler = servisler
+        };
+
+        var pdf = FixoriaPdfReportBuilder.BuildServiceHistoryReport(servisler, model);
+        var fileName = $"fixoria-servis-gecmisi-{DateTime.Now:yyyyMMdd-HHmm}.pdf";
+        return File(pdf, "application/pdf", fileName);
     }
 
     [AdminOnly]
@@ -203,7 +307,41 @@ public class HomeController : Controller
         return _db.ServisKayitlari
             .Include(x => x.Cihaz)
             .ThenInclude(x => x!.Musteri)
-            .Include(x => x.ServisIslemler);
+            .Include(x => x.ServisIslemler)
+            .ThenInclude(x => x.Islem);
+    }
+
+    private static IQueryable<ServisKaydi> ApplyGecmisFilters(
+        IQueryable<ServisKaydi> query,
+        DateTime? tarih,
+        string? durum,
+        string? q)
+    {
+        if (tarih.HasValue)
+        {
+            var gunBaslangic = tarih.Value.Date;
+            var gunBitis = gunBaslangic.AddDays(1);
+            query = query.Where(x => x.Tarih >= gunBaslangic && x.Tarih < gunBitis);
+        }
+
+        if (string.IsNullOrWhiteSpace(durum) == false)
+        {
+            var temizDurum = durum.Trim();
+            query = query.Where(x => x.Durum == temizDurum);
+        }
+
+        if (string.IsNullOrWhiteSpace(q) == false)
+        {
+            var arama = q.Trim();
+            query = query.Where(x =>
+                (x.Cihaz != null && x.Cihaz.Marka.Contains(arama)) ||
+                (x.Cihaz != null && x.Cihaz.Model.Contains(arama)) ||
+                (x.Cihaz != null && x.Cihaz.ArizaAciklama.Contains(arama)) ||
+                (x.Cihaz != null && x.Cihaz.Musteri != null && x.Cihaz.Musteri.AdSoyad.Contains(arama)) ||
+                (x.Cihaz != null && x.Cihaz.Musteri != null && x.Cihaz.Musteri.Telefon.Contains(arama)));
+        }
+
+        return query;
     }
 
     private static List<AdminStatusBreakdownItem> BuildStatusItems(IEnumerable<ServisKaydi> servisler)

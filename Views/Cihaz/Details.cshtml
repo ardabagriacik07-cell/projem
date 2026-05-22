@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Cihaz Detay";
     ViewData["PageTitle"] = "Cihaz Detay";
-    ViewData["Subtitle"] = "Cihaza ait servis gecmisi ve durum dagilimi";
+    ViewData["Subtitle"] = "Cihaza ait servis geçmişi ve durum dağılımı";
 
     string BadgeClass(string durum)
     {
@@ -38,16 +38,16 @@
                 </div>
                 <div class="detail-quick-grid mt-4">
                     <div class="detail-quick-card">
-                        <small>Musteri</small>
+                        <small>Müşteri</small>
                         <strong>@Model.Cihaz.Musteri?.AdSoyad</strong>
                     </div>
                     <div class="detail-quick-card">
-                        <small>Ariza</small>
+                        <small>Arıza</small>
                         <strong>@Model.Cihaz.ArizaAciklama</strong>
                     </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2 mt-4">
-                    <a class="btn btn-light detail-hero-btn" asp-action="Edit" asp-route-id="@Model.Cihaz.Id"><i class="bi bi-pencil-square me-2"></i>Duzenle</a>
+                    <a class="btn btn-light detail-hero-btn" asp-action="Edit" asp-route-id="@Model.Cihaz.Id"><i class="bi bi-pencil-square me-2"></i>Düzenle</a>
                     <a class="btn btn-outline-light detail-hero-btn" asp-controller="Servis" asp-action="Create"><i class="bi bi-plus-circle me-2"></i>Yeni Servis</a>
                 </div>
             </div>
@@ -73,7 +73,7 @@
     <div class="card-body p-4 p-lg-5">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
         <div>
-            <span class="admin-chip">Servis Gecmisi</span>
+            <span class="admin-chip">Servis Geçmişi</span>
             <h3 class="mt-2 mb-0">Cihaza Ait Servis Akışı</h3>
         </div>
         <span class="section-count-pill">@Model.ServisKayitlari.Count servis</span>
@@ -91,7 +91,7 @@
             <tbody>
             @if (Model.ServisKayitlari.Count == 0)
             {
-                <tr><td colspan="4" class="muted">Bu cihaza ait servis kaydi yok.</td></tr>
+                <tr><td colspan="4" class="muted">Bu cihaza ait servis kaydı yok.</td></tr>
             }
             else
             {
@@ -104,7 +104,7 @@
                                 <small>Servis tarihi</small>
                             </div>
                         </td>
-                        <td><span class="badge-status @BadgeClass(item.Durum)">@item.Durum</span></td>
+                        <td><span class="badge-status @BadgeClass(item.Durum)">@DisplayTextHelper.Status(item.Durum)</span></td>
                         <td>
                             <div class="rich-stack">
                                 <strong>@item.ToplamFiyat.ToString("C0")</strong>

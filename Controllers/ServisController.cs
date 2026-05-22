@@ -62,6 +62,24 @@ public class ServisController : Controller
         });
     }
 
+    public async Task<IActionResult> Pdf(int id)
+    {
+        var servis = await _db.ServisKayitlari
+            .Include(x => x.Cihaz)
+            .ThenInclude(x => x!.Musteri)
+            .Include(x => x.ServisIslemler)
+            .ThenInclude(x => x.Islem)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (servis == null)
+        {
+            return NotFound();
+        }
+
+        var pdf = FixoriaPdfReportBuilder.BuildServiceReceiptReport(servis);
+        return File(pdf, "application/pdf", $"fixoria-islem-fisi-{servis.Id}.pdf");
+    }
+
     public async Task<IActionResult> Create()
     {
         var vm = new ServisFormViewModel
@@ -122,7 +140,7 @@ public class ServisController : Controller
 
         await ServisBildirimHelper.TamamlananServisBildiriminiOlusturAsync(_db, servis.Id);
 
-        TempData["Ok"] = "Servis kaydi olusturuldu.";
+        TempData["Ok"] = "Servis kaydı oluşturuldu.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -210,7 +228,7 @@ public class ServisController : Controller
 
         await ServisBildirimHelper.TamamlananServisBildiriminiOlusturAsync(_db, servis.Id);
 
-        TempData["Ok"] = "Servis kaydi guncellendi.";
+        TempData["Ok"] = "Servis kaydı güncellendi.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -226,7 +244,7 @@ public class ServisController : Controller
 
         _db.ServisKayitlari.Remove(servis);
         await _db.SaveChangesAsync();
-        TempData["Ok"] = "Servis kaydi silindi.";
+        TempData["Ok"] = "Servis kaydı silindi.";
         return RedirectToAction(nameof(Index));
     }
 }

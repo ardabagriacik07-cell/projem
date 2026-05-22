@@ -1,14 +1,14 @@
 @model ServisFormViewModel
 @{
-    ViewData["Title"] = "Servis Duzenle";
-    ViewData["PageTitle"] = "Servis Kaydini Duzenle";
-    ViewData["Subtitle"] = "Durumu, islemleri ve cihaz baglantisini guncelle.";
+    ViewData["Title"] = "Servis Düzenle";
+    ViewData["PageTitle"] = "Servis Kaydını Düzenle";
+    ViewData["Subtitle"] = "Durumu, işlemleri ve cihaz bağlantısını güncelle.";
 }
 
 <div class="card">
     <div class="card-body p-4 p-lg-5">
-    <span class="admin-chip">Servis Guncelle</span>
-    <h3 class="mt-3">Servis Kaydini Duzenle</h3>
+    <span class="admin-chip">Servis Güncelle</span>
+    <h3 class="mt-3">Servis Kaydını Düzenle</h3>
     <p class="text-secondary mb-4">Durum, tarih ve işlem bağlantılarını düzenleyerek kaydı güncel tut.</p>
 
     <form asp-action="Edit" method="post" class="form-grid">
@@ -45,23 +45,23 @@
                 {
                     if (Model.Servis.Durum == d)
                     {
-                        <option value="@d" selected>@d</option>
+                        <option value="@d" selected>@DisplayTextHelper.Status(d)</option>
                     }
                     else
                     {
-                        <option value="@d">@d</option>
+                        <option value="@d">@DisplayTextHelper.Status(d)</option>
                     }
                 }
             </select>
         </div>
 
         <div class="field">
-            <label>Fiyat Onayi</label>
+            <label>Fiyat Onayı</label>
             <label class="checkbox-item">
-                <span>Musteri ekranina fiyat onayi dusur</span>
+                <span>Müşteri ekranına fiyat onayı düşür</span>
                 <input asp-for="FiyatiOnayaGonder" />
             </label>
-            <small class="text-secondary">Isaretlenirse secili islem tutari musteri panelinde kabul/reddet olarak gorunur.</small>
+            <small class="text-secondary">İşaretlenirse seçili işlem tutarı müşteri panelinde kabul/reddet olarak görünür.</small>
         </div>
 
         <div class="field full">
@@ -69,8 +69,8 @@
         </div>
 
         <div class="link-row full">
-            <button type="submit" class="btn btn-primary">Guncelle</button>
-            <a asp-action="Index" class="btn btn-light">Geri Don</a>
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+            <a asp-action="Index" class="btn btn-light">Geri Dön</a>
         </div>
     </form>
     </div>

@@ -4,19 +4,19 @@
     var groupedOperations = Model.Islemler
         .OrderBy(x => x.Kategori)
         .ThenBy(x => x.Ad)
-        .GroupBy(x => string.IsNullOrWhiteSpace(x.Kategori) ? "Diger" : x.Kategori)
+        .GroupBy(x => string.IsNullOrWhiteSpace(x.Kategori) ? "Diğer" : x.Kategori)
         .ToList();
 }
 
 <section class="islem-selector" id="@selectorId">
     <div class="islem-selector-top">
         <div>
-            <label class="mb-2">Yapilacak Islemler</label>
-            <p class="text-secondary mb-0">Arama yap, kategoriden daralt ve sadece ihtiyacin olan islemleri sec.</p>
+            <label class="mb-2">Yapılacak İşlemler</label>
+            <p class="text-secondary mb-0">Arama yap, kategoriden daralt ve sadece ihtiyacın olan işlemleri seç.</p>
         </div>
         <div class="islem-selector-summary">
             <div class="islem-selector-stat">
-                <small>Secili</small>
+                <small>Seçili</small>
                 <strong data-selected-count>0</strong>
             </div>
             <div class="islem-selector-stat">
@@ -29,11 +29,11 @@
     <div class="islem-selector-toolbar">
         <div class="islem-search-shell">
             <i class="bi bi-search"></i>
-            <input type="search" class="input islem-search-input" placeholder="Islem, kategori veya aciklama ara" data-islem-search />
+            <input type="search" class="input islem-search-input" placeholder="İşlem, kategori veya açıklama ara" data-islem-search />
         </div>
 
         <div class="islem-category-pills" data-category-pills>
-            <button type="button" class="islem-pill active" data-category-filter="">Tum Islemler</button>
+            <button type="button" class="islem-pill active" data-category-filter="">Tüm İşlemler</button>
             @foreach (var group in groupedOperations)
             {
                 <button type="button" class="islem-pill" data-category-filter="@group.Key">@group.Key</button>
@@ -52,9 +52,9 @@
                 <summary class="islem-group-summary">
                     <div>
                         <strong>@group.Key</strong>
-                        <small>@group.Count() islem</small>
+                        <small>@group.Count() işlem</small>
                     </div>
-                    <span class="islem-group-toggle">Listeyi Gor</span>
+                    <span class="islem-group-toggle">Listeyi Gör</span>
                 </summary>
 
                 <div class="islem-card-grid">

@@ -1,12 +1,12 @@
 @model UyeSifreKodGonderViewModel
 @{
-    ViewData["Title"] = "Sifremi Unuttum";
+    ViewData["Title"] = "Şifremi Unuttum";
 }
 
 <div class="card member-auth-card shadow-lg border-0" style="max-width:520px; width:100%;">
     <div class="card-body p-4 p-md-5">
-        <h1 class="h3 fw-bold mb-2">Sifremi Unuttum</h1>
-        <p class="member-muted mb-4">E-posta adresini gir, sana 6 haneli dogrulama kodu gonderelim.</p>
+        <h1 class="h3 fw-bold mb-2">Şifremi Unuttum</h1>
+        <p class="member-muted mb-4">E-posta adresini gir, sana 6 haneli doğrulama kodu gönderelim.</p>
 
         <form asp-action="SifremiUnuttum" method="post" class="row g-3">
             @Html.AntiForgeryToken()
@@ -19,8 +19,8 @@
             </div>
 
             <div class="col-12 d-grid gap-2">
-                <button type="submit" class="btn btn-info fw-semibold">Kodu Gonder</button>
-                <a class="btn btn-outline-light" asp-action="Giris">Giris Ekranina Don</a>
+                <button type="submit" class="btn btn-info fw-semibold">Kodu Gönder</button>
+                <a class="btn btn-outline-light" asp-action="Giris">Giriş Ekranına Dön</a>
             </div>
         </form>
     </div>

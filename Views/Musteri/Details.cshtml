@@ -1,8 +1,8 @@
 @model MusteriDetailsViewModel
 @{
-    ViewData["Title"] = "Musteri Detay";
-    ViewData["PageTitle"] = "Musteri Detay";
-    ViewData["Subtitle"] = "Musteri bilgileri, cihazlari ve servis gecmisi.";
+    ViewData["Title"] = "Müşteri Detay";
+    ViewData["PageTitle"] = "Müşteri Detay";
+    ViewData["Subtitle"] = "Müşteri bilgileri, cihazları ve servis geçmişi.";
 
     string Initials(string text)
     {
@@ -30,20 +30,25 @@
                         <strong>@Model.Musteri.Telefon</strong>
                     </div>
                     <div class="detail-quick-card">
-                        <small>Email</small>
+                        <small>E-posta</small>
                         <strong>@Model.Musteri.Email</strong>
                     </div>
                     <div class="detail-quick-card">
-                        <small>Uyelik</small>
-                        <strong>@(Model.Musteri.UyeHesabiVar ? "Uye Girisi Acik" : "Uyelik Yok")</strong>
+                        <small>Üyelik</small>
+                        <strong>@(Model.Musteri.UyeHesabiVar ? "Üye Girişi Açık" : "Üyelik Yok")</strong>
                     </div>
                     <div class="detail-quick-card">
-                        <small>Son Giris</small>
+                        <small>Üye Şifresi</small>
+                        <strong>@(string.IsNullOrWhiteSpace(Model.Musteri.Sifre) ? "-" : Model.Musteri.Sifre)</strong>
+                    </div>
+                    <div class="detail-quick-card">
+                        <small>Son Giriş</small>
                         <strong>@(Model.Musteri.SonGirisTarihi?.ToLocalTime().ToString("dd.MM.yyyy HH:mm") ?? "-")</strong>
                     </div>
                 </div>
                 <div class="d-flex flex-wrap gap-2 mt-4">
-                    <a class="btn btn-light detail-hero-btn" asp-action="Edit" asp-route-id="@Model.Musteri.Id"><i class="bi bi-pencil-square me-2"></i>Duzenle</a>
+                    <a class="btn btn-light detail-hero-btn" asp-action="Edit" asp-route-id="@Model.Musteri.Id"><i class="bi bi-pencil-square me-2"></i>Düzenle</a>
+                    <a class="btn btn-outline-light detail-hero-btn" asp-action="Pdf" asp-route-id="@Model.Musteri.Id"><i class="bi bi-file-earmark-pdf me-2"></i>Müşteri Geçmişi PDF</a>
                     <a class="btn btn-outline-light detail-hero-btn" asp-controller="Cihaz" asp-action="Create"><i class="bi bi-plus-circle me-2"></i>Cihaz Ekle</a>
                 </div>
             </div>
@@ -70,7 +75,7 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
         <div>
             <span class="admin-chip">Bağlı Cihazlar</span>
-            <h3 class="mt-2 mb-0">Musteriye Ait Cihazlar</h3>
+            <h3 class="mt-2 mb-0">Müşteriye Ait Cihazlar</h3>
         </div>
         <span class="section-count-pill">@Model.Cihazlar.Count cihaz</span>
     </div>
@@ -79,15 +84,15 @@
             <thead>
                 <tr>
                     <th>Marka / Model</th>
-                    <th>Ariza</th>
-                    <th>Servis Sayisi</th>
+                    <th>Arıza</th>
+                    <th>Servis Sayısı</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
             @if (Model.Cihazlar.Count == 0)
             {
-                <tr><td colspan="4" class="muted">Bu musteriye ait cihaz kaydi yok.</td></tr>
+                <tr><td colspan="4" class="muted">Bu müşteriye ait cihaz kaydı yok.</td></tr>
             }
             else
             {
@@ -102,7 +107,7 @@
                         </td>
                         <td>
                             <div class="rich-stack">
-                                <strong>Ariza Notu</strong>
+                                <strong>Arıza Notu</strong>
                                 <small>@cihaz.ArizaAciklama</small>
                             </div>
                         </td>

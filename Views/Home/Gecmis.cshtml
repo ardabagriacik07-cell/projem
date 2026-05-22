@@ -1,0 +1,125 @@
+@model AdminGecmisViewModel
+@{
+    ViewData["Title"] = "Geçmiş / Fiş";
+    ViewData["PageTitle"] = "Servis Geçmişi ve Fiş";
+    ViewData["Subtitle"] = "Servis kayıtlarını tek tarih, durum ve arama filtresiyle listeleyin; satırdan o işleme ait fişi indirin.";
+}
+
+<section class="admin-hero admin-history-hero mb-4">
+    <div class="row g-3 align-items-center">
+        <div class="col-xl-7">
+            <span class="admin-chip">Fixoria Arşiv</span>
+            <h2 class="admin-hero-title mt-2">Geçmiş servis uygulamaları</h2>
+            <p class="admin-hero-copy mb-0">Yapılan işlemler, fiyat kalemleri, müşteri ve cihaz bilgileriyle birlikte raporlanır.</p>
+        </div>
+        <div class="col-xl-5">
+            <div class="admin-hero-side-grid">
+                <div class="admin-hero-side">
+                    <small>Filtrelenen Kayıt</small>
+                    <strong>@Model.ServisSayisi</strong>
+                    <span>Servis geçmişi</span>
+                </div>
+                <div class="admin-hero-side">
+                    <small>Toplam Tutar</small>
+                    <strong>@Model.ToplamTutar.ToString("C0")</strong>
+                    <span>Seçili gün</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="card premium-card mb-4">
+    <div class="card-body p-4">
+        <form method="get" class="admin-history-filter">
+            <div class="field">
+                <label>Tarih</label>
+                <input class="input" type="date" name="tarih" value="@Model.Tarih?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="field">
+                <label>Durum</label>
+                <select class="input" name="durum">
+                    <option value="">Tüm durumlar</option>
+                    @foreach (var durum in Model.Durumlar)
+                    {
+                        <option value="@durum" selected="@(durum == Model.Durum)">@durum</option>
+                    }
+                </select>
+            </div>
+            <div class="field">
+                <label>Arama</label>
+                <input class="input" type="text" name="q" value="@Model.Q" placeholder="Müşteri, cihaz, arıza" />
+            </div>
+            <div class="admin-history-actions">
+                <button class="btn btn-primary" type="submit">Listele</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card premium-card">
+    <div class="card-body p-4 p-lg-5">
+        <div class="table-responsive">
+            <table class="table admin-table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Tarih</th>
+                        <th>Müşteri</th>
+                        <th>Cihaz</th>
+                        <th>Durum</th>
+                        <th>Yapılan İşlemler</th>
+                        <th>Fiyat</th>
+                        <th>Onay</th>
+                        <th>Fiş</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (Model.Servisler.Count == 0)
+                {
+                    <tr><td colspan="8" class="text-secondary">Filtrelere uygun servis kaydı bulunamadı.</td></tr>
+                }
+                else
+                {
+                    @foreach (var servis in Model.Servisler)
+                    {
+                        var islemler = servis.ServisIslemler.Where(x => x.Islem != null).ToList();
+                        <tr>
+                            <td>@servis.Tarih.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                            <td>
+                                <strong>@servis.Cihaz?.Musteri?.AdSoyad</strong>
+                            </td>
+                            <td>
+                                <strong>@servis.Cihaz?.Marka @servis.Cihaz?.Model</strong>
+                                <small class="d-block text-secondary">@servis.Cihaz?.ArizaAciklama</small>
+                            </td>
+                            <td><span class="badge-status islemde">@DisplayTextHelper.Status(servis.Durum)</span></td>
+                            <td>
+                                @if (islemler.Count == 0)
+                                {
+                                    <span class="text-secondary">İşlem eklenmedi</span>
+                                }
+                                else
+                                {
+                                    <div class="history-action-list">
+                                        @foreach (var islem in islemler)
+                                        {
+                                            <span>@islem.Islem!.Ad <strong>@islem.Islem.Fiyat.ToString("C0")</strong></span>
+                                        }
+                                    </div>
+                                }
+                            </td>
+                            <td>@servis.ToplamFiyat.ToString("C0")</td>
+                            <td>@DisplayTextHelper.Status(servis.FiyatOnayDurumu)</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary" asp-controller="Servis" asp-action="Pdf" asp-route-id="@servis.Id">
+                                    <i class="bi bi-receipt me-1"></i>İşlem Fişi
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -23,6 +23,21 @@ public class UyeController : Controller
         return View(new UyeGirisViewModel());
     }
 
+    public IActionResult Hakkinda()
+    {
+        return View();
+    }
+
+    public IActionResult ServisSureci()
+    {
+        return View();
+    }
+
+    public IActionResult Iletisim()
+    {
+        return View();
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Giris(UyeGirisViewModel model)
@@ -39,7 +54,7 @@ public class UyeController : Controller
 
         if (uye == null)
         {
-            ModelState.AddModelError(string.Empty, "Email veya sifre hatali.");
+            ModelState.AddModelError(string.Empty, "E-posta veya şifre hatalı.");
             return View(model);
         }
 
@@ -71,7 +86,7 @@ public class UyeController : Controller
 
         if (uye == null)
         {
-            ModelState.AddModelError(nameof(model.Email), "Bu email ile kayitli aktif bir uye bulunamadi.");
+            ModelState.AddModelError(nameof(model.Email), "Bu e-posta ile kayıtlı aktif bir üye bulunamadı.");
             return View(model);
         }
 
@@ -83,24 +98,24 @@ public class UyeController : Controller
         var body = $"""
             <div style="font-family:Arial,sans-serif;font-size:16px;color:#111827">
                 <p>Merhaba {uye.AdSoyad},</p>
-                <p>Sifre sifirlama kodun asagidadir:</p>
+                <p>Şifre sıfırlama kodun aşağıdadır:</p>
                 <p style="font-size:32px;font-weight:700;letter-spacing:6px;margin:16px 0;">{kod}</p>
-                <p>Bu kod 10 dakika boyunca gecerlidir.</p>
-                <p>Eger bu islemi sen yapmadiysan bu maili dikkate alma.</p>
+                <p>Bu kod 10 dakika boyunca geçerlidir.</p>
+                <p>Eğer bu işlemi sen yapmadıysan bu e-postayı dikkate alma.</p>
             </div>
             """;
 
         try
         {
-            await _emailSender.SendAsync(uye.Email, "Servis Plus Sifre Sifirlama Kodu", body);
+            await _emailSender.SendAsync(uye.Email, "Fixoria Şifre Sıfırlama Kodu", body);
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, $"Kod gonderilemedi: {ex.Message}");
+            ModelState.AddModelError(string.Empty, $"Kod gönderilemedi: {ex.Message}");
             return View(model);
         }
 
-        TempData["UyeOk"] = "6 haneli kod e-posta adresine gonderildi.";
+        TempData["UyeOk"] = "6 haneli kod e-posta adresine gönderildi.";
         return RedirectToAction(nameof(SifreSifirla), new { email = uye.Email });
     }
 
@@ -127,7 +142,7 @@ public class UyeController : Controller
         var uye = await _db.Musteriler.FirstOrDefaultAsync(x => x.Email.ToLower() == email && x.UyeHesabiVar);
         if (uye == null)
         {
-            ModelState.AddModelError(nameof(model.Email), "Uye hesabi bulunamadi.");
+            ModelState.AddModelError(nameof(model.Email), "Üye hesabı bulunamadı.");
             return View(model);
         }
 
@@ -135,7 +150,7 @@ public class UyeController : Controller
             uye.SifreSifirlamaKodSonTarih.Value < DateTime.UtcNow ||
             string.Equals(uye.SifreSifirlamaKodu, kod, StringComparison.Ordinal) == false)
         {
-            ModelState.AddModelError(nameof(model.Kod), "Kod hatali veya suresi dolmus.");
+            ModelState.AddModelError(nameof(model.Kod), "Kod hatalı veya süresi dolmuş.");
             return View(model);
         }
 
@@ -144,7 +159,7 @@ public class UyeController : Controller
         uye.SifreSifirlamaKodSonTarih = null;
         await _db.SaveChangesAsync();
 
-        TempData["UyeOk"] = "Sifren basariyla guncellendi. Yeni sifrenle giris yapabilirsin.";
+        TempData["UyeOk"] = "Şifren başarıyla güncellendi. Yeni şifrenle giriş yapabilirsin.";
         return RedirectToAction(nameof(Giris));
     }
 
@@ -172,7 +187,7 @@ public class UyeController : Controller
 
         if (emailVar)
         {
-            ModelState.AddModelError(nameof(model.Email), "Bu email zaten kullaniliyor.");
+            ModelState.AddModelError(nameof(model.Email), "Bu e-posta zaten kullanılıyor.");
             return View(model);
         }
 
@@ -192,7 +207,7 @@ public class UyeController : Controller
         HttpContext.Session.Remove("Admin");
         HttpContext.Session.SetInt32("UyeId", uye.Id);
         HttpContext.Session.SetString("UyeAd", uye.AdSoyad);
-        TempData["UyeOk"] = "Kayit basarili. Hos geldin.";
+        TempData["UyeOk"] = "Kayıt başarılı. Hoş geldin.";
         return RedirectToAction(nameof(Panel));
     }
 
@@ -225,6 +240,12 @@ public class UyeController : Controller
             .Take(5)
             .ToListAsync();
 
+        var sonYorumlar = await _db.UyeYorumlari
+            .Where(x => x.MusteriId == uyeId.Value)
+            .OrderByDescending(x => x.OlusturmaTarihi)
+            .Take(3)
+            .ToListAsync();
+
         var model = new UyePanelViewModel
         {
             Uye = uye,
@@ -233,10 +254,79 @@ public class UyeController : Controller
             ToplamTalep = servisler.Count,
             OkunmamisBildirimSayisi = await _db.MusteriBildirimleri.CountAsync(x => x.MusteriId == uyeId.Value && x.Okundu == false),
             SonTalepler = servisler.Take(6).ToList(),
-            SonBildirimler = sonBildirimler
+            SonBildirimler = sonBildirimler,
+            SonYorumlar = sonYorumlar
         };
 
         return View(model);
+    }
+
+    [UyeOnly]
+    public async Task<IActionResult> Yorumlar()
+    {
+        var uyeId = HttpContext.Session.GetInt32("UyeId");
+        if (uyeId.HasValue == false)
+        {
+            return RedirectToAction(nameof(Giris));
+        }
+
+        var model = new UyeYorumlarViewModel
+        {
+            Yorumlar = await _db.UyeYorumlari
+                .Where(x => x.MusteriId == uyeId.Value)
+                .OrderByDescending(x => x.OlusturmaTarihi)
+                .ToListAsync()
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [UyeOnly]
+    public async Task<IActionResult> YorumEkle(UyeYorumCreateViewModel form, string? returnTo = null)
+    {
+        var uyeId = HttpContext.Session.GetInt32("UyeId");
+        if (uyeId.HasValue == false)
+        {
+            return RedirectToAction(nameof(Giris));
+        }
+
+        if (ModelState.IsValid == false)
+        {
+            if (string.Equals(returnTo, nameof(Panel), StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["UyeHata"] = "Yorum kaydedilemedi. Başlık, puan ve yorum alanlarını kontrol et.";
+                return RedirectToAction(nameof(Panel));
+            }
+
+            var model = new UyeYorumlarViewModel
+            {
+                Form = form,
+                Yorumlar = await _db.UyeYorumlari
+                    .Where(x => x.MusteriId == uyeId.Value)
+                    .OrderByDescending(x => x.OlusturmaTarihi)
+                    .ToListAsync()
+            };
+
+            return View(nameof(Yorumlar), model);
+        }
+
+        _db.UyeYorumlari.Add(new UyeYorum
+        {
+            MusteriId = uyeId.Value,
+            Baslik = form.Baslik.Trim(),
+            Mesaj = form.Mesaj.Trim(),
+            Puan = form.Puan,
+            OlusturmaTarihi = DateTime.UtcNow
+        });
+
+        await _db.SaveChangesAsync();
+        TempData["UyeOk"] = "Yorumun alındı. Teşekkür ederiz.";
+
+        return string.Equals(returnTo, nameof(Panel), StringComparison.OrdinalIgnoreCase)
+            ? RedirectToAction(nameof(Panel))
+            : RedirectToAction(nameof(Yorumlar));
     }
 
     [UyeOnly]
@@ -304,7 +394,7 @@ public class UyeController : Controller
         }
 
         await _db.SaveChangesAsync();
-        TempData["UyeOk"] = "Bildirimler okundu olarak isaretlendi.";
+        TempData["UyeOk"] = "Bildirimler okundu olarak işaretlendi.";
         return RedirectToAction(nameof(Bildirimler));
     }
 
@@ -342,7 +432,7 @@ public class UyeController : Controller
 
         if (servis.FiyatOnayDurumu != "Onay Bekliyor")
         {
-            TempData["UyeOk"] = "Bu servis icin bekleyen fiyat onayi yok.";
+            TempData["UyeOk"] = "Bu servis için bekleyen fiyat onayı yok.";
             return RedirectToAction(nameof(Taleplerim));
         }
 
@@ -351,7 +441,7 @@ public class UyeController : Controller
         servis.Durum = "Islemde";
         await _db.SaveChangesAsync();
 
-        TempData["UyeOk"] = "Fiyat teklifini kabul ettin. Servis isleme alindi.";
+        TempData["UyeOk"] = "Fiyat teklifini kabul ettin. Servis işleme alındı.";
         return RedirectToAction(nameof(Taleplerim));
     }
 
@@ -368,7 +458,7 @@ public class UyeController : Controller
 
         if (servis.FiyatOnayDurumu != "Onay Bekliyor")
         {
-            TempData["UyeOk"] = "Bu servis icin bekleyen fiyat onayi yok.";
+            TempData["UyeOk"] = "Bu servis için bekleyen fiyat onayı yok.";
             return RedirectToAction(nameof(Taleplerim));
         }
 
@@ -377,7 +467,7 @@ public class UyeController : Controller
         servis.Durum = "Fiyat Reddedildi";
         await _db.SaveChangesAsync();
 
-        TempData["UyeOk"] = "Fiyat teklifini reddettin. Servis ekibi kaydi bu duruma gore takip edecek.";
+        TempData["UyeOk"] = "Fiyat teklifini reddettin. Servis ekibi kaydı bu duruma göre takip edecek.";
         return RedirectToAction(nameof(Taleplerim));
     }
 
@@ -425,7 +515,7 @@ public class UyeController : Controller
         _db.ServisKayitlari.Add(servis);
         await _db.SaveChangesAsync();
 
-        TempData["UyeOk"] = "Talebin alindi. En kisa surede inceleyecegiz.";
+        TempData["UyeOk"] = "Talebin alındı. En kısa sürede inceleyeceğiz.";
         return RedirectToAction(nameof(Taleplerim));
     }
 
@@ -479,7 +569,7 @@ public class UyeController : Controller
 
         if (emailVar)
         {
-            ModelState.AddModelError(nameof(model.Email), "Bu email baska bir hesapta kullaniliyor.");
+            ModelState.AddModelError(nameof(model.Email), "Bu e-posta başka bir hesapta kullanılıyor.");
             return View(model);
         }
 
@@ -487,13 +577,13 @@ public class UyeController : Controller
         {
             if (model.YeniSifre != model.YeniSifreTekrar)
             {
-                ModelState.AddModelError(nameof(model.YeniSifreTekrar), "Yeni sifreler eslesmiyor.");
+                ModelState.AddModelError(nameof(model.YeniSifreTekrar), "Yeni şifreler eşleşmiyor.");
                 return View(model);
             }
 
             if (model.YeniSifre.Length < 5)
             {
-                ModelState.AddModelError(nameof(model.YeniSifre), "Sifre en az 5 karakter olmali.");
+                ModelState.AddModelError(nameof(model.YeniSifre), "Şifre en az 5 karakter olmalı.");
                 return View(model);
             }
 
@@ -507,7 +597,7 @@ public class UyeController : Controller
         await _db.SaveChangesAsync();
 
         HttpContext.Session.SetString("UyeAd", uye.AdSoyad);
-        TempData["UyeOk"] = "Profilin guncellendi.";
+        TempData["UyeOk"] = "Profilin güncellendi.";
         return RedirectToAction(nameof(Profil));
     }
 

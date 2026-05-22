@@ -1,42 +1,77 @@
 @model UyeGirisViewModel
 @{
-    ViewData["Title"] = "Üye Girişi";
+    ViewData["Title"] = "Giriş Yap";
 }
 
-<div class="card member-auth-card shadow-lg border-0" style="max-width:520px; width:100%;">
-    <div class="card-body p-4 p-md-5">
-        <h1 class="h3 fw-bold mb-2">Üye Girişi</h1>
-        <p class="member-muted mb-4">Taleplerini takip etmek için hesabına giriş yap.</p>
+<section class="member-auth-stack">
+    <div class="member-auth-panel">
+        <div class="member-auth-heading">
+            <div class="member-auth-logo"><i class="bi bi-shield-lock"></i></div>
+            <h1>Fixoria</h1>
+            <p>Teknik servis taleplerini buradan takip et.</p>
+        </div>
 
-        <form asp-action="Giris" method="post" class="row g-3">
+        <div class="member-auth-tabs" role="tablist" aria-label="Üye işlemleri">
+            <a class="active" asp-action="Giris"><i class="bi bi-box-arrow-in-right"></i><span>Giriş Yap</span></a>
+            <a asp-action="Kayit"><i class="bi bi-person-plus"></i><span>Kayıt Ol</span></a>
+        </div>
+
+        <form asp-action="Giris" method="post" class="member-auth-form">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="member-validation"></div>
 
-            <div class="col-12">
+            <div>
                 <label asp-for="Email" class="form-label">E-posta</label>
-                <input asp-for="Email" class="form-control member-input" />
+                <div class="member-auth-field">
+                    <i class="bi bi-envelope"></i>
+                    <input asp-for="Email" class="form-control" placeholder="ornek@mail.com" autocomplete="email" />
+                </div>
                 <span asp-validation-for="Email" class="member-validation"></span>
             </div>
 
-            <div class="col-12">
+            <div>
                 <label asp-for="Sifre" class="form-label">Şifre</label>
-                <input asp-for="Sifre" type="password" class="form-control member-input" />
+                <div class="member-auth-field">
+                    <i class="bi bi-lock"></i>
+                    <input asp-for="Sifre" type="password" class="form-control" placeholder="Şifrenizi girin" autocomplete="current-password" />
+                    <button class="member-password-toggle" type="button" aria-label="Şifreyi göster">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
                 <span asp-validation-for="Sifre" class="member-validation"></span>
             </div>
 
-            <div class="col-12 text-end">
-                <a asp-action="SifremiUnuttum" class="text-decoration-none">Şifremi Unuttum</a>
+            <div class="member-auth-options">
+                <span></span>
+                <a asp-action="SifremiUnuttum">Şifremi unuttum?</a>
             </div>
 
-            <div class="col-12 d-grid gap-2">
-                <button type="submit" class="btn btn-info fw-semibold">Giriş Yap</button>
-                <a class="btn btn-outline-light" asp-action="Kayit">Kayıt Ol</a>
-                <a class="btn btn-outline-light" asp-controller="Admin" asp-action="Login">Admin Girişi</a>
-            </div>
+            <button type="submit" class="member-auth-submit">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span>Giriş Yap</span>
+            </button>
         </form>
     </div>
-</div>
+    <p class="member-auth-footer mb-0">&copy; 2026 Fixoria. Tüm hakları saklıdır.</p>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.member-password-toggle').forEach((button) => {
+            button.addEventListener('click', () => {
+                const field = button.closest('.member-auth-field')?.querySelector('input');
+                const icon = button.querySelector('i');
+
+                if (!field || !icon) {
+                    return;
+                }
+
+                const showPassword = field.type === 'password';
+                field.type = showPassword ? 'text' : 'password';
+                button.setAttribute('aria-label', showPassword ? 'Şifreyi gizle' : 'Şifreyi göster');
+                icon.className = showPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+            });
+        });
+    </script>
 }

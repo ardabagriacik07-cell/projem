@@ -12,7 +12,7 @@ public static class DbSeeder
         {
             var m1 = new Musteri
             {
-                AdSoyad = "Ahmet Yildiz",
+                AdSoyad = "Ahmet Yıldız",
                 Telefon = "0555 111 22 33",
                 Email = "ahmet@example.com",
                 UyeHesabiVar = false,
@@ -38,7 +38,7 @@ public static class DbSeeder
                 MusteriId = m1.Id,
                 Marka = "Apple",
                 Model = "iPhone 13",
-                ArizaAciklama = "Ekran kirik ve dokunmatik gec tepki veriyor."
+                ArizaAciklama = "Ekran kırık ve dokunmatik geç tepki veriyor."
             };
 
             var c2 = new Cihaz
@@ -46,7 +46,7 @@ public static class DbSeeder
                 MusteriId = m2.Id,
                 Marka = "Samsung",
                 Model = "Galaxy S22",
-                ArizaAciklama = "Sarj soketi temassizlik yapiyor."
+                ArizaAciklama = "Şarj soketi temassızlık yapıyor."
             };
 
             db.Cihazlar.AddRange(c1, c2);
@@ -71,7 +71,7 @@ public static class DbSeeder
             db.ServisKayitlari.AddRange(s1, s2);
             db.SaveChanges();
 
-            var ekranDegisimi = db.Islemler.FirstOrDefault(x => x.Ad == "Ekran Degisimi");
+            var ekranDegisimi = db.Islemler.FirstOrDefault(x => x.Ad == "Ekran Değişimi");
             if (ekranDegisimi != null)
             {
                 db.ServisIslemler.Add(new ServisIslem
@@ -162,6 +162,7 @@ public static class DbSeeder
 
     private static void ApplyOperationDefaults(Islem operation, OperationCatalogItem catalogItem)
     {
+        operation.Ad = catalogItem.Name;
         operation.Kategori = catalogItem.Category;
         operation.MinimumFiyat = catalogItem.MinPrice;
         operation.MaksimumFiyat = catalogItem.MaxPrice;

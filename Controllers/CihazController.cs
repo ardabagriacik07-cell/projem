@@ -88,7 +88,7 @@ public class CihazController : Controller
 
         _db.Cihazlar.Add(form);
         await _db.SaveChangesAsync();
-        TempData["Ok"] = "Cihaz kaydi olusturuldu.";
+        TempData["Ok"] = "Cihaz kaydı oluşturuldu.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -126,7 +126,7 @@ public class CihazController : Controller
         mevcut.ArizaAciklama = form.ArizaAciklama;
 
         await _db.SaveChangesAsync();
-        TempData["Ok"] = "Cihaz kaydi guncellendi.";
+        TempData["Ok"] = "Cihaz kaydı güncellendi.";
         return RedirectToAction(nameof(Index));
     }
 

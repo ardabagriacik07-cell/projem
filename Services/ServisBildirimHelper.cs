@@ -31,7 +31,7 @@ public static class ServisBildirimHelper
             ServisKaydiId = servis.Id,
             Tur = TeslimBildirimTuru,
             Baslik = "Cihazin teslim almaya hazir",
-            Mesaj = $"{cihazAdi} cihazinin servis islemi tamamlandi. Musait oldugunda servis noktasina gelip urununu teslim alabilirsin.",
+            Mesaj = $"{cihazAdi} cihazının servis işlemi tamamlandı. Müsait olduğunda servis noktasına gelip ürününü teslim alabilirsin.",
             OlusturmaTarihi = DateTime.UtcNow
         });
 

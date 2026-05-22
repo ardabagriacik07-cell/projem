@@ -14,4 +14,6 @@ public class AdminDashboardViewModel
     public List<Musteri> SonUyeler { get; set; } = new();
     public List<AdminStatusBreakdownItem> DurumOzeti { get; set; } = new();
     public List<AdminBrandInsightViewModel> MarkaOzetleri { get; set; } = new();
+    public int YeniYorumSayisi { get; set; }
+    public List<UyeYorum> SonYorumlar { get; set; } = new();
 }

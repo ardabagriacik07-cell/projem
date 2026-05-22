@@ -7,4 +7,6 @@ public class UyePanelViewModel
     public int OkunmamisBildirimSayisi { get; set; }
     public List<ServisKaydi> SonTalepler { get; set; } = new();
     public List<MusteriBildirim> SonBildirimler { get; set; } = new();
+    public UyeYorumCreateViewModel YorumForm { get; set; } = new();
+    public List<UyeYorum> SonYorumlar { get; set; } = new();
 }

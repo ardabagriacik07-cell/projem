@@ -35,7 +35,7 @@ public class AdminController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        ViewBag.Hata = "Kullanici adi veya sifre hatali.";
+        ViewBag.Hata = "Kullanıcı adı veya şifre hatalı.";
         return View();
     }
 
@@ -92,20 +92,20 @@ public class AdminController : Controller
 
         if (admin.Sifre != model.MevcutSifre)
         {
-            ModelState.AddModelError(nameof(model.MevcutSifre), "Mevcut sifre dogru degil.");
+            ModelState.AddModelError(nameof(model.MevcutSifre), "Mevcut şifre doğru değil.");
             return View(model);
         }
 
         var yeniKullaniciAdi = model.KullaniciAdi.Trim();
         if (string.IsNullOrWhiteSpace(yeniKullaniciAdi))
         {
-            ModelState.AddModelError(nameof(model.KullaniciAdi), "Kullanici adi bos olamaz.");
+            ModelState.AddModelError(nameof(model.KullaniciAdi), "Kullanıcı adı boş olamaz.");
             return View(model);
         }
 
         if (yeniKullaniciAdi.Length < 3 || yeniKullaniciAdi.Length > 50)
         {
-            ModelState.AddModelError(nameof(model.KullaniciAdi), "Kullanici adi 3-50 karakter arasinda olmali.");
+            ModelState.AddModelError(nameof(model.KullaniciAdi), "Kullanıcı adı 3-50 karakter arasında olmalı.");
             return View(model);
         }
 
@@ -114,7 +114,7 @@ public class AdminController : Controller
 
         if (kullaniciAdiVar)
         {
-            ModelState.AddModelError(nameof(model.KullaniciAdi), "Bu kullanici adi baska bir admin tarafindan kullaniliyor.");
+            ModelState.AddModelError(nameof(model.KullaniciAdi), "Bu kullanıcı adı başka bir yönetici tarafından kullanılıyor.");
             return View(model);
         }
 
@@ -125,13 +125,13 @@ public class AdminController : Controller
         {
             if (string.IsNullOrWhiteSpace(model.YeniSifre) || model.YeniSifre.Length < 5)
             {
-                ModelState.AddModelError(nameof(model.YeniSifre), "Yeni sifre en az 5 karakter olmali.");
+                ModelState.AddModelError(nameof(model.YeniSifre), "Yeni şifre en az 5 karakter olmalı.");
                 return View(model);
             }
 
             if (model.YeniSifre != model.YeniSifreTekrar)
             {
-                ModelState.AddModelError(nameof(model.YeniSifreTekrar), "Yeni sifreler eslesmiyor.");
+                ModelState.AddModelError(nameof(model.YeniSifreTekrar), "Yeni şifreler eşleşmiyor.");
                 return View(model);
             }
 
@@ -142,8 +142,8 @@ public class AdminController : Controller
         await _db.SaveChangesAsync();
         HttpContext.Session.SetString("Admin", admin.KullaniciAdi);
         TempData["Ok"] = sifreDegistirilecek
-            ? "Admin kullanici adi ve sifresi guncellendi."
-            : "Admin kullanici adi guncellendi.";
+            ? "Yönetici kullanıcı adı ve şifresi güncellendi."
+            : "Yönetici kullanıcı adı güncellendi.";
         return RedirectToAction(nameof(SifreDegistir));
     }
 }

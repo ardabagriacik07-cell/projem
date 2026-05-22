@@ -14,7 +14,7 @@
             {
                 <form asp-action="TumBildirimleriOkunduYap" method="post">
                     @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-outline-light btn-sm">Tumunu Okundu Yap</button>
+                    <button type="submit" class="btn btn-outline-light btn-sm">Tümünü Okundu Yap</button>
                 </form>
             }
         </div>
@@ -24,8 +24,8 @@
             {
                 <div class="member-empty-state">
                     <i class="bi bi-bell"></i>
-                    <strong>Henuz bildirim yok</strong>
-                    <span>Servis durumun teslim icin hazir olunca burada gorunecek.</span>
+                    <strong>Henüz bildirim yok</strong>
+                    <span>Servis durumun teslim için hazır olunca burada görünecek.</span>
                 </div>
             }
             else
@@ -49,7 +49,7 @@
                             <div class="member-notification-actions">
                                 @if (bildirim.ServisKaydiId.HasValue)
                                 {
-                                    <a class="btn btn-info btn-sm" asp-action="Taleplerim">Servisi Gor</a>
+                                    <a class="btn btn-info btn-sm" asp-action="Taleplerim">Servisi Gör</a>
                                 }
                                 @if (bildirim.Okundu == false)
                                 {

@@ -6,8 +6,8 @@
 <section class="member-card member-form-card" style="max-width:980px">
     <div class="p-4 p-lg-5">
     <span class="member-section-badge">Hesap Yönetimi</span>
-    <h3 class="mt-3">Profil Ayarlari</h3>
-    <p class="member-muted">Iletisim bilgilerini guncelleyebilir, istersen sifreni degistirebilirsin.</p>
+    <h3 class="mt-3">Profil Ayarları</h3>
+    <p class="member-muted">İletişim bilgilerini güncelleyebilir, istersen şifreni değiştirebilirsin.</p>
 
     <form asp-action="Profil" method="post" class="row g-4 mt-1">
         @Html.AntiForgeryToken()
@@ -26,26 +26,26 @@
         </div>
 
         <div class="col-12">
-            <label asp-for="Email" class="form-label">Email</label>
+            <label asp-for="Email" class="form-label">E-posta</label>
             <input asp-for="Email" class="form-control member-input" />
             <span asp-validation-for="Email" class="member-validation"></span>
         </div>
 
         <div class="col-md-6">
-            <label asp-for="YeniSifre" class="form-label">Yeni Sifre (Opsiyonel)</label>
+            <label asp-for="YeniSifre" class="form-label">Yeni Şifre (Opsiyonel)</label>
             <input asp-for="YeniSifre" type="password" class="form-control member-input" />
             <span asp-validation-for="YeniSifre" class="member-validation"></span>
         </div>
 
         <div class="col-md-6">
-            <label asp-for="YeniSifreTekrar" class="form-label">Yeni Sifre Tekrar</label>
+            <label asp-for="YeniSifreTekrar" class="form-label">Yeni Şifre Tekrarı</label>
             <input asp-for="YeniSifreTekrar" type="password" class="form-control member-input" />
             <span asp-validation-for="YeniSifreTekrar" class="member-validation"></span>
         </div>
 
         <div class="col-12 d-flex flex-wrap gap-2">
             <button type="submit" class="btn btn-info fw-semibold px-4">Profili Kaydet</button>
-            <a class="btn btn-outline-light px-4" asp-action="Panel">Panele Don</a>
+            <a class="btn btn-outline-light px-4" asp-action="Panel">Panele Dön</a>
         </div>
     </form>
     </div>

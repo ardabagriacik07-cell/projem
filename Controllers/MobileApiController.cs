@@ -25,7 +25,7 @@ public class MobileApiController : ControllerBase
 
         if (member == null)
         {
-            return BadRequest(new ApiMessageResponse("Email veya sifre hatali."));
+            return BadRequest(new ApiMessageResponse("E-posta veya şifre hatalı."));
         }
 
         member.SonGirisTarihi = DateTime.UtcNow;
@@ -41,7 +41,7 @@ public class MobileApiController : ControllerBase
         var exists = await _db.Musteriler.AnyAsync(x => x.Email.ToLower() == email);
         if (exists)
         {
-            return BadRequest(new ApiMessageResponse("Bu email zaten kullaniliyor."));
+            return BadRequest(new ApiMessageResponse("Bu e-posta zaten kullanılıyor."));
         }
 
         var member = new Musteri
@@ -68,7 +68,7 @@ public class MobileApiController : ControllerBase
         var member = await _db.Musteriler.FirstOrDefaultAsync(x => x.Email.ToLower() == email && x.UyeHesabiVar);
         if (member == null)
         {
-            return BadRequest(new ApiMessageResponse("Bu email ile kayitli aktif bir uye bulunamadi."));
+            return BadRequest(new ApiMessageResponse("Bu e-posta ile kayıtlı aktif bir üye bulunamadı."));
         }
 
         var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
@@ -79,22 +79,22 @@ public class MobileApiController : ControllerBase
         var body = $"""
             <div style="font-family:Arial,sans-serif;font-size:16px;color:#111827">
                 <p>Merhaba {member.AdSoyad},</p>
-                <p>Sifre sifirlama kodun asagidadir:</p>
+                <p>Şifre sıfırlama kodun aşağıdadır:</p>
                 <p style="font-size:32px;font-weight:700;letter-spacing:6px;margin:16px 0;">{code}</p>
-                <p>Bu kod 10 dakika boyunca gecerlidir.</p>
+                <p>Bu kod 10 dakika boyunca geçerlidir.</p>
             </div>
             """;
 
         try
         {
-            await _emailSender.SendAsync(member.Email, "Servis Plus Sifre Sifirlama Kodu", body);
+            await _emailSender.SendAsync(member.Email, "Fixoria Şifre Sıfırlama Kodu", body);
         }
         catch (Exception ex)
         {
-            return BadRequest(new ApiMessageResponse($"Kod olusturuldu ancak email gonderilemedi: {ex.Message}"));
+            return BadRequest(new ApiMessageResponse($"Kod oluşturuldu ancak e-posta gönderilemedi: {ex.Message}"));
         }
 
-        return Ok(new ApiMessageResponse("Kod e-posta adresine gonderildi."));
+        return Ok(new ApiMessageResponse("Kod e-posta adresine gönderildi."));
     }
 
     [HttpPost("member/password-reset")]
@@ -105,14 +105,14 @@ public class MobileApiController : ControllerBase
         var member = await _db.Musteriler.FirstOrDefaultAsync(x => x.Email.ToLower() == email && x.UyeHesabiVar);
         if (member == null)
         {
-            return BadRequest(new ApiMessageResponse("Uye hesabi bulunamadi."));
+            return BadRequest(new ApiMessageResponse("Üye hesabı bulunamadı."));
         }
 
         if (member.SifreSifirlamaKodSonTarih.HasValue == false ||
             member.SifreSifirlamaKodSonTarih.Value < DateTime.UtcNow ||
             string.Equals(member.SifreSifirlamaKodu, code, StringComparison.Ordinal) == false)
         {
-            return BadRequest(new ApiMessageResponse("Kod hatali veya suresi dolmus."));
+            return BadRequest(new ApiMessageResponse("Kod hatalı veya süresi dolmuş."));
         }
 
         member.Sifre = request.NewPassword;
@@ -120,7 +120,7 @@ public class MobileApiController : ControllerBase
         member.SifreSifirlamaKodSonTarih = null;
         await _db.SaveChangesAsync();
 
-        return Ok(new ApiMessageResponse("Sifren basariyla guncellendi."));
+        return Ok(new ApiMessageResponse("Şifren başarıyla güncellendi."));
     }
 
     [HttpGet("member/{memberId:int}/snapshot")]
@@ -135,14 +135,14 @@ public class MobileApiController : ControllerBase
         var member = await _db.Musteriler.FirstOrDefaultAsync(x => x.Id == memberId && x.UyeHesabiVar);
         if (member == null)
         {
-            return NotFound(new ApiMessageResponse("Uye hesabi bulunamadi."));
+            return NotFound(new ApiMessageResponse("Üye hesabı bulunamadı."));
         }
 
         var email = request.Email.Trim().ToLowerInvariant();
         var emailExists = await _db.Musteriler.AnyAsync(x => x.Id != memberId && x.Email.ToLower() == email);
         if (emailExists)
         {
-            return BadRequest(new ApiMessageResponse("Bu email baska bir hesapta kullaniliyor."));
+            return BadRequest(new ApiMessageResponse("Bu e-posta başka bir hesapta kullanılıyor."));
         }
 
         member.AdSoyad = request.FullName.Trim();
@@ -154,7 +154,7 @@ public class MobileApiController : ControllerBase
         }
 
         await _db.SaveChangesAsync();
-        return await BuildMemberSyncAsync(memberId, "Profilin guncellendi.");
+        return await BuildMemberSyncAsync(memberId, "Profilin güncellendi.");
     }
 
     [HttpPost("member/{memberId:int}/service-requests")]
@@ -163,7 +163,7 @@ public class MobileApiController : ControllerBase
         var member = await _db.Musteriler.FirstOrDefaultAsync(x => x.Id == memberId && x.UyeHesabiVar);
         if (member == null)
         {
-            return NotFound(new ApiMessageResponse("Aktif uye bulunamadi."));
+            return NotFound(new ApiMessageResponse("Aktif üye bulunamadı."));
         }
 
         var device = new Cihaz
@@ -188,7 +188,7 @@ public class MobileApiController : ControllerBase
         _db.ServisKayitlari.Add(service);
         await _db.SaveChangesAsync();
 
-        return await BuildMemberSyncAsync(memberId, "Talebin alindi. En kisa surede inceleyecegiz.");
+        return await BuildMemberSyncAsync(memberId, "Talebin alındı. En kısa sürede inceleyeceğiz.");
     }
 
     [HttpPost("member/{memberId:int}/services/{serviceId:int}/price-offer/accept")]
@@ -197,12 +197,12 @@ public class MobileApiController : ControllerBase
         var service = await GetMemberServiceAsync(memberId, serviceId);
         if (service == null)
         {
-            return NotFound(new ApiMessageResponse("Servis kaydi bulunamadi."));
+            return NotFound(new ApiMessageResponse("Servis kaydı bulunamadı."));
         }
 
         if (service.FiyatOnayDurumu != "Onay Bekliyor")
         {
-            return BadRequest(new ApiMessageResponse("Bu servis icin bekleyen fiyat onayi yok."));
+            return BadRequest(new ApiMessageResponse("Bu servis için bekleyen fiyat onayı yok."));
         }
 
         service.FiyatOnayDurumu = "Kabul Edildi";
@@ -210,7 +210,7 @@ public class MobileApiController : ControllerBase
         service.Durum = "Islemde";
         await _db.SaveChangesAsync();
 
-        return await BuildMemberSyncAsync(memberId, "Fiyat teklifini kabul ettin. Servis isleme alindi.");
+        return await BuildMemberSyncAsync(memberId, "Fiyat teklifini kabul ettin. Servis işleme alındı.");
     }
 
     [HttpPost("member/{memberId:int}/services/{serviceId:int}/price-offer/reject")]
@@ -219,12 +219,12 @@ public class MobileApiController : ControllerBase
         var service = await GetMemberServiceAsync(memberId, serviceId);
         if (service == null)
         {
-            return NotFound(new ApiMessageResponse("Servis kaydi bulunamadi."));
+            return NotFound(new ApiMessageResponse("Servis kaydı bulunamadı."));
         }
 
         if (service.FiyatOnayDurumu != "Onay Bekliyor")
         {
-            return BadRequest(new ApiMessageResponse("Bu servis icin bekleyen fiyat onayi yok."));
+            return BadRequest(new ApiMessageResponse("Bu servis için bekleyen fiyat onayı yok."));
         }
 
         service.FiyatOnayDurumu = "Reddedildi";
@@ -242,7 +242,7 @@ public class MobileApiController : ControllerBase
         var admin = await _db.Adminler.FirstOrDefaultAsync(x => x.KullaniciAdi == username && x.Sifre == request.Password);
         if (admin == null)
         {
-            return BadRequest(new ApiMessageResponse("Kullanici adi veya sifre hatali."));
+            return BadRequest(new ApiMessageResponse("Kullanıcı adı veya şifre hatalı."));
         }
 
         return await BuildAdminSyncAsync(admin.KullaniciAdi, string.Empty);
@@ -253,13 +253,13 @@ public class MobileApiController : ControllerBase
     {
         if (string.IsNullOrWhiteSpace(username))
         {
-            return BadRequest(new ApiMessageResponse("Admin kullanici adi gerekli."));
+            return BadRequest(new ApiMessageResponse("Yönetici kullanıcı adı gerekli."));
         }
 
         var adminExists = await _db.Adminler.AnyAsync(x => x.KullaniciAdi == username);
         if (adminExists == false)
         {
-            return NotFound(new ApiMessageResponse("Admin bulunamadi."));
+            return NotFound(new ApiMessageResponse("Yönetici bulunamadı."));
         }
 
         return await BuildAdminSyncAsync(username, string.Empty);
@@ -272,12 +272,12 @@ public class MobileApiController : ControllerBase
         var admin = await _db.Adminler.FirstOrDefaultAsync(x => x.KullaniciAdi == username);
         if (admin == null)
         {
-            return NotFound(new ApiMessageResponse("Admin bulunamadi."));
+            return NotFound(new ApiMessageResponse("Yönetici bulunamadı."));
         }
 
         if (admin.Sifre != request.CurrentPassword)
         {
-            return BadRequest(new ApiMessageResponse("Mevcut sifre dogru degil."));
+            return BadRequest(new ApiMessageResponse("Mevcut şifre doğru değil."));
         }
 
         var newUsername = string.IsNullOrWhiteSpace(request.NewUsername)
@@ -286,12 +286,12 @@ public class MobileApiController : ControllerBase
 
         if (string.IsNullOrWhiteSpace(newUsername))
         {
-            return BadRequest(new ApiMessageResponse("Yeni kullanici adi bos olamaz."));
+            return BadRequest(new ApiMessageResponse("Yeni kullanıcı adı boş olamaz."));
         }
 
         if (newUsername.Length < 3 || newUsername.Length > 50)
         {
-            return BadRequest(new ApiMessageResponse("Yeni kullanici adi 3-50 karakter arasinda olmali."));
+            return BadRequest(new ApiMessageResponse("Yeni kullanıcı adı 3-50 karakter arasında olmalı."));
         }
 
         var usernameExists = await _db.Adminler.AnyAsync(x =>
@@ -299,13 +299,13 @@ public class MobileApiController : ControllerBase
 
         if (usernameExists)
         {
-            return BadRequest(new ApiMessageResponse("Bu kullanici adi baska bir admin tarafindan kullaniliyor."));
+            return BadRequest(new ApiMessageResponse("Bu kullanıcı adı başka bir yönetici tarafından kullanılıyor."));
         }
 
         var passwordWillChange = string.IsNullOrWhiteSpace(request.NewPassword) == false;
         if (passwordWillChange && request.NewPassword!.Length < 5)
         {
-            return BadRequest(new ApiMessageResponse("Yeni sifre en az 5 karakter olmali."));
+            return BadRequest(new ApiMessageResponse("Yeni şifre en az 5 karakter olmalı."));
         }
 
         admin.KullaniciAdi = newUsername;
@@ -317,8 +317,8 @@ public class MobileApiController : ControllerBase
         await _db.SaveChangesAsync();
 
         return await BuildAdminSyncAsync(admin.KullaniciAdi, passwordWillChange
-            ? "Admin hesabi guncellendi."
-            : "Admin kullanici adi guncellendi.");
+            ? "Yönetici hesabı güncellendi."
+            : "Yönetici kullanıcı adı güncellendi.");
     }
 
     [HttpPost("admin/members")]
@@ -328,7 +328,7 @@ public class MobileApiController : ControllerBase
         var exists = await _db.Musteriler.AnyAsync(x => x.Email.ToLower() == email);
         if (exists)
         {
-            return BadRequest(new ApiMessageResponse("Bu email zaten kullaniliyor."));
+            return BadRequest(new ApiMessageResponse("Bu e-posta zaten kullanılıyor."));
         }
 
         var member = new Musteri
@@ -344,7 +344,7 @@ public class MobileApiController : ControllerBase
         _db.Musteriler.Add(member);
         await _db.SaveChangesAsync();
 
-        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Musteri olusturuldu.");
+        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Müşteri oluşturuldu.");
     }
 
     [HttpPost("admin/devices")]
@@ -353,7 +353,7 @@ public class MobileApiController : ControllerBase
         var memberExists = await _db.Musteriler.AnyAsync(x => x.Id == request.MemberId);
         if (memberExists == false)
         {
-            return NotFound(new ApiMessageResponse("Musteri bulunamadi."));
+            return NotFound(new ApiMessageResponse("Müşteri bulunamadı."));
         }
 
         var device = new Cihaz
@@ -367,7 +367,7 @@ public class MobileApiController : ControllerBase
         _db.Cihazlar.Add(device);
         await _db.SaveChangesAsync();
 
-        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Cihaz olusturuldu.");
+        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Cihaz oluşturuldu.");
     }
 
     [HttpPost("admin/services")]
@@ -376,7 +376,7 @@ public class MobileApiController : ControllerBase
         var deviceExists = await _db.Cihazlar.AnyAsync(x => x.Id == request.DeviceId);
         if (deviceExists == false)
         {
-            return NotFound(new ApiMessageResponse("Cihaz bulunamadi."));
+            return NotFound(new ApiMessageResponse("Cihaz bulunamadı."));
         }
 
         var selectedActions = await _db.Islemler
@@ -413,7 +413,7 @@ public class MobileApiController : ControllerBase
 
         await _db.SaveChangesAsync();
         await ServisBildirimHelper.TamamlananServisBildiriminiOlusturAsync(_db, service.Id);
-        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Servis kaydi olusturuldu.");
+        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Servis kaydı oluşturuldu.");
     }
 
     [HttpPut("admin/services/{serviceId:int}")]
@@ -425,13 +425,13 @@ public class MobileApiController : ControllerBase
 
         if (service == null)
         {
-            return NotFound(new ApiMessageResponse("Servis kaydi bulunamadi."));
+            return NotFound(new ApiMessageResponse("Servis kaydı bulunamadı."));
         }
 
         var deviceExists = await _db.Cihazlar.AnyAsync(x => x.Id == request.DeviceId);
         if (deviceExists == false)
         {
-            return NotFound(new ApiMessageResponse("Cihaz bulunamadi."));
+            return NotFound(new ApiMessageResponse("Cihaz bulunamadı."));
         }
 
         service.CihazId = request.DeviceId;
@@ -474,7 +474,7 @@ public class MobileApiController : ControllerBase
 
         await _db.SaveChangesAsync();
         await ServisBildirimHelper.TamamlananServisBildiriminiOlusturAsync(_db, service.Id);
-        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Servis kaydi guncellendi.");
+        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Servis kaydı güncellendi.");
     }
 
     [HttpPost("admin/services/{serviceId:int}/delete")]
@@ -483,13 +483,13 @@ public class MobileApiController : ControllerBase
         var service = await _db.ServisKayitlari.FindAsync(serviceId);
         if (service == null)
         {
-            return NotFound(new ApiMessageResponse("Servis kaydi bulunamadi."));
+            return NotFound(new ApiMessageResponse("Servis kaydı bulunamadı."));
         }
 
         _db.ServisKayitlari.Remove(service);
         await _db.SaveChangesAsync();
 
-        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Servis kaydi silindi.");
+        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Servis kaydı silindi.");
     }
 
     [HttpPost("admin/actions")]
@@ -509,7 +509,7 @@ public class MobileApiController : ControllerBase
         _db.Islemler.Add(action);
         await _db.SaveChangesAsync();
 
-        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Yeni islem eklendi.");
+        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Yeni işlem eklendi.");
     }
 
     [HttpPut("admin/actions/{actionId:int}")]
@@ -518,7 +518,7 @@ public class MobileApiController : ControllerBase
         var action = await _db.Islemler.FindAsync(actionId);
         if (action == null)
         {
-            return NotFound(new ApiMessageResponse("Islem bulunamadi."));
+            return NotFound(new ApiMessageResponse("İşlem bulunamadı."));
         }
 
         action.Ad = request.Name.Trim();
@@ -529,7 +529,7 @@ public class MobileApiController : ControllerBase
         action.Aciklama = request.Description?.Trim();
         await _db.SaveChangesAsync();
 
-        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Islem guncellendi.");
+        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "İşlem güncellendi.");
     }
 
     [HttpPost("admin/actions/{actionId:int}/delete")]
@@ -538,19 +538,19 @@ public class MobileApiController : ControllerBase
         var actionInUse = await _db.ServisIslemler.AnyAsync(x => x.IslemId == actionId);
         if (actionInUse)
         {
-            return BadRequest(new ApiMessageResponse("Bu islem servis kayitlarinda kullanildigi icin silinemedi."));
+            return BadRequest(new ApiMessageResponse("Bu işlem servis kayıtlarında kullanıldığı için silinemedi."));
         }
 
         var action = await _db.Islemler.FindAsync(actionId);
         if (action == null)
         {
-            return NotFound(new ApiMessageResponse("Islem bulunamadi."));
+            return NotFound(new ApiMessageResponse("İşlem bulunamadı."));
         }
 
         _db.Islemler.Remove(action);
         await _db.SaveChangesAsync();
 
-        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Islem silindi.");
+        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "İşlem silindi.");
     }
 
     private async Task<ServisKaydi?> GetMemberServiceAsync(int memberId, int serviceId)

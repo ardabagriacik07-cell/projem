@@ -18,7 +18,7 @@
 }
 
 <div class="row g-3 mb-4">
-    <div class="col-12 col-md-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Toplam Admin</small><h3 class="display-6 fw-bold mb-0">@Model.ToplamAdmin</h3></div></div></div>
+    <div class="col-12 col-md-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Toplam Yönetici</small><h3 class="display-6 fw-bold mb-0">@Model.ToplamAdmin</h3></div></div></div>
     <div class="col-12 col-md-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Aktif Üye</small><h3 class="display-6 fw-bold mb-0">@Model.ToplamUye</h3></div></div></div>
     <div class="col-12 col-md-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Son 7 Gün Giriş</small><h3 class="display-6 fw-bold mb-0">@Model.Son7GunGirisYapanUye</h3></div></div></div>
     <div class="col-12 col-md-6 col-xxl-3"><div class="card kpi-card h-100"><div class="card-body"><small class="text-secondary">Bugün Açılan Servis</small><h3 class="display-6 fw-bold mb-0">@Model.BugunAcilanServis</h3></div></div></div>
@@ -57,7 +57,7 @@
                         <div class="queue-item">
                             <strong>@servis.Cihaz?.Musteri?.AdSoyad</strong>
                             <small>@servis.Cihaz?.Marka @servis.Cihaz?.Model</small>
-                            <span><span class="badge-status @BadgeClass(servis.Durum)">@servis.Durum</span></span>
+                            <span><span class="badge-status @BadgeClass(servis.Durum)">@DisplayTextHelper.Status(servis.Durum)</span></span>
                         </div>
                     }
                 </div>
@@ -70,11 +70,11 @@
     <div class="col-12">
         <div class="card premium-card">
             <div class="card-body p-4 p-lg-5">
-                <span class="admin-chip">Operasyon Checklist</span>
+                <span class="admin-chip">Operasyon Kontrol Listesi</span>
                 <h5 class="fw-bold mt-2">Sunum ve günlük kullanım için hazır durum listesi</h5>
                 <div class="row g-3 mt-3">
-                    <div class="col-md-4"><div class="check-card"><i class="bi bi-check2-circle"></i><div><strong>Oturum Yönetimi</strong><small>Admin ve üye oturumları ayrıştırılmış durumda.</small></div></div></div>
-                    <div class="col-md-4"><div class="check-card"><i class="bi bi-check2-circle"></i><div><strong>Veri Görünürlüğü</strong><small>Dashboard, rapor ve operasyon ekranları aktif.</small></div></div></div>
+                    <div class="col-md-4"><div class="check-card"><i class="bi bi-check2-circle"></i><div><strong>Oturum Yönetimi</strong><small>Yönetici ve üye oturumları ayrıştırılmış durumda.</small></div></div></div>
+                    <div class="col-md-4"><div class="check-card"><i class="bi bi-check2-circle"></i><div><strong>Veri Görünürlüğü</strong><small>Yönetici paneli, rapor ve operasyon ekranları aktif.</small></div></div></div>
                     <div class="col-md-4"><div class="check-card"><i class="bi bi-check2-circle"></i><div><strong>Mobil Uyum</strong><small>3 çizgili menü ile dar ekranlar için hazır.</small></div></div></div>
                 </div>
             </div>

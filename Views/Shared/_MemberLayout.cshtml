@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Üye Alanı</title>
+    <title>@ViewData["Title"] - Fixoria</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/member.css" asp-append-version="true" />
@@ -13,14 +13,33 @@
     var uyeAd = Context.Session.GetString("UyeAd");
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
     var action = ViewContext.RouteData.Values["action"]?.ToString();
-    var authSayfasi = controller == "Uye" && (action == "Giris" || action == "Kayit" || action == "SifremiUnuttum" || action == "SifreSifirla");
-    var pageTitle = ViewData["Title"]?.ToString() ?? "Üye Alanı";
+    var publicSayfasi = controller == "Uye" && (action == "Giris" || action == "Kayit" || action == "SifremiUnuttum" || action == "SifreSifirla" || action == "Hakkinda" || action == "ServisSureci" || action == "Iletisim");
+    var pageTitle = ViewData["Title"]?.ToString() ?? "Fixoria Üye Alanı";
 }
 
-@if (authSayfasi)
+@if (publicSayfasi)
 {
     <div class="member-auth-bg">
-        <main class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
+        <header class="member-public-header">
+            <a class="member-public-brand" asp-controller="Uye" asp-action="Giris" aria-label="Fixoria ana sayfa">
+                <span class="member-public-brand-mark"><i class="bi bi-shield-lightning"></i></span>
+                <span class="member-public-brand-copy">
+                    <strong>Fixoria</strong>
+                    <small>Servis takip merkezi</small>
+                </span>
+            </a>
+            <nav class="member-public-links" aria-label="Genel sayfalar">
+                <a class="@(action == "Hakkinda" ? "active" : "")" asp-controller="Uye" asp-action="Hakkinda">Hakkında</a>
+                <a class="@(action == "ServisSureci" ? "active" : "")" asp-controller="Uye" asp-action="ServisSureci">Servis Süreci</a>
+            <a class="@(action == "Iletisim" ? "active" : "")" asp-controller="Uye" asp-action="Iletisim">İletişim</a>
+            <a class="member-public-login @(action == "Giris" ? "active" : "")" asp-controller="Uye" asp-action="Giris">Giriş</a>
+            <a class="member-public-admin" asp-controller="Admin" asp-action="Login">
+                <i class="bi bi-shield-lock"></i>
+                <span>Yönetici</span>
+            </a>
+            </nav>
+        </header>
+        <main class="member-public-main container min-vh-100 d-flex align-items-center justify-content-center py-5">
             @RenderBody()
         </main>
     </div>
@@ -34,8 +53,8 @@ else
     <div class="offcanvas offcanvas-start member-offcanvas text-white" tabindex="-1" id="memberMenu" aria-labelledby="memberMenuLabel">
         <div class="offcanvas-header border-bottom border-light border-opacity-10">
             <div>
-                <div class="member-brand-mark mb-2"><i class="bi bi-gem"></i></div>
-                <h5 class="offcanvas-title mb-0" id="memberMenuLabel">Servis Plus</h5>
+                <div class="member-brand-mark mb-2">F</div>
+                <h5 class="offcanvas-title mb-0" id="memberMenuLabel">Fixoria</h5>
                 <small class="member-offcanvas-subtitle">@uyeAd</small>
             </div>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Kapat"></button>
@@ -53,6 +72,10 @@ else
                 <i class="bi bi-bell-fill"></i>
                 <span>Bildirimler</span>
             </a>
+            <a class="member-side-link @(action == "Yorumlar" ? "active" : "")" asp-controller="Uye" asp-action="Yorumlar">
+                <i class="bi bi-chat-left-heart-fill"></i>
+                <span>Yorumlarım</span>
+            </a>
             <a class="member-side-link @(action == "YeniTalep" ? "active" : "")" asp-controller="Uye" asp-action="YeniTalep">
                 <i class="bi bi-plus-square-fill"></i>
                 <span>Yeni Talep</span>
@@ -63,7 +86,7 @@ else
             </a>
             <a class="member-side-link" asp-controller="Admin" asp-action="Login">
                 <i class="bi bi-shield-lock-fill"></i>
-                <span>Admin</span>
+                <span>Yönetici</span>
             </a>
             <div class="member-side-spacer"></div>
             <div class="member-side-note">
@@ -81,7 +104,7 @@ else
     <main class="member-shell container-fluid px-3 px-md-4 px-xl-5 py-4 py-md-5">
         <section class="member-topbar mb-4">
             <div>
-                <div class="member-eyebrow">Üye Alanı</div>
+                <div class="member-eyebrow">Fixoria</div>
                 <h1 class="member-page-title mb-1">@pageTitle</h1>
                 <p class="member-topbar-copy mb-0">Servis sürecini tek bakışta takip et ve tüm işlemlerini hızlıca yönet.</p>
             </div>

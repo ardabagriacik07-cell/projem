@@ -2,8 +2,8 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @{
     ViewData["Title"] = "Cihazlar";
-    ViewData["PageTitle"] = "Cihaz Yonetimi";
-    ViewData["Subtitle"] = "Cihaz kayitlarini musteri bazli filtreleyip takip et.";
+    ViewData["PageTitle"] = "Cihaz Yönetimi";
+    ViewData["Subtitle"] = "Cihaz kayıtlarını müşteri bazlı filtreleyip takip et.";
 
     var musteriler = ViewBag.Musteriler as List<SelectListItem> ?? new List<SelectListItem>();
 
@@ -31,9 +31,9 @@
 
         <div class="admin-toolbar mb-4">
         <form method="get" class="admin-searchbar admin-searchbar-wide">
-            <input class="input" type="text" name="q" value="@ViewBag.Q" placeholder="Marka, model veya musteri ara" />
+            <input class="input" type="text" name="q" value="@ViewBag.Q" placeholder="Marka, model veya müşteri ara" />
             <select name="musteriId" class="input-like-select">
-                <option value="">Tum Musteriler</option>
+                <option value="">Tüm Müşteriler</option>
                 @foreach (var m in musteriler)
                 {
                     if (ViewBag.MusteriId?.ToString() == m.Value)
@@ -55,9 +55,9 @@
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Musteri</th>
+                    <th>Müşteri</th>
                     <th>Marka / Model</th>
-                    <th>Ariza</th>
+                    <th>Arıza</th>
                     <th>Servis</th>
                     <th></th>
                 </tr>
@@ -65,7 +65,7 @@
             <tbody>
             @if (Model.Count == 0)
             {
-                <tr><td colspan="5" class="muted">Kayit bulunamadi.</td></tr>
+                <tr><td colspan="5" class="muted">Kayıt bulunamadı.</td></tr>
             }
             else
             {
@@ -77,7 +77,7 @@
                                 <div class="rich-avatar">@Initials(item.Musteri?.AdSoyad ?? "?")</div>
                                 <div>
                                     <strong>@item.Musteri?.AdSoyad</strong>
-                                    <small>Musteri sahibi</small>
+                                    <small>Müşteri sahibi</small>
                                 </div>
                             </div>
                         </td>
@@ -89,7 +89,7 @@
                         </td>
                         <td>
                             <div class="rich-stack">
-                                <strong>Ariza Notu</strong>
+                                <strong>Arıza Notu</strong>
                                 <small>@item.ArizaAciklama</small>
                             </div>
                         </td>
@@ -102,7 +102,7 @@
                         <td>
                             <div class="action-cluster">
                                 <a class="btn action-btn action-btn-view" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i><span>Detay</span></a>
-                                <a class="btn action-btn action-btn-edit" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i><span>Duzenle</span></a>
+                                <a class="btn action-btn action-btn-edit" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i><span>Düzenle</span></a>
                                 <form asp-action="Delete" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@item.Id" />

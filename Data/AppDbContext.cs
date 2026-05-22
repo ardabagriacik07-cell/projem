@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<ServisIslem> ServisIslemler => Set<ServisIslem>();
     public DbSet<Admin> Adminler => Set<Admin>();
     public DbSet<MusteriBildirim> MusteriBildirimleri => Set<MusteriBildirim>();
+    public DbSet<UyeYorum> UyeYorumlari => Set<UyeYorum>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,6 +59,18 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<MusteriBildirim>()
             .HasIndex(x => new { x.ServisKaydiId, x.Tur });
 
+        modelBuilder.Entity<UyeYorum>()
+            .HasOne(x => x.Musteri)
+            .WithMany(x => x.Yorumlar)
+            .HasForeignKey(x => x.MusteriId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UyeYorum>()
+            .HasIndex(x => new { x.MusteriId, x.OlusturmaTarihi });
+
+        modelBuilder.Entity<UyeYorum>()
+            .HasIndex(x => new { x.YoneticiGordu, x.OlusturmaTarihi });
+
         modelBuilder.Entity<Cihaz>()
             .HasMany(x => x.ServisKayitlari)
             .WithOne(x => x.Cihaz)
@@ -92,10 +105,10 @@ public class AppDbContext : DbContext
         });
 
         modelBuilder.Entity<Islem>().HasData(
-            new Islem { Id = 1, Ad = "Ekran Degisimi", Kategori = "Telefon", MinimumFiyat = 1800m, MaksimumFiyat = 6500m, Fiyat = 4150m, Aciklama = "On cam saglamsa komple panel degisimi gerekebilir; marka ve OLED/AMOLED yapisina gore fiyat degisir." },
-            new Islem { Id = 2, Ad = "Batarya Degisimi", Kategori = "Telefon", MinimumFiyat = 900m, MaksimumFiyat = 3200m, Fiyat = 2050m, Aciklama = "Pil sagligi dusen veya sisen telefonlarda parca kalitesine gore fiyat araligi degisir." },
-            new Islem { Id = 3, Ad = "Soket Tamiri", Kategori = "Telefon", MinimumFiyat = 700m, MaksimumFiyat = 2200m, Fiyat = 1450m, Aciklama = "Sarj almama ve temassizlik sorunlarinda soket temizlik veya degisim uygulanir." },
-            new Islem { Id = 4, Ad = "Genel Bakim", Kategori = "Telefon", MinimumFiyat = 600m, MaksimumFiyat = 1500m, Fiyat = 1050m, Aciklama = "Ic temizlik, baglanti kontrolleri ve genel performans taramasi iceren temel servis bakimi." }
+            new Islem { Id = 1, Ad = "Ekran Değişimi", Kategori = "Telefon", MinimumFiyat = 1800m, MaksimumFiyat = 6500m, Fiyat = 4150m, Aciklama = "Ön cam sağlamsa komple panel değişimi gerekebilir; marka ve OLED/AMOLED yapısına göre fiyat değişir." },
+            new Islem { Id = 2, Ad = "Batarya Değişimi", Kategori = "Telefon", MinimumFiyat = 900m, MaksimumFiyat = 3200m, Fiyat = 2050m, Aciklama = "Pil sağlığı düşen veya şişen telefonlarda parça kalitesine göre fiyat aralığı değişir." },
+            new Islem { Id = 3, Ad = "Soket Tamiri", Kategori = "Telefon", MinimumFiyat = 700m, MaksimumFiyat = 2200m, Fiyat = 1450m, Aciklama = "Şarj almama ve temassızlık sorunlarında soket temizliği veya değişimi uygulanır." },
+            new Islem { Id = 4, Ad = "Genel Bakım", Kategori = "Telefon", MinimumFiyat = 600m, MaksimumFiyat = 1500m, Fiyat = 1050m, Aciklama = "İç temizlik, bağlantı kontrolleri ve genel performans taraması içeren temel servis bakımı." }
         );
     }
 }

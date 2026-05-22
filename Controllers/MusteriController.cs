@@ -51,6 +51,39 @@ public class MusteriController : Controller
         });
     }
 
+    public async Task<IActionResult> Pdf(int id)
+    {
+        var musteri = await _db.Musteriler.FirstOrDefaultAsync(x => x.Id == id);
+        if (musteri == null)
+        {
+            return NotFound();
+        }
+
+        var servisler = await _db.ServisKayitlari
+            .Include(x => x.Cihaz)
+            .ThenInclude(x => x!.Musteri)
+            .Include(x => x.ServisIslemler)
+            .ThenInclude(x => x.Islem)
+            .Where(x => x.Cihaz != null && x.Cihaz.MusteriId == id)
+            .OrderByDescending(x => x.Tarih)
+            .ToListAsync();
+
+        var rapor = new AdminGecmisViewModel
+        {
+            Q = musteri.AdSoyad,
+            ServisSayisi = servisler.Count,
+            ToplamTutar = servisler.Sum(x => x.ToplamFiyat),
+            Servisler = servisler
+        };
+
+        var pdf = FixoriaPdfReportBuilder.BuildServiceHistoryReport(servisler, rapor);
+        var safeName = string.Join("-", musteri.AdSoyad
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            .ToLowerInvariant();
+
+        return File(pdf, "application/pdf", $"fixoria-{safeName}-servis-gecmisi.pdf");
+    }
+
     public IActionResult Create()
     {
         return View(new Musteri());
@@ -70,7 +103,7 @@ public class MusteriController : Controller
         model.KayitTarihi = DateTime.UtcNow;
         _db.Musteriler.Add(model);
         await _db.SaveChangesAsync();
-        TempData["Ok"] = "Musteri kaydi olusturuldu.";
+        TempData["Ok"] = "Müşteri kaydı oluşturuldu.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -100,12 +133,26 @@ public class MusteriController : Controller
             return NotFound();
         }
 
-        mevcut.AdSoyad = model.AdSoyad;
-        mevcut.Telefon = model.Telefon;
-        mevcut.Email = model.Email;
+        var yeniEmail = model.Email.Trim().ToLowerInvariant();
+        var emailVar = await _db.Musteriler.AnyAsync(x => x.Id != model.Id && x.Email.ToLower() == yeniEmail);
+        if (emailVar)
+        {
+            ModelState.AddModelError(nameof(model.Email), "Bu e-posta başka bir müşteri tarafından kullanılıyor.");
+            return View(model);
+        }
+
+        mevcut.AdSoyad = model.AdSoyad.Trim();
+        mevcut.Telefon = model.Telefon.Trim();
+        mevcut.Email = yeniEmail;
+        mevcut.Sifre = model.Sifre?.Trim() ?? string.Empty;
+        mevcut.UyeHesabiVar = model.UyeHesabiVar;
+        mevcut.KayitTarihi = model.KayitTarihi;
+        mevcut.SonGirisTarihi = model.SonGirisTarihi;
+        mevcut.SifreSifirlamaKodu = string.IsNullOrWhiteSpace(model.SifreSifirlamaKodu) ? null : model.SifreSifirlamaKodu.Trim();
+        mevcut.SifreSifirlamaKodSonTarih = model.SifreSifirlamaKodSonTarih;
 
         await _db.SaveChangesAsync();
-        TempData["Ok"] = "Musteri bilgileri guncellendi.";
+        TempData["Ok"] = "Müşteri bilgileri güncellendi.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -121,7 +168,7 @@ public class MusteriController : Controller
 
         _db.Musteriler.Remove(model);
         await _db.SaveChangesAsync();
-        TempData["Ok"] = "Musteri silindi.";
+        TempData["Ok"] = "Müşteri silindi.";
         return RedirectToAction(nameof(Index));
     }
 }

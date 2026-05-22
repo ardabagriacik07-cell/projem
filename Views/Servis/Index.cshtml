@@ -1,8 +1,8 @@
 @model List<ServisKaydi>
 @{
-    ViewData["Title"] = "Servis Kayitlari";
+    ViewData["Title"] = "Servis Kayıtları";
     ViewData["PageTitle"] = "Servis Takip";
-    ViewData["Subtitle"] = "Duruma gore filtrele, kayitlari detayli takip et.";
+    ViewData["Subtitle"] = "Duruma göre filtrele, kayıtları detaylı takip et.";
 
     string BadgeClass(string durum)
     {
@@ -46,18 +46,18 @@
 
         <div class="admin-toolbar mb-4">
         <form method="get" class="admin-searchbar admin-searchbar-wide">
-            <input class="input" type="text" name="q" value="@ViewBag.Q" placeholder="Musteri, marka veya model ara" />
+            <input class="input" type="text" name="q" value="@ViewBag.Q" placeholder="Müşteri, marka veya model ara" />
             <select name="durum" class="input-like-select">
-                <option value="">Tum Durumlar</option>
+                <option value="">Tüm Durumlar</option>
                 @foreach (var s in new[] { "Bekliyor", "Islemde", "Fiyat Onayi Bekliyor", "Tamamlandi", "Teslim Edildi", "Fiyat Reddedildi" })
                 {
                     if (ViewBag.Durum?.ToString() == s)
                     {
-                        <option value="@s" selected>@s</option>
+                        <option value="@s" selected>@DisplayTextHelper.Status(s)</option>
                     }
                     else
                     {
-                        <option value="@s">@s</option>
+                        <option value="@s">@DisplayTextHelper.Status(s)</option>
                     }
                 }
             </select>
@@ -71,11 +71,11 @@
             <thead>
                 <tr>
                     <th>Tarih</th>
-                    <th>Musteri</th>
+                    <th>Müşteri</th>
                     <th>Cihaz</th>
                     <th>Durum</th>
-                    <th>Fiyat Onayi</th>
-                    <th>Islem Adedi</th>
+                    <th>Fiyat Onayı</th>
+                    <th>İşlem Adedi</th>
                     <th>Tutar</th>
                     <th></th>
                 </tr>
@@ -83,7 +83,7 @@
             <tbody>
             @if (Model.Count == 0)
             {
-                <tr><td colspan="8" class="muted">Servis kaydi bulunamadi.</td></tr>
+                <tr><td colspan="8" class="muted">Servis kaydı bulunamadı.</td></tr>
             }
             else
             {
@@ -101,7 +101,7 @@
                                 <div class="rich-avatar">@Initials(item.Cihaz?.Musteri?.AdSoyad ?? "?")</div>
                                 <div>
                                     <strong>@item.Cihaz?.Musteri?.AdSoyad</strong>
-                                    <small>Musteri profili</small>
+                                    <small>Müşteri profili</small>
                                 </div>
                             </div>
                         </td>
@@ -111,12 +111,12 @@
                                 <small>@item.Cihaz?.Model</small>
                             </div>
                         </td>
-                        <td><span class="badge-status @BadgeClass(item.Durum)">@item.Durum</span></td>
-                        <td><span class="badge-status @BadgeClass(item.FiyatOnayDurumu)">@item.FiyatOnayDurumu</span></td>
+                        <td><span class="badge-status @BadgeClass(item.Durum)">@DisplayTextHelper.Status(item.Durum)</span></td>
+                        <td><span class="badge-status @BadgeClass(item.FiyatOnayDurumu)">@DisplayTextHelper.Status(item.FiyatOnayDurumu)</span></td>
                         <td>
                             <div class="metric-pill">
                                 <strong>@item.ServisIslemler.Count</strong>
-                                <small>Islem</small>
+                                <small>İşlem</small>
                             </div>
                         </td>
                         <td>
@@ -128,7 +128,8 @@
                         <td>
                             <div class="action-cluster">
                                 <a class="btn action-btn action-btn-view" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i><span>Detay</span></a>
-                                <a class="btn action-btn action-btn-edit" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i><span>Duzenle</span></a>
+                                <a class="btn action-btn action-btn-edit" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i><span>Düzenle</span></a>
+                                <a class="btn action-btn action-btn-pdf" asp-action="Pdf" asp-route-id="@item.Id"><i class="bi bi-receipt"></i><span>Fiş PDF</span></a>
                                 <form asp-action="Delete" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@item.Id" />

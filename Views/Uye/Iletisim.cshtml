@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "İletişim";
+}
+
+<section class="member-public-page">
+    <div class="member-public-hero">
+        <span class="member-public-kicker">İletişim</span>
+        <h1>Servis kaydın için hesabına giriş yap, destek gerektiğinde bize ulaş.</h1>
+        <p>Fixoria panelinden yeni talep açabilir, açık servislerini izleyebilir ve fiyat onaylarını cevaplayabilirsin.</p>
+    </div>
+
+    <div class="member-contact-panel">
+        <a asp-controller="Uye" asp-action="Giris">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>
+                <strong>Üye girişi</strong>
+                <small>Mevcut taleplerini görüntüle.</small>
+            </span>
+        </a>
+        <a asp-controller="Uye" asp-action="Kayit">
+            <i class="bi bi-person-plus"></i>
+            <span>
+                <strong>Yeni hesap</strong>
+                <small>Servis taleplerini takip etmek için kayıt ol.</small>
+            </span>
+        </a>
+        <a asp-controller="Admin" asp-action="Login">
+            <i class="bi bi-shield-lock"></i>
+            <span>
+                <strong>Yönetici girişi</strong>
+                <small>Yetkili servis paneline geç.</small>
+            </span>
+        </a>
+    </div>
+</section>

@@ -1,12 +1,12 @@
 @model UyeSifreSifirlaViewModel
 @{
-    ViewData["Title"] = "Sifre Sifirla";
+    ViewData["Title"] = "Şifre Sıfırla";
 }
 
 <div class="card member-auth-card shadow-lg border-0" style="max-width:560px; width:100%;">
     <div class="card-body p-4 p-md-5">
-        <h1 class="h3 fw-bold mb-2">Yeni Sifre Belirle</h1>
-        <p class="member-muted mb-4">Mailine gelen 6 haneli kodu gir ve yeni sifreni belirle.</p>
+        <h1 class="h3 fw-bold mb-2">Yeni Şifre Belirle</h1>
+        <p class="member-muted mb-4">Mailine gelen 6 haneli kodu gir ve yeni şifreni belirle.</p>
 
         <form asp-action="SifreSifirla" method="post" class="row g-3">
             @Html.AntiForgeryToken()
@@ -25,20 +25,20 @@
             </div>
 
             <div class="col-md-6">
-                <label asp-for="YeniSifre" class="form-label">Yeni Sifre</label>
+                <label asp-for="YeniSifre" class="form-label">Yeni Şifre</label>
                 <input asp-for="YeniSifre" type="password" class="form-control member-input" />
                 <span asp-validation-for="YeniSifre" class="member-validation"></span>
             </div>
 
             <div class="col-md-6">
-                <label asp-for="YeniSifreTekrar" class="form-label">Yeni Sifre Tekrar</label>
+                <label asp-for="YeniSifreTekrar" class="form-label">Yeni Şifre Tekrarı</label>
                 <input asp-for="YeniSifreTekrar" type="password" class="form-control member-input" />
                 <span asp-validation-for="YeniSifreTekrar" class="member-validation"></span>
             </div>
 
             <div class="col-12 d-grid gap-2">
-                <button type="submit" class="btn btn-success fw-semibold">Sifreyi Guncelle</button>
-                <a class="btn btn-outline-light" asp-action="Giris">Giris Ekranina Don</a>
+                <button type="submit" class="btn btn-success fw-semibold">Şifreyi Güncelle</button>
+                <a class="btn btn-outline-light" asp-action="Giris">Giriş Ekranına Dön</a>
             </div>
         </form>
     </div>
