@@ -3,52 +3,106 @@
     ViewData["Title"] = "Üye Kayıt";
 }
 
-<div class="card member-auth-card shadow-lg border-0" style="max-width:620px; width:100%;">
-    <div class="card-body p-4 p-md-5">
-        <h1 class="h3 fw-bold mb-2">Yeni Üye Kaydı</h1>
-        <p class="member-muted mb-4">Hesabını oluştur ve servis taleplerini güvenle yönet.</p>
+<section class="member-auth-v2 member-auth-v2--register">
+    <aside class="member-auth-showcase member-auth-showcase--compact" aria-hidden="true">
+        <div class="member-showcase-copy">
+            <span class="member-showcase-kicker">Yeni servis hesabı</span>
+            <h2>Takip sende.</h2>
+            <p>Kaydını oluştur, cihaz hareketlerini ve fiyat onaylarını aynı panelden izle.</p>
+        </div>
 
-        <form asp-action="Kayit" method="post" class="row g-3">
+        <div class="member-register-flow">
+            <div class="member-flow-step active">
+                <i class="bi bi-person-check"></i>
+                <span>Üyelik</span>
+            </div>
+            <div class="member-flow-line"></div>
+            <div class="member-flow-step">
+                <i class="bi bi-clipboard2-plus"></i>
+                <span>Talep</span>
+            </div>
+            <div class="member-flow-line"></div>
+            <div class="member-flow-step">
+                <i class="bi bi-bell"></i>
+                <span>Bildirim</span>
+            </div>
+        </div>
+    </aside>
+
+    <div class="member-auth-panel member-auth-panel--wide">
+        <div class="member-auth-heading">
+            <div class="member-auth-logo"><i class="bi bi-person-plus"></i></div>
+            <h1>Yeni Üye Kaydı</h1>
+            <p>Hesabını oluştur ve servis taleplerini güvenle yönet.</p>
+        </div>
+
+        <div class="member-auth-tabs" role="tablist" aria-label="Üye işlemleri">
+            <a asp-action="Giris"><i class="bi bi-box-arrow-in-right"></i><span>Giriş Yap</span></a>
+            <a class="active" asp-action="Kayit"><i class="bi bi-person-plus"></i><span>Kayıt Ol</span></a>
+        </div>
+
+        <form asp-action="Kayit" method="post" class="member-auth-form member-auth-form--grid">
             @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="member-validation"></div>
 
-            <div class="col-md-6">
+            <div>
                 <label asp-for="AdSoyad" class="form-label">Ad Soyad</label>
-                <input asp-for="AdSoyad" class="form-control member-input" />
+                <div class="member-auth-field">
+                    <i class="bi bi-person"></i>
+                    <input asp-for="AdSoyad" class="form-control" autocomplete="name" />
+                </div>
                 <span asp-validation-for="AdSoyad" class="member-validation"></span>
             </div>
 
-            <div class="col-md-6">
+            <div>
                 <label asp-for="Telefon" class="form-label">Telefon</label>
-                <input asp-for="Telefon" class="form-control member-input" />
+                <div class="member-auth-field">
+                    <i class="bi bi-telephone"></i>
+                    <input asp-for="Telefon" class="form-control" autocomplete="tel" />
+                </div>
                 <span asp-validation-for="Telefon" class="member-validation"></span>
             </div>
 
-            <div class="col-12">
+            <div class="member-form-span">
                 <label asp-for="Email" class="form-label">E-posta</label>
-                <input asp-for="Email" class="form-control member-input" />
+                <div class="member-auth-field">
+                    <i class="bi bi-envelope"></i>
+                    <input asp-for="Email" class="form-control" autocomplete="email" />
+                </div>
                 <span asp-validation-for="Email" class="member-validation"></span>
             </div>
 
-            <div class="col-md-6">
+            <div>
                 <label asp-for="Sifre" class="form-label">Şifre</label>
-                <input asp-for="Sifre" type="password" class="form-control member-input" />
+                <div class="member-auth-field">
+                    <i class="bi bi-lock"></i>
+                    <input asp-for="Sifre" type="password" class="form-control" autocomplete="new-password" />
+                </div>
                 <span asp-validation-for="Sifre" class="member-validation"></span>
             </div>
 
-            <div class="col-md-6">
+            <div>
                 <label asp-for="SifreTekrar" class="form-label">Şifre Tekrarı</label>
-                <input asp-for="SifreTekrar" type="password" class="form-control member-input" />
+                <div class="member-auth-field">
+                    <i class="bi bi-shield-check"></i>
+                    <input asp-for="SifreTekrar" type="password" class="form-control" autocomplete="new-password" />
+                </div>
                 <span asp-validation-for="SifreTekrar" class="member-validation"></span>
             </div>
 
-            <div class="col-12 d-grid gap-2">
-                <button type="submit" class="btn btn-success fw-semibold">Hesap Oluştur</button>
-                <a class="btn btn-outline-light" asp-action="Giris">Zaten Üyeyim</a>
+            <div class="member-auth-actions member-form-span">
+                <button type="submit" class="member-auth-submit">
+                    <i class="bi bi-person-check"></i>
+                    <span>Hesap Oluştur</span>
+                </button>
+                <a class="member-auth-secondary" asp-action="Giris">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span>Zaten Üyeyim</span>
+                </a>
             </div>
         </form>
     </div>
-</div>
+</section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

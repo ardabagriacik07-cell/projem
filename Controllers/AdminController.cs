@@ -12,7 +12,7 @@ public class AdminController : Controller
 
     public IActionResult Login()
     {
-        if (string.IsNullOrWhiteSpace(HttpContext.Session.GetString("Admin")) == false)
+        if (!string.IsNullOrWhiteSpace(HttpContext.Session.GetString("Admin")))
         {
             return RedirectToAction("Index", "Home");
         }

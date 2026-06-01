@@ -235,6 +235,71 @@ public class MobileApiController : ControllerBase
         return await BuildMemberSyncAsync(memberId, "Fiyat teklifini reddettin.");
     }
 
+    [HttpPost("member/{memberId:int}/reviews")]
+    public async Task<ActionResult<MemberSyncResponse>> CreateMemberReview(int memberId, CreateMemberReviewRequest request)
+    {
+        var member = await _db.Musteriler.FirstOrDefaultAsync(x => x.Id == memberId && x.UyeHesabiVar);
+        if (member == null)
+        {
+            return NotFound(new ApiMessageResponse("Aktif üye bulunamadı."));
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Title) ||
+            string.IsNullOrWhiteSpace(request.Message) ||
+            request.Rating < 1 ||
+            request.Rating > 5)
+        {
+            return BadRequest(new ApiMessageResponse("Başlık, yorum ve 1-5 arası puan gerekli."));
+        }
+
+        _db.UyeYorumlari.Add(new UyeYorum
+        {
+            MusteriId = memberId,
+            Baslik = request.Title.Trim(),
+            Mesaj = request.Message.Trim(),
+            Puan = request.Rating,
+            OlusturmaTarihi = DateTime.UtcNow
+        });
+
+        await _db.SaveChangesAsync();
+        return await BuildMemberSyncAsync(memberId, "Yorumun alındı. Teşekkür ederiz.");
+    }
+
+    [HttpPost("member/{memberId:int}/notifications/{notificationId:int}/read")]
+    public async Task<ActionResult<MemberSyncResponse>> MarkMemberNotificationRead(int memberId, int notificationId)
+    {
+        var notification = await _db.MusteriBildirimleri
+            .FirstOrDefaultAsync(x => x.Id == notificationId && x.MusteriId == memberId);
+
+        if (notification == null)
+        {
+            return NotFound(new ApiMessageResponse("Bildirim bulunamadı."));
+        }
+
+        notification.Okundu = true;
+        notification.OkunmaTarihi = DateTime.UtcNow;
+        await _db.SaveChangesAsync();
+
+        return await BuildMemberSyncAsync(memberId, "Bildirim okundu olarak işaretlendi.");
+    }
+
+    [HttpPost("member/{memberId:int}/notifications/read-all")]
+    public async Task<ActionResult<MemberSyncResponse>> MarkAllMemberNotificationsRead(int memberId)
+    {
+        var notifications = await _db.MusteriBildirimleri
+            .Where(x => x.MusteriId == memberId && x.Okundu == false)
+            .ToListAsync();
+
+        foreach (var notification in notifications)
+        {
+            notification.Okundu = true;
+            notification.OkunmaTarihi = DateTime.UtcNow;
+        }
+
+        await _db.SaveChangesAsync();
+        return await BuildMemberSyncAsync(memberId, "Bildirimler okundu olarak işaretlendi.");
+    }
+
     [HttpPost("admin/login")]
     public async Task<ActionResult<AdminSyncResponse>> AdminLogin(AdminLoginRequest request)
     {
@@ -319,6 +384,36 @@ public class MobileApiController : ControllerBase
         return await BuildAdminSyncAsync(admin.KullaniciAdi, passwordWillChange
             ? "Yönetici hesabı güncellendi."
             : "Yönetici kullanıcı adı güncellendi.");
+    }
+
+    [HttpPost("admin/reviews/{reviewId:int}/read")]
+    public async Task<ActionResult<AdminSyncResponse>> MarkAdminReviewRead(int reviewId, DeleteAdminEntityRequest request)
+    {
+        var review = await _db.UyeYorumlari.FindAsync(reviewId);
+        if (review == null)
+        {
+            return NotFound(new ApiMessageResponse("Yorum bulunamadı."));
+        }
+
+        review.YoneticiGordu = true;
+        await _db.SaveChangesAsync();
+
+        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Yorum okundu olarak işaretlendi.");
+    }
+
+    [HttpPost("admin/reviews/{reviewId:int}/delete")]
+    public async Task<ActionResult<AdminSyncResponse>> DeleteAdminReview(int reviewId, DeleteAdminEntityRequest request)
+    {
+        var review = await _db.UyeYorumlari.FindAsync(reviewId);
+        if (review == null)
+        {
+            return NotFound(new ApiMessageResponse("Yorum bulunamadı."));
+        }
+
+        _db.UyeYorumlari.Remove(review);
+        await _db.SaveChangesAsync();
+
+        return await BuildAdminSyncAsync(request.AdminUsername.Trim(), "Yorum silindi.");
     }
 
     [HttpPost("admin/members")]
@@ -581,13 +676,25 @@ public class MobileApiController : ControllerBase
             .ToListAsync();
 
         var actions = await _db.Islemler.OrderBy(x => x.Ad).ToListAsync();
+        var notifications = await _db.MusteriBildirimleri
+            .Include(x => x.ServisKaydi)
+            .ThenInclude(x => x.Cihaz)
+            .Where(x => x.MusteriId == memberId)
+            .OrderByDescending(x => x.OlusturmaTarihi)
+            .ToListAsync();
+        var reviews = await _db.UyeYorumlari
+            .Where(x => x.MusteriId == memberId)
+            .OrderByDescending(x => x.OlusturmaTarihi)
+            .ToListAsync();
 
         return new MemberSyncResponse(
             message,
             ToMemberDto(member),
             devices.Select(ToDeviceDto).ToList(),
             actions.Select(ToActionDto).ToList(),
-            services.Select(ToServiceDto).ToList());
+            services.Select(ToServiceDto).ToList(),
+            notifications.Select(ToNotificationDto).ToList(),
+            reviews.Select(ToReviewDto).ToList());
     }
 
     private async Task<AdminSyncResponse> BuildAdminSyncAsync(string adminUsername, string message)
@@ -606,6 +713,10 @@ public class MobileApiController : ControllerBase
             .ToListAsync();
 
         var actions = await _db.Islemler.OrderBy(x => x.Ad).ToListAsync();
+        var reviews = await _db.UyeYorumlari
+            .Include(x => x.Musteri)
+            .OrderByDescending(x => x.OlusturmaTarihi)
+            .ToListAsync();
 
         return new AdminSyncResponse(
             message,
@@ -613,7 +724,8 @@ public class MobileApiController : ControllerBase
             members.Select(ToMemberDto).ToList(),
             devices.Select(ToDeviceDto).ToList(),
             actions.Select(ToActionDto).ToList(),
-            services.Select(ToServiceDto).ToList());
+            services.Select(ToServiceDto).ToList(),
+            reviews.Select(ToReviewDto).ToList());
     }
 
     private static MemberDto ToMemberDto(Musteri member)
@@ -687,12 +799,44 @@ public class MobileApiController : ControllerBase
             service.FiyatCevapTarihi);
     }
 
+    private static NotificationDto ToNotificationDto(MusteriBildirim notification)
+    {
+        var device = notification.ServisKaydi?.Cihaz;
+        var deviceLabel = device == null ? string.Empty : $"{device.Marka} {device.Model}";
+
+        return new NotificationDto(
+            notification.Id,
+            notification.MusteriId,
+            notification.ServisKaydiId,
+            notification.Tur,
+            notification.Baslik,
+            notification.Mesaj,
+            notification.Okundu,
+            notification.OlusturmaTarihi,
+            notification.OkunmaTarihi,
+            deviceLabel);
+    }
+
+    private static ReviewDto ToReviewDto(UyeYorum review)
+    {
+        return new ReviewDto(
+            review.Id,
+            review.MusteriId,
+            review.Musteri?.AdSoyad ?? string.Empty,
+            review.Baslik,
+            review.Mesaj,
+            review.Puan,
+            review.YoneticiGordu,
+            review.OlusturmaTarihi);
+    }
+
     public sealed record MemberLoginRequest(string Email, string Password);
     public sealed record MemberRegisterRequest(string FullName, string Phone, string Email, string Password);
     public sealed record PasswordResetCodeRequest(string Email);
     public sealed record PasswordResetRequest(string Email, string Code, string NewPassword);
     public sealed record UpdateMemberProfileRequest(string FullName, string Phone, string Email, string? NewPassword);
     public sealed record CreateMemberServiceRequestRequest(string Brand, string Model, string IssueDescription);
+    public sealed record CreateMemberReviewRequest(string Title, string Message, int Rating);
     public sealed record AdminLoginRequest(string Username, string Password);
     public sealed record ChangeAdminPasswordRequest(string AdminUsername, string CurrentPassword, string? NewPassword = null, string? NewUsername = null);
     public sealed record CreateAdminMemberRequest(string AdminUsername, string FullName, string Phone, string Email, bool CreateAccount);
@@ -704,10 +848,12 @@ public class MobileApiController : ControllerBase
     public sealed record DeleteAdminEntityRequest(string AdminUsername);
 
     public sealed record ApiMessageResponse(string Message);
-    public sealed record MemberSyncResponse(string Message, MemberDto Member, List<DeviceDto> Devices, List<ServiceActionDto> Actions, List<ServiceRecordDto> Services);
-    public sealed record AdminSyncResponse(string Message, string AdminUsername, List<MemberDto> Members, List<DeviceDto> Devices, List<ServiceActionDto> Actions, List<ServiceRecordDto> Services);
+    public sealed record MemberSyncResponse(string Message, MemberDto Member, List<DeviceDto> Devices, List<ServiceActionDto> Actions, List<ServiceRecordDto> Services, List<NotificationDto> Notifications, List<ReviewDto> Reviews);
+    public sealed record AdminSyncResponse(string Message, string AdminUsername, List<MemberDto> Members, List<DeviceDto> Devices, List<ServiceActionDto> Actions, List<ServiceRecordDto> Services, List<ReviewDto> Reviews);
     public sealed record MemberDto(int Id, string FullName, string Phone, string Email, string Password, bool HasAccount, DateTime RegisteredAt, DateTime? LastLoginAt, string? ResetCode, DateTime? ResetCodeExpiresAt);
     public sealed record DeviceDto(int Id, int MemberId, string Brand, string Model, string IssueDescription);
     public sealed record ServiceActionDto(int Id, string Name, double Price, string Category, double MinPrice, double MaxPrice, string Description);
     public sealed record ServiceRecordDto(int Id, int DeviceId, DateTime Date, string Status, double TotalPrice, List<int> ActionIds, string PriceApprovalStatus, DateTime? PriceApprovalSentAt, DateTime? PriceApprovalAnsweredAt);
+    public sealed record NotificationDto(int Id, int MemberId, int? ServiceId, string Type, string Title, string Message, bool IsRead, DateTime CreatedAt, DateTime? ReadAt, string DeviceLabel);
+    public sealed record ReviewDto(int Id, int MemberId, string MemberName, string Title, string Message, int Rating, bool SeenByAdmin, DateTime CreatedAt);
 }

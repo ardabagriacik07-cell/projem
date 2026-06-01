@@ -2754,6 +2754,21 @@ textarea:focus {
   border-color: transparent;
 }
 
+.admin-auth-showcase,
+.admin-auth-showcase .admin-auth-badge,
+.admin-auth-showcase .admin-auth-title,
+.admin-auth-showcase .admin-auth-copy,
+.admin-auth-showcase .admin-auth-stat strong,
+.admin-auth-showcase .admin-auth-stat small,
+.admin-auth-showcase .admin-auth-note strong,
+.admin-auth-showcase .admin-auth-note small {
+  color: #fff !important;
+}
+
+.admin-auth-showcase .admin-auth-title {
+  text-shadow: 0 10px 32px rgba(0, 0, 0, .38);
+}
+
 @keyframes adminBubbleDrift {
   0% { transform: translate3d(0, 0, 0); }
   100% { transform: translate3d(-44px, -44px, 0); }
