@@ -3,9 +3,91 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 [ApiController]
-[Route("api/mobile")]
+[Route("api/fixoria")]
 public class MobileApiController : ControllerBase
 {
+    [HttpGet("")]
+public IActionResult Root()
+{
+    var baseUrl = "http://localhost:5106";
+
+    return Ok(new
+    {
+        projeAdi = "Fixoria Servis Sistemi",
+        domain = "www.fixoria.com.tr",
+        localApi = baseUrl + "/api/mobile",
+        durum = "Calisiyor",
+        tur = "ASP.NET Core MVC API",
+
+        roller = new[]
+        {
+            "Musteri",
+            "Admin"
+        },
+
+        endpointler = new
+        {
+            musteri = new
+            {
+                login = baseUrl + "/api/mobile/member/login",
+                register = baseUrl + "/api/mobile/member/register",
+                snapshot = baseUrl + "/api/mobile/member/{memberId}/snapshot",
+                profil = baseUrl + "/api/mobile/member/{memberId}/profile"
+            },
+
+            sifre = new
+            {
+                resetCode = baseUrl + "/api/mobile/member/password-reset-code",
+                reset = baseUrl + "/api/mobile/member/password-reset"
+            },
+
+            servis = new
+            {
+                create = baseUrl + "/api/mobile/member/{memberId}/service-requests",
+                accept = baseUrl + "/api/mobile/member/{memberId}/services/{serviceId}/price-offer/accept",
+                reject = baseUrl + "/api/mobile/member/{memberId}/services/{serviceId}/price-offer/reject"
+            },
+
+            bildirim = new
+            {
+                read = baseUrl + "/api/mobile/member/{memberId}/notifications/{notificationId}/read",
+                readAll = baseUrl + "/api/mobile/member/{memberId}/notifications/read-all"
+            },
+
+            admin = new
+            {
+                login = baseUrl + "/api/mobile/admin/login",
+                snapshot = baseUrl + "/api/mobile/admin/snapshot",
+                password = baseUrl + "/api/mobile/admin/password",
+                services = baseUrl + "/api/mobile/admin/services",
+                actions = baseUrl + "/api/mobile/admin/actions"
+            }
+        },
+
+        demoData = new
+        {
+            customer = new
+            {
+                name = "Arda Bağrıaçık",
+                email = "ardabagiracik07@gmail.com",
+                phone = "+90 531 554 18 94"
+            },
+            device = new
+            {
+                brand = "Apple",
+                model = "iPhone 13 ",
+                issue = "Battery drain problem"
+            },
+            service = new
+            {
+                status = "Waiting Approval",
+                estimatedPrice = 1500
+            }
+        },
+
+        timestamp = DateTime.UtcNow
+    });
+}
     private readonly AppDbContext _db;
     private readonly IEmailSender _emailSender;
 

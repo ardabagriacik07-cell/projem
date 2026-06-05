@@ -77,7 +77,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Uye}/{action=Giris}/{id?}");
 
-app.MapFallbackToFile("/mobile/{*path:nonfile}", "mobile/index.html");
+app.MapFallbackToFile("/app/{*path:nonfile}", "mobile/index.html");
 
 // .WithStaticAssets(); BUNU SİLDİK
 
